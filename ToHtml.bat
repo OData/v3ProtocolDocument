@@ -1,2 +1,4 @@
+rmdir /s/q output
 mkdir output
-copy ToHtml.bat output\index.html
+Pandoc\bin\pandoc.exe --from markdown --to html -o output\spec.html *.markdown
+rem pause

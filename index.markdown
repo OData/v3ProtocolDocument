@@ -6,8 +6,7 @@
 [dl]: http://daringfireball.net/projects/downloads/Markdown_1.0.1.zip
 
 
-Introduction
-------------
+# Introduction #
 
 Markdown is a text-to-HTML conversion tool for web writers. Markdown
 allows you to write using an easy-to-read, easy-to-write plain text

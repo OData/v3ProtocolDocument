@@ -19,7 +19,7 @@
 
 # Versioning & Extensibility #
 
- - how the protocol is versioned and the relation of this doc to prior OData versions.
+- how the protocol is versioned and the relation of this doc to prior OData versions.
 - What versioning is the responsibility of the service author  vs. inherent in the protocol.  This is just a statement of concerns, not best practices re: versioning (that stuff can be put in a companion whitepaper)
 - explicit extension points in the system and what types of extensibility we encourage
 

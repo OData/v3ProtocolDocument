@@ -2,8 +2,42 @@
 
 # Overview #
 
+The OData Protocol is an application-level protocol for interacting with data via RESTful web services. The protocol supports the description of data models and editing and querying of data according to those models. It provides facilities for:
+
+- Metadata: 
+- Data: 
+- Querying: 
+- Editing: 
+
+The OData Protocol is different from other REST-based web service approaches in that it provides a uniform way to describe both the data and the data model. This improves semmantic interoperability between systems and allows an ecosystem to emerge. Towards that end, the OData Protocol follows these design principles:
+
+- 
+
+
+----------
+
 - ASSIGNED TO: ARLO
-- include the exec summary of data and its design principles.
+- include the exec summary of odata and its design principles.
+
+*Sample text, taken from the AtomPub RFC's Introduction section.*
+
+>  The Atom Publishing Protocol is an application-level protocol for
+>    publishing and editing Web Resources using HTTP [RFC2616] and XML 1.0
+>    [REC-xml].  The protocol supports the creation of Web Resources and
+>    provides facilities for:
+> 
+>    o  Collections: Sets of Resources, which can be retrieved in whole or
+>       in part.
+> 
+>    o  Services: Discovery and description of Collections.
+> 
+>    o  Editing: Creating, editing, and deleting Resources.
+> 
+>    The Atom Publishing Protocol is different from many contemporary
+>    protocols in that the server is given wide latitude in processing
+>    requests from clients.  See Section 4.4 for more details.
+
+----
 
 # Data Model #
 

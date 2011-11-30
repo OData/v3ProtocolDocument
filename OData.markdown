@@ -15,10 +15,19 @@
 
 - glossary of terms used throughout the doc
 
-# Conventions #
+# 2. Notational Conventions #
 
-- ASSIGNED TO: ARLO
-- any conventions used in the document (i.e. all examples should use the odata efficient format – more on that below)
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[RFC2119](http://tools.ietf.org/html/rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")].
+
+## 2.1. Json Example Payloads ##
+
+Some sections of this specification are illustrated with non-normative example OData request and response payloads. However, the text of this specification provides the definition of conformance.
+
+OData payloads are representable in multiple formats. Those formats are specified in separate documents. In this document, when an example is necessary, it will be given in the minimal Json format.
+
+## 2.2. CSDL Schema ##
+
+Some sections of this specification are illustrated with fragments of a non-normative RELAX NG Compact schema [[RNC](http://tools.ietf.org/html/rfc5023#ref-RNC "RELAX NG Compact Syntax")]. However, the text of this specification provides the definition of conformance. Complete schemas appear in Appendix B.
 
 # Versioning#
 

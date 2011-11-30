@@ -2,10 +2,12 @@
 
 # Overview #
 
+- ASSIGNED TO: ARLO
 - include the exec summary of data and its design principles.
 
 # Data Model #
 
+- ASSIGNED TO: MikeF
 - high level overview of the data model that describes the system (not a full/formal definition of EDM, but just what you need to know to reason about the contents of the spec)
 - ideally we can put the full/formal definition of EDM into an appendix or something.  We should also consider any changes or omissions to EDM we might need/want
 
@@ -15,12 +17,16 @@
 
 # Conventions #
 
+- ASSIGNED TO: ARLO
 - any conventions used in the document (i.e. all examples should use the odata efficient format – more on that below)
 
-# Versioning & Extensibility #
+# Versioning#
 
 - how the protocol is versioned and the relation of this doc to prior OData versions.
 - What versioning is the responsibility of the service author  vs. inherent in the protocol.  This is just a statement of concerns, not best practices re: versioning (that stuff can be put in a companion whitepaper)
+
+# Versioning & Extensibility #
+
 - explicit extension points in the system and what types of extensibility we encourage
 
 # Interaction Semantics #
@@ -29,8 +35,11 @@
 
 ### Service Document ###
 
+- ASSIGNED TO: MikeP
+
 ### Metadata Document ###
 
+- ASSIGNED TO: Alex
 - i.e. $metadata
 
 ## Querying Data ##

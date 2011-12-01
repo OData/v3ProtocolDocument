@@ -4,15 +4,17 @@
 
 The OData Protocol is an application-level protocol for interacting with data via RESTful web services. The protocol supports the description of data models and editing and querying of data according to those models. It provides facilities for:
 
-- Metadata: 
-- Data: 
-- Querying: 
-- Editing: 
+- Metadata: A machine-readable description of the data model exposed by a particular data provider.
+- Data: Sets of data entities and the relationships between them.
+- Querying: Requesting that the server perform a set of filtering and other transformations to its data, then return the results.
+- Editing: Creating, editing, and deleting data.
 
 The OData Protocol is different from other REST-based web service approaches in that it provides a uniform way to describe both the data and the data model. This improves semmantic interoperability between systems and allows an ecosystem to emerge. Towards that end, the OData Protocol follows these design principles:
 
-- 
-
+- Prefer mechanisms that work on a variety of data stores. In particular, do not assume a relational data model.
+- Backwards compatability is paramount. Clients and servers which speak different versions of the OData Protocol should interoperate, supporting everything allowed in the lower of the two versions.
+- Follow REST principles unless there is a good and specific reason not to.
+- OData should degrade gracefully. It should be easy to make a very basic but compliant OData endpoint, with additional work necessary only to support additional capabilities.
 
 ----------
 

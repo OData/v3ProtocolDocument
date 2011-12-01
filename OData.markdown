@@ -85,7 +85,7 @@ Some sections of this specification are illustrated with fragments of a non-norm
 ### Metadata Document ###
 
 - ASSIGNED TO: Alex
-- i.e. $metadata
+- i.e. $metadata - etc.
 
 ## Querying Data ##
 

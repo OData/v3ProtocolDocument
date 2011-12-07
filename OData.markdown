@@ -1,4 +1,6 @@
 ﻿# OData #
+We have a few statuses: 
+Assigned to Someone, Review, Reviewing(name), Edit
 
 # Overview #
 
@@ -48,30 +50,30 @@ The OData Protocol is different from other REST-based web service approaches in 
 - ideally we can put the full/formal definition of EDM into an appendix or something.  We should also consider any changes or omissions to EDM we might need/want
 
 # Terminology #
-
-- glossary of terms used throughout the doc
+- ASSIGNED TO: MikeF/All
+- glossary of terms used throughout the doc 
 
 # 2. Notational Conventions #
-
+- ASSIGNED TO: Edit
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[RFC2119](http://tools.ietf.org/html/rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")].
 
 ## 2.1. Json Example Payloads ##
-
+- ASSIGNED TO: Review
 Some sections of this specification are illustrated with non-normative example OData request and response payloads. However, the text of this specification provides the definition of conformance.
 
 OData payloads are representable in multiple formats. Those formats are specified in separate documents. In this document, when an example is necessary, it will be given in the minimal Json format.
 
 ## 2.2. CSDL Schema ##
-
+- ASSIGNED TO: Review
 Some sections of this specification are illustrated with fragments of a non-normative RELAX NG Compact schema [[RNC](http://tools.ietf.org/html/rfc5023#ref-RNC "RELAX NG Compact Syntax")]. However, the text of this specification provides the definition of conformance. Complete schemas appear in Appendix B.
 
 # Versioning#
-
+- ASSIGNED TO: MikeP
 - how the protocol is versioned and the relation of this doc to prior OData versions.
 - What versioning is the responsibility of the service author  vs. inherent in the protocol.  This is just a statement of concerns, not best practices re: versioning (that stuff can be put in a companion whitepaper)
 
-# Versioning & Extensibility #
-
+# Extensibility #
+- ASSIGNED TO: MikeP
 - explicit extension points in the system and what types of extensibility we encourage
 
 # Interaction Semantics #
@@ -88,23 +90,44 @@ Some sections of this specification are illustrated with fragments of a non-norm
 - i.e. $metadata
 
 ## Querying Data ##
+- ASSIGNED TO: Mike(*)
 
 - description of how data is queried in OData (i.e. GET requests).  Might need some additional structure, but figured that can be flushed out as we progress
 - this would include description of everything after the ? ($filter, select, top, skip, etc)
 
 ## Data Modification ##
 
-- description of POST, PUT, DELETE, PATCH/MERGE 
+### POST ###
+- ASSIGNED TO: Arlo
+
+### DELETE ###
+- ASSIGNED TO: Arlo
+
+### PUT ###
+- ASSIGNED TO: Arlo
+
+### PATCH/MERGE ###
+- ASSIGNED TO: Arlo
 
 ## Additional Operations  ##
 
-- Actions 
-- Functions
-- Service Operations (ideally we want to end of life these in favor of the above two – should consider if /how we include these)
+### Actions ###
+- ASSIGNED TO: Alex
+
+###  Functions ### 
+- ASSIGNED TO: Alex
+
+###  Service Operations ### 
+- ASSIGNED TO: Alex
+(ideally we want to end of life these in favor of the above two – should consider if /how we include these)
+
 - Batch Processing
+- ASSIGNED TO: MikeP
 
 # Appendices #
 
 ## A: Formal CSDL description ##
+- ASSIGNED TO: Alex
 
 ## B: XSD for CSDL ##
+- ASSIGNED TO: Alex

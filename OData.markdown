@@ -1,8 +1,8 @@
-﻿# OData #
+# OData #
 We have a few statuses: 
 Assigned to Someone, Review, Reviewing(name), Edit
 
-# Overview #
+# 1. Overview #
 
 The OData Protocol is an application-level protocol for interacting with data via RESTful web services. The protocol supports the description of data models and editing and querying of data according to those models. It provides facilities for:
 
@@ -20,7 +20,7 @@ Towards that end, the OData Protocol follows these design principles:
 - Follow REST principles unless there is a good and specific reason not to.
 - OData should degrade gracefully. It should be easy to make a very basic but compliant OData endpoint, with additional work necessary only to support additional capabilities.
 
-# Data Model #
+# 2. Data Model #
 
 - ASSIGNED TO: MikeF
 - high level overview of the data model that describes the system (not a full/formal definition of EDM, but just what you need to know to reason about the contents of the spec)
@@ -28,30 +28,38 @@ Towards that end, the OData Protocol follows these design principles:
 - Should include the type system (unless we put that in another section), including, e.g., a list of the primitive types supported and the operations that are allowed on properties of those types.
  - As an abstract type system. Avoid its representation in EDM/CSDL. That remains in appendices.
 
-# Terminology #
+# 3. Terminology #
 - ASSIGNED TO: MikeF/All
 - glossary of terms used throughout the doc 
 
-# 2. Notational Conventions #
+# 4. Notational Conventions #
+
 - ASSIGNED TO: Edit
+
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[RFC2119](http://tools.ietf.org/html/rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")].
 
-## 2.1. Json Example Payloads ##
+## 4.1. Json Example Payloads ##
+
 - ASSIGNED TO: Review
+
 Some sections of this specification are illustrated with non-normative example OData request and response payloads. However, the text of this specification provides the definition of conformance.
 
 OData payloads are representable in multiple formats. Those formats are specified in separate documents. In this document, when an example is necessary, it will be given in the minimal Json format.
 
-## 2.2. CSDL Schema ##
+## 4.2. CSDL Schema ##
+
 - ASSIGNED TO: Review
+
 Some sections of this specification are illustrated with fragments of a non-normative RELAX NG Compact schema [[RNC](http://tools.ietf.org/html/rfc5023#ref-RNC "RELAX NG Compact Syntax")]. However, the text of this specification provides the definition of conformance. Complete schemas appear in Appendix B.
 
 # Versioning#
+
 - ASSIGNED TO: MikeP
 - how the protocol is versioned and the relation of this doc to prior OData versions.
 - What versioning is the responsibility of the service author  vs. inherent in the protocol.  This is just a statement of concerns, not best practices re: versioning (that stuff can be put in a companion whitepaper)
 
 # Extensibility #
+
 - ASSIGNED TO: MikeP
 - explicit extension points in the system and what types of extensibility we encourage
 
@@ -69,44 +77,48 @@ Some sections of this specification are illustrated with fragments of a non-norm
 - i.e. $metadata
 
 ## Querying Data ##
-- ASSIGNED TO: Mike(*)
 
+- ASSIGNED TO: Mike(*)
 - description of how data is queried in OData (i.e. GET requests).  Might need some additional structure, but figured that can be flushed out as we progress
 - this would include description of everything after the ? ($filter, select, top, skip, etc)
 
 ## Data Modification ##
 
-### POST ###
 - ASSIGNED TO: Arlo
+
+### POST ###
 
 ### DELETE ###
-- ASSIGNED TO: Arlo
 
 ### PUT ###
-- ASSIGNED TO: Arlo
 
 ### PATCH/MERGE ###
-- ASSIGNED TO: Arlo
 
-## Additional Operations  ##
+## Additional Operations ##
 
 ### Actions ###
+
 - ASSIGNED TO: Alex
 
-###  Functions ### 
+### Functions ###
+
 - ASSIGNED TO: Alex
 
-###  Service Operations ### 
+### Service Operations ###
+
 - ASSIGNED TO: Alex
 (ideally we want to end of life these in favor of the above two – should consider if /how we include these)
 
-- Batch Processing
+### Batch Processing ###
+
 - ASSIGNED TO: MikeP
 
 # Appendices #
 
 ## A: Formal CSDL description ##
+
 - ASSIGNED TO: Alex
 
 ## B: XSD for CSDL ##
+
 - ASSIGNED TO: Alex

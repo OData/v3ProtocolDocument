@@ -18,7 +18,6 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 # Common Payload Format #
 
 - This section includes all the stuff that is common between request and response payloads. Mostly, this means the representations of EDM values.
-- Also, it contains only the stuff that is common between historical and efficient formats.
 
 ## Entities ##
 
@@ -41,19 +40,21 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 # Request Specifics #
 
-- All the stuff that only applies to request payloads. Is there any? Only that which is common between efficient and historical formats.
+- All the stuff that only applies to request payloads.
+
+## HTTP Headers ##
+
+- proper accept header to request this format.
+- other stuff?
 
 # Response Specifics #
 
-- All the stuff that only applies to response payloads. Only that which is common between efficient and historical formats.
+- All the stuff that only applies to response payloads.
 
-# Efficient Format Specifics #
+## HTTP Headers ##
 
-- Repeat whatever sections from above change in the efficient format, and talk about what this format adds.
-
-# Historical Format Specifics #
-
-- Repeat whatever sections from above change in the historical format, and talk about what this format adds.
+- proper content type for this format.
+- other stuff?
 
 ## Next Links ##
 

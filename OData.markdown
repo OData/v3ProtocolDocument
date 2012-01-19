@@ -145,17 +145,47 @@ Some sections of this specification are illustrated with fragments of a non-norm
 
 ------
 
-### POST ###
+For all operations, the format of request and response bodies is format specific. See the format-specific specifications ([[Json]](Json), [[Json with metadata]](Json_With_Metadata_Format), [[Atom]](Atom_Format)) for details.
 
-### DELETE ###
+Any response may use any valid HTTP status code, as appropriate for the action taken. A server SHOULD be as specific as possible in its choice of HTTP status codes. Each request specification, below, indicates the most common success response code. In some cases, a server might respond with a more specific success code. For example, a server might decide to perform an action asynchronously, in which case it SHOULD use the HTTP status codes designed for that purpose.
 
-### PUT ###
+In all failure responses, the server MUST provide an accurate failure HTTP status code. The response body MUST contain a human-readable description of the problem, and SHOULD contain suggested resolution steps, if the server knows what those are.
 
-### PATCH/MERGE ###
+### Entities ###
 
-## Additional Operations ##
+#### Create an Entity ####
 
-### Actions ###
+To create an Entity in an entity set, send a POST request to that entity set's URI. The POST body MUST contain a single valid entity representation.
+
+On success, the response SHOULD be 201 Created, with the Location header set to the edit URI for the new entity.
+
+#### Update an Entity ####
+
+To update an existing entity, send a PUT, PATCH, or MERGE request to that entity's edit URI. The request body must contain a single valid entity representation.
+
+If the request is a PUT request, the server MUST replace all property values with those specified in the request body. Missing properties MUST be set to their default values.
+
+If the request is a PATCH or MERGE request, the server MUST replace exactly those property values that are specified in the request body. Missing properties MUST NOT be altered.
+
+On success, the response SHOULD be 200 OK.
+
+-------
+
+This section is all stuff to cover, but not in the right ToC. I want to follow the Atom approach of discussing everything from the perspective of what the person is trying to accomplish, rather than from the perspective of stating the meaning of each thing (and all of its conditions and exceptions).
+
+  ### POST ###
+
+  ### DELETE ###
+
+  ### PUT ###
+
+  ### PATCH/MERGE ###
+
+  ## Additional Operations ##
+
+  ### Actions ###
+
+-----
 
 ------
 

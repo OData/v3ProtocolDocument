@@ -41,6 +41,16 @@ Towards that end, the OData Protocol follows these design principles:
 - Should include the type system (unless we put that in another section), including, e.g., a list of the primitive types supported and the operations that are allowed on properties of those types.
  - As an abstract type system. Avoid its representation in EDM/CSDL. That remains in appendices.
 
+## 2.1 Entities
+
+## 2.2 Entity Sets ##
+
+## 2.3 Primitive Values ##
+
+## 2.4 Complex Values ##
+
+## 2.5 Navigations ##
+
 # 3. Terminology #
 
 ------
@@ -83,7 +93,7 @@ OData payloads are representable in multiple formats. Those formats are specifie
 
 Some sections of this specification are illustrated with fragments of a non-normative RELAX NG Compact schema [[RNC](http://tools.ietf.org/html/rfc5023#ref-RNC "RELAX NG Compact Syntax")]. However, the text of this specification provides the definition of conformance. Complete schemas appear in Appendix B.
 
-# Versioning#
+# Versioning
 
 ------
 
@@ -145,13 +155,15 @@ Some sections of this specification are illustrated with fragments of a non-norm
 
 ------
 
-For all operations, the format of request and response bodies is format specific. See the format-specific specifications ([[Json]](Json), [[Json with metadata]](Json_With_Metadata_Format), [[Atom]](Atom_Format)) for details.
+For all operations, the format of request and response bodies is format specific. See the format-specific specifications ([[Json](Json)], [[Json with metadata](Json_With_Metadata_Format)], [[Atom](Atom_Format)]) for details.
 
 Any response may use any valid HTTP status code, as appropriate for the action taken. A server SHOULD be as specific as possible in its choice of HTTP status codes. Each request specification, below, indicates the most common success response code. In some cases, a server might respond with a more specific success code. For example, a server might decide to perform an action asynchronously, in which case it SHOULD use the HTTP status codes designed for that purpose.
 
 In all failure responses, the server MUST provide an accurate failure HTTP status code. The response body MUST contain a human-readable description of the problem, and SHOULD contain suggested resolution steps, if the server knows what those are.
 
-### Entities ###
+### Modifying Entities ###
+
+Entities are described in [Section XX](#entities). URI conventions for entites are described in [URI Conventions](uri_conventions).
 
 #### Create an Entity ####
 

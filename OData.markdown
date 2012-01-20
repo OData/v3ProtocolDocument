@@ -163,7 +163,7 @@ In all failure responses, the server MUST provide an accurate failure HTTP statu
 
 ### Modifying Entities ###
 
-Entities are described in [Section XX](#entities). URI conventions for entites are described in [URI Conventions](uri_conventions).
+Entities are described in [Section 2.1](#entities). URI conventions for entites are described in [URI Conventions](uri_conventions).
 
 #### Create an Entity ####
 
@@ -178,6 +178,16 @@ To update an existing entity, send a PUT, PATCH, or MERGE request to that entity
 If the request is a PUT request, the server MUST replace all property values with those specified in the request body. Missing properties MUST be set to their default values.
 
 If the request is a PATCH or MERGE request, the server MUST replace exactly those property values that are specified in the request body. Missing properties MUST NOT be altered.
+
+On success, the response SHOULD be 200 OK.
+
+The response body MAY contain the entity representation for the entity's new state.
+
+If desired, the PUT, PATCH, or MERGE request can include a XXXXXXXXXXXX header. If this header is included in the request, then the response MUST contain the entity representation for the entity's new state.
+
+#### Delete an Entity ####
+
+To delete an existing entity, send a DELETE request to that entity's edit URI. The request body SHOULD be empty.
 
 On success, the response SHOULD be 200 OK.
 

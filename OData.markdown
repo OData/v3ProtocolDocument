@@ -41,6 +41,16 @@ Towards that end, the OData Protocol follows these design principles:
 - Should include the type system (unless we put that in another section), including, e.g., a list of the primitive types supported and the operations that are allowed on properties of those types.
  - As an abstract type system. Avoid its representation in EDM/CSDL. That remains in appendices.
 
+## 2.1 Entities
+
+## 2.2 Entity Sets ##
+
+## 2.3 Primitive Values ##
+
+## 2.4 Complex Values ##
+
+## 2.5 Navigations ##
+
 # 3. Terminology #
 
 ------
@@ -197,17 +207,59 @@ Metadata and instance annonations defined outside of the OData specification SHO
 
 ------
 
-### POST ###
+For all operations, the format of request and response bodies is format specific. See the format-specific specifications ([[Json](Json)], [[Json with metadata](Json_With_Metadata_Format)], [[Atom](Atom_Format)]) for details.
 
-### DELETE ###
+Any response may use any valid HTTP status code, as appropriate for the action taken. A server SHOULD be as specific as possible in its choice of HTTP status codes. Each request specification, below, indicates the most common success response code. In some cases, a server might respond with a more specific success code. For example, a server might decide to perform an action asynchronously, in which case it SHOULD use the HTTP status codes designed for that purpose.
 
-### PUT ###
+In all failure responses, the server MUST provide an accurate failure HTTP status code. The response body MUST contain a human-readable description of the problem, and SHOULD contain suggested resolution steps, if the server knows what those are.
 
-### PATCH/MERGE ###
+### Modifying Entities ###
 
-## Additional Operations ##
+Entities are described in [Section 2.1](#entities). URI conventions for entites are described in [URI Conventions](uri_conventions).
 
-### Actions ###
+#### Create an Entity ####
+
+To create an Entity in an entity set, send a POST request to that entity set's URI. The POST body MUST contain a single valid entity representation.
+
+On success, the response SHOULD be 201 Created, with the Location header set to the edit URI for the new entity.
+
+#### Update an Entity ####
+
+To update an existing entity, send a PUT, PATCH, or MERGE request to that entity's edit URI. The request body must contain a single valid entity representation.
+
+If the request is a PUT request, the server MUST replace all property values with those specified in the request body. Missing properties MUST be set to their default values.
+
+If the request is a PATCH or MERGE request, the server MUST replace exactly those property values that are specified in the request body. Missing properties MUST NOT be altered.
+
+On success, the response SHOULD be 200 OK.
+
+The response body MAY contain the entity representation for the entity's new state.
+
+If desired, the PUT, PATCH, or MERGE request can include a XXXXXXXXXXXX header. If this header is included in the request, then the response MUST contain the entity representation for the entity's new state.
+
+#### Delete an Entity ####
+
+To delete an existing entity, send a DELETE request to that entity's edit URI. The request body SHOULD be empty.
+
+On success, the response SHOULD be 200 OK.
+
+-------
+
+This section is all stuff to cover, but not in the right ToC. I want to follow the Atom approach of discussing everything from the perspective of what the person is trying to accomplish, rather than from the perspective of stating the meaning of each thing (and all of its conditions and exceptions).
+
+  ### POST ###
+
+  ### DELETE ###
+
+  ### PUT ###
+
+  ### PATCH/MERGE ###
+
+  ## Additional Operations ##
+
+  ### Actions ###
+
+-----
 
 ------
 

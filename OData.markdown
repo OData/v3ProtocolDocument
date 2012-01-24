@@ -83,7 +83,7 @@ OData payloads are representable in multiple formats. Those formats are specifie
 
 Some sections of this specification are illustrated with fragments of a non-normative RELAX NG Compact schema [[RNC](http://tools.ietf.org/html/rfc5023#ref-RNC "RELAX NG Compact Syntax")]. However, the text of this specification provides the definition of conformance. Complete schemas appear in Appendix B.
 
-# Versioning#
+# 5. Versioning#
 
 ------
 
@@ -91,10 +91,76 @@ Some sections of this specification are illustrated with fragments of a non-norm
 
 ------
 
-- how the protocol is versioned and the relation of this doc to prior OData versions.
+This document defines version 3.0 of the OData Specification.
+
+The OData protocol supports a versioning scheme for enabling services to expose new features and format versions without breaking compatability with older clients.
+
+OData clients MAY use the DataServiceVersion header on a request to specify the version of the protocol used to generate the request. The service MUST intepret the request according to the rules defined in that version of the protocol, or fail the request with a 4xx response code.
+
+If not specified, the server MUST assume the request is generated using the maximum version of the protocol that the service understands.
+
+The OData client MAY also use the MinDataServiceVersion and MaxDataServiceVersion headers. The server MUST generate a response compatible with a version greater than or equal to the specified MinDataServiceVersion and less than or equal to the specified MaxDataServiceVersion, and SHOULD generate a response formatted according to the maximum version supported by the service that is less than or equal to the specified MaxDataServiceVersion. If MaxDataServiceVersion is not specified, then the service SHOULD return a response formatted according to the latest version of the format supported by the service.
+
+If the MinDataService header is not specified by the client, it is assumed by the service to be version 1.0.
+
+DataServiceVersion, MinDataServiceVersion, and MaxDataServiceVersion header fields MUST be of the following form majorversionnumber + "." + minorversionnumber. This version of the specification defines the following valid data service version values: "1.0", "2.0", and "3.0", corresponding to OData versions 1.0, 2.0, and 3.0, respectively.
+
+The service MUST include a DataServiceVersion header to specify the version of the format according to which the response is generated. If the service is unable to generate a response that is within the specified version range it MUST fail the request with a 4xx response code and a description of the error using the error format defined in [todo].
+
 - What versioning is the responsibility of the service author  vs. inherent in the protocol.  This is just a statement of concerns, not best practices re: versioning (that stuff can be put in a companion whitepaper)
 
-# Extensibility #
+
+# 6. Extensibility #
+
+------
+
+- ASSIGNED TO: MikeP
+
+------
+The OData protocol supports both user- and version- driven extensibility through a combination of versioning, convention, and explicit extension points.
+
+## 6.1. Query Option Extensibility ##
+Query Options within the Request URL can control how a particular request is processed by the service. 
+
+OData-defined system query options are prefixed with "$". Services MAY support additional query options not defined in the OData specification, but they MUST NOT begin with the "$" character.
+
+OData Services SHOULD NOT require any query options to be specified in a request, and MUST fail any request that contains query options that it does not understand.
+
+## 6.2. Payload Extensibility ##
+OData supports extensibility in the payload, according to the specific format.
+
+Regardless of the format, additional content may be present only if it need not be understood by the receiver in order to correctly interpret the payload. Thus, clients and services may safely ignore any content not specifically defined in the version of the payload specified by the DataServiceVersion header.
+
+## 6.3. Query Option Extensibility ##
+Query Options within the Request URL can control how a particular request is processed by the service. 
+
+OData-defined system query options are prefixed with "$". Services MAY support additional query options not defined in the OData specification, but they MUST NOT begin with the "$" character.
+
+OData Services MUST fail any request that contains query options that it does not understand.
+
+### 6.4. Action/Function Extensibility ###
+Actions and Functions extend the set of operations that can be performed on or with a service or resource. Actions my have side-effects and be used, for example, to extend CUD operations, invoke custom operations, etc. Functions MUST NOT have side-effects, and can generally be invoked directly on a service or resource or composed within, for example, a predicate.
+
+OData-defined actions and functions are prefixed with "$". Services MAY support additional actions and functions not defined in the OData specification, but they MUST NOT begin with the "$" character.
+
+OData Services MUST fail any request that contains actions or functions that it does not understand.
+
+### 6.5. Vocabulary Extensibility ###
+Vocabularies provide the ability to annotate metadata, as well as instance data, and define a powerful extensibility point for OData.
+
+Metadata annotations can be used to define additional characteristics or capabilities of a metadata element, such as a service, entitytype, property, function, action, parameter, or association. For example, a metadata annotation may define ranges of valid values for a particular field, or required query operators for a particular entityset.
+
+Instance annotations can be used to define additional information associated with a particular feed or resource, for example whether a particular property is read-only for a particular instance. 
+
+Properties that apply across instances SHOULD be specified within the metadata. Where the same annotation is defined at both the metadata and instance level, the instance-annotation overrides whatever defaults have been specified at the metadata level.
+
+Metadata and instance annonations defined outside of the OData specification SHOULD NOT be required in order to correctly interact with, or interpret the result of, an OData Service.
+
+# 7. Interaction Semantics #
+
+## 7.1. Metadata ##
+
+### 7.1.1. Service Document ###
 
 ------
 
@@ -102,21 +168,7 @@ Some sections of this specification are illustrated with fragments of a non-norm
 
 ------
 
-- explicit extension points in the system and what types of extensibility we encourage
-
-# Interaction Semantics #
-
-## Metadata ##
-
-### Service Document ###
-
-------
-
-- ASSIGNED TO: MikeP
-
-------
-
-### Metadata Document ###
+### 7.1.2. Metadata Document ###
 
 ------
 
@@ -126,7 +178,7 @@ Some sections of this specification are illustrated with fragments of a non-norm
 
 - i.e. $metadata
 
-## Querying Data ##
+## 7.2. Querying Data ##
 
 ------
 
@@ -137,7 +189,7 @@ Some sections of this specification are illustrated with fragments of a non-norm
 - description of how data is queried in OData (i.e. GET requests).  Might need some additional structure, but figured that can be flushed out as we progress
 - this would include description of everything after the ? ($filter, select, top, skip, etc)
 
-## Data Modification ##
+## 7.3. Data Modification ##
 
 ------
 

@@ -1,4 +1,4 @@
-# OData #
+﻿# OData #
 
 We have a few statuses:
 
@@ -149,7 +149,7 @@ OData-defined system query options are prefixed with "$". Services MAY support a
 OData Services MUST fail any request that contains query options that it does not understand.
 
 ### 6.4. Action/Function Extensibility ###
-Actions and Functions extend the set of operations that can be performed on or with a service or resource. Actions my have side-effects and be used, for example, to extend CUD operations, invoke custom operations, etc. Functions MUST NOT have side-effects, and can generally be invoked directly on a service or resource or composed within, for example, a predicate.
+Actions and Functions extend the set of operations that can be performed on or with a service or resource. Actions MAY have side-effects and be used, for example, to extend CUD operations, invoke custom operations, etc. Functions MUST NOT have side-effects, and can generally be invoked directly on a service or resource or composed within, for example, a predicate.
 
 OData-defined actions and functions are prefixed with "$". Services MAY support additional actions and functions not defined in the OData specification, but they MUST NOT begin with the "$" character.
 

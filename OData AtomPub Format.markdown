@@ -1,2 +1,0 @@
-﻿# OData AtomPub Format #
-

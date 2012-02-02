@@ -1,4 +1,4 @@
-﻿# OData #
+# OData #
 
 We have a few statuses:
 
@@ -103,9 +103,9 @@ Some sections of this specification are illustrated with fragments of a non-norm
 
 This document defines version 3.0 of the OData Specification.
 
-The OData protocol supports a versioning scheme for enabling services to expose new features and format versions without breaking compatability with older clients.
+The OData protocol supports a versioning scheme for enabling services to expose new features and format versions without breaking compatibility with older clients.
 
-OData clients MAY use the DataServiceVersion header on a request to specify the version of the protocol used to generate the request. The service MUST intepret the request according to the rules defined in that version of the protocol, or fail the request with a 4xx response code.
+OData clients MAY use the DataServiceVersion header on a request to specify the version of the protocol used to generate the request. The service MUST interpret the request according to the rules defined in that version of the protocol, or fail the request with a 4xx response code.
 
 If not specified, the server MUST assume the request is generated using the maximum version of the protocol that the service understands.
 
@@ -141,21 +141,12 @@ OData supports extensibility in the payload, according to the specific format.
 
 Regardless of the format, additional content may be present only if it need not be understood by the receiver in order to correctly interpret the payload. Thus, clients and services may safely ignore any content not specifically defined in the version of the payload specified by the DataServiceVersion header.
 
-## 6.3. Query Option Extensibility ##
-Query Options within the Request URL can control how a particular request is processed by the service. 
-
-OData-defined system query options are prefixed with "$". Services MAY support additional query options not defined in the OData specification, but they MUST NOT begin with the "$" character.
-
-OData Services MUST fail any request that contains query options that it does not understand.
-
-### 6.4. Action/Function Extensibility ###
+### 6.3. Action/Function Extensibility ###
 Actions and Functions extend the set of operations that can be performed on or with a service or resource. Actions MAY have side-effects and be used, for example, to extend CUD operations, invoke custom operations, etc. Functions MUST NOT have side-effects, and can generally be invoked directly on a service or resource or composed within, for example, a predicate.
 
-OData-defined actions and functions are prefixed with "$". Services MAY support additional actions and functions not defined in the OData specification, but they MUST NOT begin with the "$" character.
+Services MAY support additional actions and functions not defined in the OData specification, and MUST fail any request that contains actions or functions that it does not understand.
 
-OData Services MUST fail any request that contains actions or functions that it does not understand.
-
-### 6.5. Vocabulary Extensibility ###
+### 6.4. Vocabulary Extensibility ###
 Vocabularies provide the ability to annotate metadata, as well as instance data, and define a powerful extensibility point for OData.
 
 Metadata annotations can be used to define additional characteristics or capabilities of a metadata element, such as a service, entitytype, property, function, action, parameter, or association. For example, a metadata annotation may define ranges of valid values for a particular field, or required query operators for a particular entityset.

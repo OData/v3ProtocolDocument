@@ -1,4 +1,4 @@
-# OData #
+﻿# OData #
 
 # 1. Overview #
 
@@ -248,19 +248,141 @@ This section is all stuff to cover, but not in the right ToC. I want to follow t
 
   ## Additional Operations ##
 
-  ### Actions ###
+### Common Rules for FunctionImport elements (or Operations) ###
 
------
+Operations (ServiceOperations, Actions and Functions) are represented as FunctionImport elements under an EntityContainer element. 
 
-------
+The following rules apply to all FunctionImport elements:
 
-- ASSIGNED TO: Alex
+- MUST have a 'Name' attribute set to a valid EDM identifier.
+- MUST either omit a ReturnType (in the case of void operations) or specify a ReturnType either by including a 'ReturnType' attribute set to a valid TypeReference or by including a child 'ReturnType' element. 
+- MAY have child Parameter elements.
+- MAY have an 'IsSideEffecting' attribute set to either 'true' or 'false'. When omitted 'IsSideEffecting' MUST be interpretted as 'true'. 
+- MAY have a 'm:HttpMethod' attribute set to value of either 'POST' or 'GET'. When omitted 'm:HttpMethod' MUST be interpretted as not specified.
+- MAY have an 'IsBindable' attribute set to either 'true' or 'false'. When 'IsBindable' is set to 'true' the FunctionImport MUST have at least one child Parameter element, and the first child Parameter element MUST have a type that is either an EntityType or a collection of EntityTypes. When omitted 'IsBindable' MUST be assumed to have a value of 'false'.
+- MAY have an 'm:IsAlwaysBindable' attribute set to either 'true' of 'false'. When omitted 'm:IsAlwaysBindable' MUST be assumed to have a value of 'false'. When 'IsAlwaysBindable' is 'true', 'IsBindable' MUST also be set to 'true'.
+- MUST have an 'EntitySet' attribute set to either the name of an EntitySet or to an EntitySetPath expression if the 'ReturnType' of the FunctionImport is either an EntityType or a Collection of an EntityType.
 
-------
+#### EntitySetPathExpression ####
+TODO: Alex
+
+### Common Rules for Binding Operations ###
+Some Operations (Actions and Functions but not ServiceOperations) support binding if the 'IsBindable' attribute is set to 'true'. When Binding is supported the first parameter of an Operation is the 'Binding Parameter'. 
+
+In OData version 3 binding parameters MUST be of a Type that is either an EntityType or a collection of EntityType.
+
+Any url that can identify a 'Binding Parameter' of the correct type MAY be used as the foundation of a uri to invoke an Operation that supports Binding using the resource identified by that url as the 'Binding Parameter Value'.
+
+For example this Function:
+
+&lt;FunctionImport Name="MostRecentOrder" ReturnType="SampleModel.Order" EntitySet="Orders" IsBindable="true" IsSideEffecting="false" m:IsAlwaysBindable="true"&gt;
+&lt;Parameter Name="customer" Type="SampleModel.Customer" Mode="In" /&gt;
+&lt;/FunctionImport&gt;
+
+Can be bound to any url that identifies a SampleModel.Customer, two examples might be:
+
+GET http://server/Customers(6)/MostRecentOrder() HTTP/1.1
+
+Which invokes the MostRecentOrder Function with the 'customer' or binding parameter value being the resource identified by http://server/Customers(6)/.
+
+GET http://server/Contacts(23123)/Company/MostRecentOrder() HTTP/1.1
+
+Which again invokes the MostRecentOrder function, this time with the 'customer' or binding parameter value being the resource identified by http://server/Contacts(23123)/Company/. 
+
+### Actions ###
+
+Actions are operations exposed by an OData server that have side effects when invoked and optionally return some data.
+
+#### Declaring Actions in metadata ####
+A server that supports Actions SHOULD declare them in $metadata. Actions that are declared MUST be specified using a FunctionImport element, that indicates the signature (Name, ReturnType and Parameters) of the Action. 
+
+In addition to the [Common Rules for FunctionImports] the following rules apply for FunctionImport elements that represent Actions:
+
+- Actions MUST NOT specify the 'm:HttpMethod' attribute as this is reserved for ServiceOperations.
+- Actions MUST be side effecting, indicated by either omiting or setting the 'IsSideEffecting' attribute to 'true'.
+- Actions MUST NOT be composable, indicated by either omiting or setting the 'IsComposable' attribute  to 'false'.
+
+This is an example of an Action that creates an Order for a quantity of product using the specified discount:
+
+&lt;FunctionImport Name="CreateOrder" IsBindable="true" IsSideEffecting="true" m:IsAlwaysBindable="true"&gt;
+    &lt;Parameter Name="product" Type="SampleModel.Product" Mode="In" /&gt;
+	&lt;Parameter Name="quantity" Type="Edm.Int32" Mode="In" /&gt;
+	&lt;Parameter Name="discountCode" Type="Edm.String" Mode="In" /&gt;
+&lt;/FunctionImport&gt; 
+
+#### Advertizing currently available Actions ####
+The existing OData Formats (application/atom+xml and application/json) require all Actions that are currently available for the current entity or current collection of entities be advertized inside any representation of the entity or collection entities returned from the Server. 
+
+If calculating whether an Action is currently available is too resource intensive a server SHOULD advertize the Action as if it is available and fail only later if the client attempts to invoke the Action AND it is found to be not available.
+
+The following information MUST be included when an Action is advertized: 
+
+- A 'Target Url' that MUST identify the resource that accepts requests to invoke the Action.
+- A 'Metadata Url' that MUST identify the FunctionImport that declares the Action. This Url can be either relative or absolute, but when relative it MUST be assumed to be relative to the $metadata Url of the current server.
+- A 'Title' that MUST contain a human readable description of the Action.
+
+Here is an example of an Action advertized inside an Entity in JSON format:
+
+TODO: Sample JSON with advertized Action.
+ 
+When the resource retrieved represents a collection, the 'Target Url' of any Actions advertized MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
+
+An efficient format that assumes client knowledge of metadata SHOULD NOT advertize Actions whose availability ('IsAlwaysBindable' is set to 'true') and target url can be established via metadata. 
+
+#### Invoking an Action ####
+To invoke an Action a client MUST make a POST request to the 'Target Url' of the Action. 
+
+If the Action supports binding the binding parameter value MUST be encoded in the 'Target Url'. Background: In OData version 3 only parameters of an EntityType or collection of EntityType are permitted to be binding parameters, and there is no way to specify these types of parameter values in the request body, hence the binding parameters can only be specified in the 'Target Url'.
+
+If the invoke request contains any non-binding parameter values, the Content-Type of the request MUST be 'application/json', and the parameter values MUST be encoded in a single JSON object in the request body. 
+
+Each non-binding parameter value specified MUST be encoded as a separate 'name/value' pair in a single JSON object that comprises the body of the request. Where the name is the name of the Parameter and the value is the Parameter value which is an instance of the type specified by the parameter in JSON format. Any parameter values not specified in the JSON object MUST be assumed to be null.
+
+If the Action returns results the client SHOULD use content type negotiation to request the results in the desired format, otherwise the default content type will be used.
+
+If a client only wants an Action invoke request to be processed when the binding parameter value, an Entity or collection of Entities, is unmodified, the client SHOULD include the 'If-Match' header with the latest known ETag value for the Entity or collection of Entities. When presents a Server MUST attempt to verify that the ETag found in the 'If-Match' header is current before processing the request. If the ETag cannot be verified or is found to be out of date the server response MUST be '412 Precondition Failed'. 
+
+On success, the response SHOULD be '200 OK' for Actions with a return type or '204 No Content' for Action without a return type.  
+
+TODO: Sample invoke request and response with parameters. 
 
 ### Functions ###
+Functions are operations exposed by an OData server which MAY have parameters and MUST return data and MUST have no observable side effects.  
 
-------
+#### Declaring Functions in metadata ####
+A server that supports Functions SHOULD declare them in $metadata. Functions that are declared MUST be specified using a FunctionImport element, that indicates the signature (Name, ReturnType and Parameters) of the Function. 
+
+In addition to the [Common Rules for FunctionImports] the following rules apply for FunctionImport elements that represent Functions:
+
+- Functions MUST NOT specify the 'm:HttpMethod' attribute as this is reserved for ServiceOperations.
+- Functions MUST NOT be side effecting, indicated by setting the 'IsSideEffecting' attribute to 'false'.
+- Functions MAY be composable, indicated by setting the 'IsComposable' attribute  to 'true'.
+
+This is an example of an Function called MostRecent that returns the 'MostRecent' Order from amongst a collection of Orders:
+
+&lt;FunctionImport Name="MostRecent" EntitySet="Orders" ReturnType="SampleModel.Order" IsBindable="true" IsSideEffecting="false" m:IsAlwaysBindable="true"&gt;
+    &lt;Parameter Name="customer" Type="Collection(SampleModel.Order)" Mode="In" /&gt;
+&lt;/FunctionImport&gt; 
+
+#### Advertizing currently available Functions ####
+Servers are allowed to choose whether to advertize Functions that can be bound to the current entity or current collection of entities inside representations of the entity or collection entities returned from the Server. 
+
+If the server chooses to advertize a Function the following information MUST be included: 
+
+- A 'Target Url' that MUST identify the resource that accepts requests to invoke the Function.
+- A 'Metadata Url' that MUST identify the FunctionImport (and potentially overload) that declares the Function. This Url can be either relative or absolute, but when relative it MUST be assumed to be relative to the $metadata Url of the current server.
+- A 'Title' that MUST contain a human readable description of the Function.
+
+Here is an example of an Function advertized inside an Entity in JSON format:
+
+TODO: Sample JSON with advertized Function.
+ 
+When the resource retrieved represents a collection, the 'Target Url' of any Functions advertized MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
+
+An efficient format that assumes client knowledge of metadata SHOULD NOT advertize Functions whose availability ('IsAlwaysBindable' is set to 'true')and target url can be established via metadata.
+
+#### Invoking an Function ####
+To invoke an Function a client MUST make a GET request to the 'Target Url' of the Function or compose Navigations, subsequent functions or actions to the 'Target Url', to produce a new Target Url that when invoked will invoke the Function. 
 
 - ASSIGNED TO: Alex
 

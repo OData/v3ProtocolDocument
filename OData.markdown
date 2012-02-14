@@ -1,4 +1,4 @@
-﻿# OData #
+# OData #
 
 # 1. Overview #
 
@@ -47,6 +47,8 @@ Finally, all instance containers (Entity Sets and Association Sets) are grouped 
 
 
 # 3. Terminology #
+
+move to be an appendix -- glossary
 
 ------
 
@@ -156,6 +158,8 @@ Metadata and instance annonations defined outside of the OData specification SHO
 ## 7.1. Metadata ##
 
 ### 7.1.1. Service Document ###
+
+make sure to reference service root in this section
 
 ------
 

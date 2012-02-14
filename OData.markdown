@@ -262,13 +262,13 @@ The following rules apply to all FunctionImport elements:
 - MUST have an 'EntitySet' attribute set to either the name of an EntitySet or to an EntitySetPath expression if the 'ReturnType' of the FunctionImport is either an EntityType or a Collection of an EntityType.
 
 #### EntitySetPathExpression ####
-Functions or Actions that return an Entity or Entities MAY return results from an EntitySet that is a function* of the EntitySet of one the parameter values used to invoke the Operation.
+Functions or Actions that return an Entity or Entities MAY return results from an EntitySet that is dependent upon the EntitySet of one the parameter values used to invoke the Operation.
 
-To describe this function* an EntitySetPathExpression is used. An EntitySetPathExpression MUST be either a constant, i.e. a EntitySet name, or a path, that begins with the name of a parameter to the Operation, and which optionally includes a series NavigationProperties (and occasional type casts) as a succinct way to describe the series of EntitySet transitions. 
+When such a dependency exists an EntitySetPathExpression is used. An EntitySetPathExpression MUST begins with the name of a parameter to the Operation, and optionally include a series NavigationProperties (and occasional type casts) as a succinct way to describe the series of EntitySet transitions. 
 
-The actual EntitySet transitions MUST be deduced by finding the AssociationSet backing each NavigationProperty, and moving from the current EntitySet which will be found on one End to the EntitySet found on the other End. 
+The actual EntitySet transitions may be deduced by finding the AssociationSet backing each NavigationProperty, and moving from the current EntitySet which will be found on one End to the EntitySet found on the other End. 
 
-The EntitySet of the results of an Operation Invocation with an EntitySetPathExpression can only be established once the EntitySet of the named parameter that begins the EntitySetPathExpression is known.
+The EntitySet of the results of an Operation Invocation with an EntitySetPathExpression can only be established once the EntitySet of the parameter that begins the EntitySetPathExpression is known.
 
 For example this EntitySetPathExpression: "p1/Orders/Customer" can only be evaluted once the EntitySet of the p1 parameter value is known.
 

@@ -53,6 +53,8 @@ Towards that end, the OData Protocol follows these design principles:
 
 # 3. Terminology #
 
+move to be an appendix -- glossary
+
 ------
 
 - ASSIGNED TO: MikeF/All
@@ -166,6 +168,8 @@ Metadata and instance annonations defined outside of the OData specification SHO
 
 ### 7.1.1. Service Document ###
 
+make sure to reference service root in this section
+
 ------
 
 - ASSIGNED TO: MikeP
@@ -174,6 +178,7 @@ Metadata and instance annonations defined outside of the OData specification SHO
 
 ### 7.1.2. Metadata Document ###
 
+<<<<<<< HEAD
 ------
 
 - ASSIGNED TO: Alex
@@ -181,6 +186,15 @@ Metadata and instance annonations defined outside of the OData specification SHO
 ------
 
 - i.e. $metadata
+=======
+An OData Metadata Document is an representation of the data model (<ref> see section 2. Data Model</ref>) that describes the data and operations exposed by an OData service. 
+
+<ref>Appendix A</ref> describes an XML representation for OData Metadata Documents and provides an XSD to validate its syntax rules. The media type of the XML representation of an OData Metadata Document is 'application/xml'      
+
+As of OData v3, OData services MUST expose a Metadata Document which defines all data exposed by the service.  The URI of the document MUST be http://<service root>/$metadata, where <service root> is the root URI of the OData service as described in <ref>//TODO</ref>. 
+
+Retrieval of a Metadata Document by a client MUST be done by issuing a HTTP GET request to document's URI.  If the request doesn't specify a format preference (via Accept header or <ref>$format query string option</ref>) then the XML representation MUST be returned.      
+>>>>>>> 495dc296dd16c3083645ad61e4faabee55a13f05
 
 ## 7.2. Querying Data ##
 
@@ -251,7 +265,60 @@ This section is all stuff to cover, but not in the right ToC. I want to follow t
 
   ## Additional Operations ##
 
+<<<<<<< HEAD
   ### Actions ###
+=======
+### Common Rules for FunctionImport elements (or Operations) ###
+
+Operations (ServiceOperations, Actions and Functions) are represented as FunctionImport elements under an EntityContainer element. 
+
+The following rules apply to all FunctionImport elements:
+
+- MUST have a 'Name' attribute set to a valid EDM identifier.
+- MUST either omit a ReturnType (in the case of void operations) or specify a ReturnType either by including a 'ReturnType' attribute set to a valid TypeReference or by including a child 'ReturnType' element. 
+- MAY have child Parameter elements.
+- MAY have an 'IsSideEffecting' attribute set to either 'true' or 'false'. When omitted 'IsSideEffecting' MUST be interpretted as 'true'. 
+- MAY have a 'm:HttpMethod' attribute set to value of either 'POST' or 'GET'. When omitted 'm:HttpMethod' MUST be interpretted as not specified.
+- MAY have an 'IsBindable' attribute set to either 'true' or 'false'. When 'IsBindable' is set to 'true' the FunctionImport MUST have at least one child Parameter element, and the first child Parameter element MUST have a type that is either an EntityType or a collection of EntityTypes. When omitted 'IsBindable' MUST be assumed to have a value of 'false'.
+- MAY have an 'm:IsAlwaysBindable' attribute set to either 'true' of 'false'. When omitted 'm:IsAlwaysBindable' MUST be assumed to have a value of 'false'. When 'IsAlwaysBindable' is 'true', 'IsBindable' MUST also be set to 'true'.
+- MUST have an 'EntitySet' attribute set to either the name of an EntitySet or to an EntitySetPath expression if the 'ReturnType' of the FunctionImport is either an EntityType or a Collection of an EntityType.
+
+#### EntitySetPathExpression ####
+Functions or Actions that return an Entity or Entities MAY return results from an EntitySet that is dependent upon the EntitySet of one the parameter values used to invoke the Operation.
+
+When such a dependency exists an EntitySetPathExpression is used. An EntitySetPathExpression MUST begins with the name of a parameter to the Operation, and optionally include a series NavigationProperties (and occasional type casts) as a succinct way to describe the series of EntitySet transitions. 
+
+The actual EntitySet transitions may be deduced by finding the AssociationSet backing each NavigationProperty, and moving from the current EntitySet which will be found on one End to the EntitySet found on the other End. 
+
+The EntitySet of the results of an Operation Invocation with an EntitySetPathExpression can only be established once the EntitySet of the parameter that begins the EntitySetPathExpression is known.
+
+For example this EntitySetPathExpression: "p1/Orders/Customer" can only be evaluted once the EntitySet of the p1 parameter value is known.
+
+### Common Rules for Binding Operations ###
+Some Operations (Actions and Functions but not ServiceOperations) support binding if the 'IsBindable' attribute is set to 'true'. When Binding is supported the first parameter of an Operation is the 'Binding Parameter'. 
+
+In OData version 3 binding parameters MUST be of a Type that is either an EntityType or a collection of EntityType.
+
+Any url that can identify a 'Binding Parameter' of the correct type MAY be used as the foundation of a uri to invoke an Operation that supports Binding using the resource identified by that url as the 'Binding Parameter Value'.
+
+For example this Function:
+
+&lt;FunctionImport Name="MostRecentOrder" ReturnType="SampleModel.Order" EntitySet="Orders" IsBindable="true" IsSideEffecting="false" m:IsAlwaysBindable="true"&gt;
+&lt;Parameter Name="customer" Type="SampleModel.Customer" Mode="In" /&gt;
+&lt;/FunctionImport&gt;
+
+Can be bound to any url that identifies a SampleModel.Customer, two examples might be:
+
+GET http://server/Customers(6)/MostRecentOrder() HTTP/1.1
+
+Which invokes the MostRecentOrder Function with the 'customer' or binding parameter value being the resource identified by http://server/Customers(6)/.
+
+GET http://server/Contacts(23123)/Company/MostRecentOrder() HTTP/1.1
+
+Which again invokes the MostRecentOrder function, this time with the 'customer' or binding parameter value being the resource identified by http://server/Contacts(23123)/Company/. 
+
+### Actions ###
+>>>>>>> 495dc296dd16c3083645ad61e4faabee55a13f05
 
 -----
 

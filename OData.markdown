@@ -30,26 +30,25 @@ Towards that end, the OData Protocol follows these design principles:
 
 # 2. Data Model #
 
-------
+This section provides a high-level description of the Entity Data Model (EDM); the abstract data model that MUST be used to describe the data exposed by an OData service. <ref>Section XXXX</ref> defines an OData Metadata Document which is a representation of a service's data model exposed for client consumption.  
 
-- ASSIGNED TO: MikeF
+The central concepts in the EDM are **entities** and **associations**. Entities are instances of **Entity Types** (e.g. Customer, Employee, etc) which are nominal structured records with a key that consist of named primitive or complex properties. 
 
-------
+**Complex Types** are nominal structured types also consisting of a list of properties but with no key, thus can only exist as a property of a containing Entity Type or as a temporary value. 
 
-- high level overview of the data model that describes the system (not a full/formal definition of EDM, but just what you need to know to reason about the contents of the spec)
-- ideally we can put the full/formal definition of EDM into an appendix or something.  We should also consider any changes or omissions to EDM we might need/want
-- Should include the type system (unless we put that in another section), including, e.g., a list of the primitive types supported and the operations that are allowed on properties of those types.
- - As an abstract type system. Avoid its representation in EDM/CSDL. That remains in appendices.
+The **Entity Key** of an Entity Type is formed from a subset of primitive properties of the Entity Type. The Entity Key (e.g. CustomerId, OrderId, etc) is a fundamental concept to uniquely identify instances of Entity Types (entities) and allows entities to participate in relationships. 
 
-## 2.1 Entities
+Properties statically declared as part of the Entity Type's structural definition are called **declared properties** and those which are not are **dynamic properties**. Entity Types which allow dynamic properties are called Open Entity Types. If an instance of an Open Entity Type does not include a value for a dynamic property, the instance must be treated as if it included the property with a value of null. A dynamic property MAY NOT have the same name as a declared property.
 
-## 2.2 Entity Sets ##
+Entities are grouped in named collections called **Entity Sets** (e.g. Customers is a set of Customer Entity Type instances).
 
-## 2.3 Primitive Values ##
+**Association Types** define the relationship between two or more Entity Types (e.g. Employee WorksFor Department). Instances of Association Types are grouped in **Association Sets**. **Navigation Properties** are special properties on Entity Types which are bound to a specific association and are used to refer to specific associations of an entity. 
+ 
+Finally, all instance containers (Entity Sets and Association Sets) are grouped in an **Entity Container**.
 
-## 2.4 Complex Values ##
+//TODO: put primitive type table here in subsection
+//TODO: what about named streams?  anything else core that I missed?
 
-## 2.5 Navigations ##
 
 # 3. Terminology #
 

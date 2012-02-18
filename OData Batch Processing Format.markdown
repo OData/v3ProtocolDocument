@@ -30,6 +30,14 @@ Finally, batch requests MUST NOT include an X-HTTP-Method header (i.e. use POST 
 The body of a batch request MUST be made up of an ordered series of query operations and/or ChangeSets.  A query operation in the context of a batch request is either a query or Function invocation request as described in [[OData:Core](odata)]. A ChangeSet is an atomic unit of work consisting of an unordered group of one or more of the insert/update/delete operations, Action invocations or Service Operation invocations described in [[OData:Core](odata)]. ChangeSets MUST NOT contain query operations and MUST NOT be nested (i.e. a ChangeSet cannot contain a ChangeSet).
  
 In a batch request body, each query operation and ChangeSet MUST be represented as a distinct MIME part (i.e. is separated by the boundary defined in the Content-Type header). A MIME part representing a query operation MUST include a Content-Type header with value "application/http" and a Content-Transfer-Encoding" header with value "binary".  The contents of a MIME part representing a ChangeSet MUST itself be a multipart MIME document (see [[RFC2046](http://www.rfc-editor.org/rfc/rfc2046.txt)]) with one part for each operation that makes up the ChangeSet. Each part represnting an operation in the ChangeSet MUST include the same headers (Content-Type and Content-Transfer-Encoding) and associated values as previously described for query operations.
+
+Preambles and Epilogues in the MIME payload, as defined in [[RFC2046](http://www.rfc-editor.org/rfc/rfc2046.txt)], are valid but MUST are assigned no meaning and thus MUST be ignored by processors of batch requests.
+
+Each MIME part body which represents a single request SHOULD NOT:
+* Include authentication or authorization related HTTP headers because it is unlikely the infrastructure used for authentication will parse and utilize such headers.
+* Include Expect, From, Max-Forwards, Range, or TE headers because their contents will be ignored.
+
+Processors of batch requests MAY choose to disallow additional HTTP constructs in HTTP requests serialized within MIME part bodies. For example, a processor MAY choose to disallow chunked encoding to be used by such HTTP requests.
  
 The example below shows a sample batch request that contains the following operations in the order listed:
 * query request

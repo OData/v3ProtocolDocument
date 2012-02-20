@@ -132,6 +132,7 @@ The service MUST include a DataServiceVersion header to specify the version of t
 The OData protocol supports both user- and version- driven extensibility through a combination of versioning, convention, and explicit extension points.
 
 ## 6.1. Query Option Extensibility ##
+
 Query Options within the Request URL can control how a particular request is processed by the service. 
 
 OData-defined system query options are prefixed with "$". Services MAY support additional query options not defined in the OData specification, but they MUST NOT begin with the "$" character.
@@ -139,11 +140,13 @@ OData-defined system query options are prefixed with "$". Services MAY support a
 OData Services SHOULD NOT require any query options to be specified in a request, and MUST fail any request that contains query options that it does not understand.
 
 ## 6.2. Payload Extensibility ##
+
 OData supports extensibility in the payload, according to the specific format.
 
 Regardless of the format, additional content may be present only if it need not be understood by the receiver in order to correctly interpret the payload. Thus, clients and services may safely ignore any content not specifically defined in the version of the payload specified by the DataServiceVersion header.
 
 ### 6.3. Action/Function Extensibility ###
+
 Actions and Functions extend the set of operations that can be performed on or with a service or resource. Actions MAY have side-effects and be used, for example, to extend CUD operations, invoke custom operations, etc. Functions MUST NOT have side-effects, and can generally be invoked directly on a service or resource or composed within, for example, a predicate.
 
 Services MAY support additional actions and functions not defined in the OData specification. Such functions MUST be qualified with a namespace other than one of the OData namespaces specified in [todo]. 
@@ -151,6 +154,7 @@ Services MAY support additional actions and functions not defined in the OData s
 Servers MUST fail any request that contains actions or functions that it does not understand.
 
 ### 6.4. Vocabulary Extensibility ###
+
 Vocabularies provide the ability to annotate metadata as well as instance data, and define a powerful extensibility point for OData.
 
 Metadata annotations can be used to define additional characteristics or capabilities of a metadata element, such as a service, entitytype, property, function, action, parameter, or association. For example, a metadata annotation may define ranges of valid values for a particular field, or required query operators for a particular entityset.
@@ -177,23 +181,13 @@ make sure to reference service root in this section
 
 ### 7.1.2. Metadata Document ###
 
-<<<<<<< HEAD
-------
-
-- ASSIGNED TO: Alex
-
-------
-
-- i.e. $metadata
-=======
 An OData Metadata Document is an representation of the data model (<ref> see section 2. Data Model</ref>) that describes the data and operations exposed by an OData service. 
 
 <ref>Appendix A</ref> describes an XML representation for OData Metadata Documents and provides an XSD to validate its syntax rules. The media type of the XML representation of an OData Metadata Document is 'application/xml'      
 
 As of OData v3, OData services MUST expose a Metadata Document which defines all data exposed by the service.  The URI of the document MUST be http://<service root>/$metadata, where <service root> is the root URI of the OData service as described in <ref>//TODO</ref>. 
 
-Retrieval of a Metadata Document by a client MUST be done by issuing a HTTP GET request to document's URI.  If the request doesn't specify a format preference (via Accept header or <ref>$format query string option</ref>) then the XML representation MUST be returned.      
->>>>>>> 495dc296dd16c3083645ad61e4faabee55a13f05
+Retrieval of a Metadata Document by a client MUST be done by issuing a HTTP GET request to document's URI.  If the request doesn't specify a format preference (via Accept header or <ref>$format query string option</ref>) then the XML representation MUST be returned.
 
 ## 7.2. Querying Data ##
 
@@ -214,11 +208,11 @@ Retrieval of a Metadata Document by a client MUST be done by issuing a HTTP GET 
 
 ------
 
-For all operations, the format of request and response bodies is format specific. See the format-specific specifications ([[Json](Json)], [[Json with metadata](Json_With_Metadata_Format)], [[Atom](Atom_Format)]) for details.
+For all operations, the format of request and response bodies is format specific. See the format-specific specifications ([[JSON](JSON)], [[JSON Verbose](JSON_Verbose_format)], [[Atom](Atom_Format)]) for details.
 
 Any response may use any valid HTTP status code, as appropriate for the action taken. A server SHOULD be as specific as possible in its choice of HTTP status codes. Each request specification, below, indicates the most common success response code. In some cases, a server might respond with a more specific success code. For example, a server might decide to perform an action asynchronously, in which case it SHOULD use the HTTP status codes designed for that purpose.
 
-In all failure responses, the server MUST provide an accurate failure HTTP status code. The response body MUST contain a human-readable description of the problem, and SHOULD contain suggested resolution steps, if the server knows what those are.
+In all failure responses, the server MUST provide an accurate failure HTTP status code. The response body MUST contain a human-readable description of the problem, and SHOULD contain suggested resolution steps, if the server knows what those are. This information MUST be supplied in the <ref>Error format</ref>.
 
 ### Modifying Entities ###
 
@@ -242,7 +236,7 @@ On success, the response SHOULD be 200 OK.
 
 The response body MAY contain the entity representation for the entity's new state.
 
-If desired, the PUT, PATCH, or MERGE request can include a XXXXXXXXXXXX header. If this header is included in the request, then the response MUST contain the entity representation for the entity's new state.
+If desired, the PUT, PATCH, or MERGE request can include a <ref>Prefer</ref> header. If this header is included in the request, then the response MUST contain the entity representation for the entity's new state.
 
 #### Delete an Entity ####
 
@@ -264,9 +258,6 @@ This section is all stuff to cover, but not in the right ToC. I want to follow t
 
   ## Additional Operations ##
 
-<<<<<<< HEAD
-  ### Actions ###
-=======
 ### Common Rules for FunctionImport elements (or Operations) ###
 
 Operations (ServiceOperations, Actions and Functions) are represented as FunctionImport elements under an EntityContainer element. 
@@ -283,6 +274,7 @@ The following rules apply to all FunctionImport elements:
 - MUST have an 'EntitySet' attribute set to either the name of an EntitySet or to an EntitySetPath expression if the 'ReturnType' of the FunctionImport is either an EntityType or a Collection of an EntityType.
 
 #### EntitySetPathExpression ####
+
 Functions or Actions that return an Entity or Entities MAY return results from an EntitySet that is dependent upon the EntitySet of one the parameter values used to invoke the Operation.
 
 When such a dependency exists an EntitySetPathExpression is used. An EntitySetPathExpression MUST begins with the name of a parameter to the Operation, and optionally include a series NavigationProperties (and occasional type casts) as a succinct way to describe the series of EntitySet transitions. 
@@ -294,6 +286,7 @@ The EntitySet of the results of an Operation Invocation with an EntitySetPathExp
 For example this EntitySetPathExpression: "p1/Orders/Customer" can only be evaluted once the EntitySet of the p1 parameter value is known.
 
 ### Common Rules for Binding Operations ###
+
 Some Operations (Actions and Functions but not ServiceOperations) support binding if the 'IsBindable' attribute is set to 'true'. When Binding is supported the first parameter of an Operation is the 'Binding Parameter'. 
 
 In OData version 3 binding parameters MUST be of a Type that is either an EntityType or a collection of EntityType.
@@ -317,7 +310,6 @@ GET http://server/Contacts(23123)/Company/MostRecentOrder() HTTP/1.1
 Which again invokes the MostRecentOrder function, this time with the 'customer' or binding parameter value being the resource identified by http://server/Contacts(23123)/Company/. 
 
 ### Actions ###
->>>>>>> 495dc296dd16c3083645ad61e4faabee55a13f05
 
 -----
 

@@ -321,11 +321,11 @@ In addition to the [Common Rules for FunctionImports] the following rules apply 
 - Actions MUST be side effecting, indicated by either omiting or setting the 'IsSideEffecting' attribute to 'true'.
 - Actions MUST NOT be composable, indicated by either omiting or setting the 'IsComposable' attribute  to 'false'.
 
-This is an example of an Action that creates an Order for a quantity of product using the specified discount:
+For example this FunctionImport represents an Action that Creates an Order for a customer using the specified quantity and discountCode, which can be bound to any resource path that represents a Customer entity:
 
 	<FunctionImport Name="CreateOrder" IsBindable="true" IsSideEffecting="true" 
 					m:IsAlwaysBindable="true">
-    	<Parameter Name="product" Type="SampleModel.Product" Mode="In">
+    	<Parameter Name="customer" Type="SampleModel.Customer" Mode="In">
 		<Parameter Name="quantity" Type="Edm.Int32" Mode="In">
 		<Parameter Name="discountCode" Type="Edm.String" Mode="In">
 	</FunctionImport&gt; 
@@ -341,10 +341,48 @@ The following information MUST be included when an Action is advertized:
 - A 'Metadata Url' that MUST identify the FunctionImport that declares the Action. This Url can be either relative or absolute, but when relative it MUST be assumed to be relative to the $metadata Url of the current server.
 - A 'Title' that MUST contain a human readable description of the Action.
 
-Here is an example of an Action advertized inside an Entity in JSON format:
+Example: Given this client request:
 
-TODO: Sample JSON with advertized Action.
- 
+	GET /service.svc/Customers('ALFKI') HTTP/1.1
+	Host: host
+	Accept: application/json
+	DataServiceVersion: 1.0
+	MaxDataServiceVersion: 3.0
+
+The server might respond with a Customer entity that advertizes a binding of the `SampleEntities.CreateOrder` Action to itself:
+
+	HTTP/1.1 200 OK
+	Date: Fri, 12 Dec 2008 17:17:11 GMT
+	Content-Type: application/json
+	Content-Length: nnn
+	ETag: W/"X'000000000000FA01'"
+	DataServiceVersion: 3.0
+
+	{"d":
+	 { 
+	   "__metadata": { 
+	       "uri": "Customers(\'ALFKI\')", 
+	       "type": "SampleModel.Customer",
+	       "etag": "W/\"X\'000000000000FA01\'\"" 
+	       "properties" : {
+	           "Orders" : {
+	              "__associationuri" : "Customers(\'ALFKI\')/SampleModel.Customer/$links/Orders",
+	           }
+	       },
+	       "actions" : {
+	           "SampleEntities.CreateOrder" : [{
+	               "title" : "Create Order",
+	               "target" : "Customers(\'ALFKI\')/SampleEntities.CreateOrder"
+	           }]
+	       }
+	   },  
+	   "CustomerID": "ALFKI", 
+	   "CompanyName": " Alfreds Futterkiste", 
+	   "Version": "AAAAAAAA+gE=",
+	   "Orders":  { "__deferred": { "uri": "Customers(\'ALFKI\')/SampleModel.Customer/Orders" } }
+	 }
+	} 
+
 When the resource retrieved represents a collection, the 'Target Url' of any Actions advertized MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
 
 An efficient format that assumes client knowledge of metadata SHOULD NOT advertize Actions whose availability ('IsAlwaysBindable' is set to 'true') and target url can be established via metadata. 
@@ -362,9 +400,27 @@ If the Action returns results the client SHOULD use content type negotiation to 
 
 If a client only wants an Action invoke request to be processed when the binding parameter value, an Entity or collection of Entities, is unmodified, the client SHOULD include the 'If-Match' header with the latest known ETag value for the Entity or collection of Entities. When presents a Server MUST attempt to verify that the ETag found in the 'If-Match' header is current before processing the request. If the ETag cannot be verified or is found to be out of date the server response MUST be '412 Precondition Failed'. 
 
-On success, the response SHOULD be '200 OK' for Actions with a return type or '204 No Content' for Action without a return type.  
+On success, the response SHOULD be '200 OK' for Actions with a return type or '204 No Content' for Action without a return type. 
 
-TODO: Sample invoke request and response with parameters. 
+Example: This request invokes the `SampleEntities.CreateOrder` action using `/Customers('ALFKI') `as the customer (or binding parameter): 
+
+       POST /Customers('ALFKI')/SampleEntities.CreateOrder HTTP/1.1
+       Host: host
+       Content-Type: application/json
+       DataServiceVersion: 3.0
+       MaxDataServiceVersion: 3.0
+       If-Match: ...ETag...
+       Content-Length: ####
+
+       {
+          "quantity": 2,
+          "discountCode": "BLACKFRIDAY"
+       }
+
+HTTP Response:
+     HTTP/1.1 204 OK
+     Date: Fri, 11 Oct 2008 04:23:49 GMT
+
 
 ### Functions ###
 Functions are operations exposed by an OData server which MAY have parameters and MUST return data and MUST have no observable side effects.  
@@ -382,7 +438,7 @@ This is an example of an Function called MostRecent that returns the 'MostRecent
 
 	<FunctionImport Name="MostRecent" EntitySet="Orders" ReturnType="SampleModel.Order" IsBindable="true" IsSideEffecting="false"
 					m:IsAlwaysBindable="true">
-		<Parameter Name="customer" Type="Collection(SampleModel.Order)" Mode="In">
+		<Parameter Name="orders" Type="Collection(SampleModel.Order)" Mode="In">
 	</FunctionImport>
 
 #### Advertizing currently available Functions ####
@@ -394,9 +450,68 @@ If the server chooses to advertize a Function the following information MUST be 
 - A 'Metadata Url' that MUST identify the FunctionImport (and potentially overload) that declares the Function. This Url can be either relative or absolute, but when relative it MUST be assumed to be relative to the $metadata Url of the current server.
 - A 'Title' that MUST contain a human readable description of the Function.
 
-Here is an example of an Function advertized inside an Entity in JSON format:
+Example: Given this client request:
 
-TODO: Sample JSON with advertized Function.
+	GET /service.svc/Orders HTTP/1.1
+	Host: host
+	Accept: application/json
+	DataServiceVersion: 1.0
+	MaxDataServiceVersion: 3.0
+
+The server might respond with a collection of Orders that advertizing the `SampleEntities.MostRecent` Function bound to itself:
+
+	HTTP/1.1 200 OK
+	Date: Fri, 12 Dec 2008 17:17:11 GMT
+	Content-Type: application/json
+	Content-Length: nnn
+	DataServiceVersion: 3.0
+
+	{
+		"__metadata": {
+			"functions": "SampleEntities.MostRecent" : [{
+	               "title" : "Most Recent Order",
+	               "target" : "Orders/SampleEntities.MostRecent"
+	           }]
+		},
+		"d": [
+	         {
+	            "__metadata": { "uri": "Orders(1)",
+	                            "type": "SampleModel.Order",
+	                            "properties" : {
+	                              "Customer" : {
+	                                "__associationuri" : "Orders(1)/SampleModel.Order/$links/Customer",
+	                              },
+	                              "OrderLines" : {
+	                                "__associationuri" : "Orders(1)/SampleModel.Order/$links/OrderLines",
+	                              }
+	                            } 	
+	                          },
+	            "OrderID": 1,
+	            "ShippedDate": "\/Date(872467200000)\/",
+	            "Customer":   { "__deferred": { "uri": "Orders(1)/SampleModel.Order/Customer" } }
+	            "OrderLines": { "__deferred": { "uri": "Orders(1)/SampleModel.Order/OrderLines"} }
+	         },
+	         {
+	            "__metadata": { "uri": "Orders(2)",
+	                            "type": "SampleModel.Order",
+	                            "properties" : {
+	                              "Customer" : {
+	                                "__associationuri" : "Orders(2)/SampleModel.Order/$links/Customer",
+	                              },
+	                              "OrderLines" : {
+	                                "__associationuri" : "Orders(2)/SampleModel.Order/$links/OrderLines",
+	                              }
+	                            } 
+	
+	                          },
+	            "OrderID": 2,
+	            "ShippedDate": "\/Date(875836800000)\/",
+	            "Customer":   { "__deferred": { "uri": "Orders(2)/SampleModel.Order/Customer"} }
+	            "OrderLines": { "__deferred": { "uri": "Orders(2)/SampleModel.Order/OrderLines"} }
+	
+	         }
+	]}
+ 
  
 When the resource retrieved represents a collection, the 'Target Url' of any Functions advertized MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
 
@@ -435,7 +550,7 @@ Parameters values MAY be provided to Functions in the Request Uri path using inl
 ##### Parameter Alias Syntax #####
 Another way to pass parameter values is by using Parameter Alias Syntax.
 
-To use Parameter Alias Syntax, whereever a Function is called, parameter aliases MUST be specified inside the parenthesis, i.e. `()`, appended directly to the Function name, and actual parameter values MUST be specified as Query options in the Query part of the Request Uri. The Query option name is the Name of the Parameter Alias, and the Query option value is the Value of any parameter that refers to this Parameter Alias.
+To use Parameter Alias Syntax, whereever a Function is called, parameter aliases MUST be specified inside parenthesis, i.e. `()`, appended directly to the Function name, and actual parameter values MUST be specified as Query options in the Query part of the Request Uri. The Query option name is the Name of the Parameter Alias, and the Query option value is the Value of any parameter that refers to this Parameter Alias.
 
 The parameter aliases MUST be constructed by concatenating Name/Value pairs for each parameter separated by `,`'s, where the Name/Value pairs are in the format `Name=Value` and where `Name` is the Name of the parameter to the Function and `Value` is a Parameter Alias. Parameter aliases MUST begin with `@`. 
 
@@ -452,17 +567,27 @@ Parameter Alias Syntax has a number of advantages over Inline syntax:
 If a Parameter Alias referenced by a Function call is not given a value in the Query part of the Request Uri, the value MUST be assumed to be null.
 
 ##### Parameter Name Syntax #####
+The OData protocol allows parameter values for the last Function call in a Request Uri Path to be specified by appending Name/Value pairs, representing each parameter Name and Value for that Function, as query strings to the Query part of the Request Uri. 
 
+This is useful because it means clients, in particular rudimentary clients, MAY invoke advertized Functions without parsing the advertized Target Url (as would be required to either inject parameter values using [Inline Parameter Syntax] or identify Parameter Aliases so that Parameter Values can be provided using [Parameter Alias Syntax]). 
+
+This means that all of these requests are equivalent:
+
+	GET http://server/service.svc/Entities(6)/NS.Foo(p1=3,p2="hello")/NavigationProperty HTTP/1.1
+	GET http://server/service.svc/Entities(6)/NS.Foo(p1=@p1,p2=@p2)/NavigationProperty?@p1=3&@p2="hello" HTTP/1.1
+	GET http://server/service.svc/Entities(6)/NS.Foo/NavigationProperty?p1=3&p2="hello" HTTP/1.1
+
+Notice though that only the third request can be built without complicated Parsing logic when `http://server/service.svc/Entities(6)/NS.Foo/NavigationProperty` is advertized as the [Target Url] of an available Function to a client which has knowledge of signature for `NS.Foo`.  
 
 #### Function overload resolution ####
 Functions overloads are supported in OData, meaning a server MAY expose multiple Functions with the same name that take a different set of parameters.
 
-When a function is invoked (using any of the 3 parameter syntaxes) the parameter names and parameter values are specified in the URL, and the parameter types can be deduced from each parameter value, also in the Uri. The combination of the Function name, and the unordered parameter names and types is always sufficient to identify a particular Function overload. 
+When a function is invoked (using any of the 3 parameter syntaxes) the parameter names and parameter values are specified in the URL, and the parameter types can be deduced from each parameter value. The combination of the Function name, and the unordered parameter names and types is always sufficient to identify a particular Function overload. 
 
 ### Service Operations ###
 Service Operations are Operations like Actions and Functions. However use of Service Operations is now discouraged because they are legacy and have a number of disadvantages:
 
-- Service Operation Semantics are unclear - a Service Operation that is invoked with a GET MAY have side effects and a Service Operation that is invoked with a POST MAY have no side-effects.
+- Service Operation Semantics are unclear - for example a Service Operation that is invoked with a GET MAY have side effects and a Service Operation that is invoked with a POST MAY have no side-effects.
 - Service Operations only support primitive parameter types.
 - Unlike Functions, composing Multiple Service Operations calls in the same request is not supported.
 
@@ -472,11 +597,62 @@ A server that supports Service Operations MUST declare them in $metadata using a
 In addition to the [Common Rules for FunctionImports] the following rules apply for FunctionImport elements that represent Service Operations:
 
 - Service Operations MUST specify the 'm:HttpMethod' attribute, to indicate which HttpMethod (GET or POST) is required to invoke the Service Operation.
-- Service Operations MUST omit the 'IsComposable' attribute.
-- Service Operations MUST omit the 'IsBindable' attribute.
-- Service Operations MUST omit the 'm:IsAlwaysBindable' attribute. 
+- Service Operations MUST omit the 'IsComposable' attribute or set its value to 'false'.
+- Service Operations MUST omit the 'IsBindable' attribute or set its value to 'false'.
+- Service Operations MUST omit the 'm:IsAlwaysBindable' attribute or set its value to 'false'.
 
 #### Invoking a Service Operation ####
+To invoke a ServiceOperation the Request Uri used MUST begin with the Uri of the Service Document, followed by a path segment containing the Name or Namespace Qualified Name of the ServiceOperation and optionally parentheses.
+
+For example:
+
+	http://server/service.svc/ServiceOperation or http://server/service.svc/ServiceOperation()
+
+The HttpMethod (either GET or POST) used to invoke the ServiceOperation MUST match the HttpMethod specified by the 'm:HttpMethod' attribute on the FunctionImport that defines the ServiceOperation. 
+
+Even when the Service Operation when POST is required to invoke the ServiceOperation the Body of the Invoke Request SHOULD be empty. 
+
+Any Parameter Values MUST be encoded into the Query part of the Request Uri, as individual Query string Name/Value pairs, where the Name is the Parameter Name and the Value is a UriLiteral representing the parameter value.
+
+NOTE: Because all Service Operation parameters must be primitive all Service Operation Parameter can be represented as UriLiterals.
+
+For example given this ServiceOperation:
+
+	<FunctionImport Name="CreatePerson" EntitySet="People" ReturnType="NS.Person" m:HttpMethod="POST">
+		<Parameter Name="Firstname" Type="Edm.String" Mode="In" />
+		<Parameter Name="Surname" Type="Edm.String" Mode="In" />
+		<Parameter Name="DateOfBirth" Type="Edm.Datetime" Mode="In" />
+	</FunctionImport>
+
+This request:
+
+	POST http://server/service.svc/CreatePerson?Firstname="John"&Surname="Smith"&DateOfBirth=datetime'1971-07-07T13:03:00' HTTP/1.1
+
+    DataServiceVersion: 3;
+	Accept: application/json;
+ 
+Invokes the `CreatePerson` ServiceOperation with the following Parameter values:
+
+- Firstname: `"John"`
+- Surname: `"Smith"`
+- DateOfBirth: `datetime'1971-07-07T13:03:00'`
+
+If the ServiceOperation specifies a ReturnType it MAY be possible to compose further OData path and/or Query Options after the segment that identifies the ServiceOperation. 
+
+For example given this ServiceOperation:
+
+	<FunctionImport Name="GetOrdersByDate" EntitySet="Orders" ReturnType="Collection(NS.Order)" m:HttpMethod="GET">
+		<Parameter Name="OrderDate" Type="Edm.Datetime" Mode="In" />
+	</FunctionImport>
+
+This request:
+
+	GET http://server/service.svc/GetOrdersByDate/$filter=Customer/Name eq 'ACME'&OrderDate=datetime'2012-07-07T01:03:00' HTTP/1.1
+
+    DataServiceVersion: 3;
+	Accept: application/json;
+
+Invokes the `GetOrdersByDate` ServiceOperation with the `OrderDate` parameter value of `datetime'2012-07-07T01:03:00` and then further filters the results so only the Orders for `ACME` on that date are returned.
 
 ### Batch Processing ###
 

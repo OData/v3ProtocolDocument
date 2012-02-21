@@ -165,6 +165,18 @@ Annotations that apply across instances SHOULD be specified within the metadata.
 
 Metadata and instance annonations defined outside of the OData specification SHOULD NOT be required to be understood in order to correctly interact with an OData Service or correctly interpret an OData payload.
 
+
+### 6.5. Header Field Extensibility ###
+
+OData defines semantics around certain HTTP Header Fields that may be included in requests to, and responses from, the data service. Services advertising compliance with a particular version of the OData Specification MUST understand and comply with the header fields defined in that version of the specification, either by honoring the semantics of the header field or by failing the request.
+
+Individual services may define additional header fields specific to that particular service. For maximum interoperability, such header fields SHOULD be optional in making requests against the service and MUST NOT be required to be understood by the client in order to accurately interpret the response.
+
+----
+* do these semantics for header fields seem right? should we reserve a set of header fields, i.e., prefixed with "OData-"? 
+
+----
+
 # 7. Interaction Semantics #
 
 ## 7.1. Metadata ##

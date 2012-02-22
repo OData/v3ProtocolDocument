@@ -52,15 +52,22 @@ The Version attribute is a string value that specifies the version of the EDMX w
 
 ### 2.2 The "edmx:DataServices" Element ###
 The `edmx:DataServices` element contains zero or more [`Schema`](#The"Schema"Element) elements, defining the schema(s) exposed by the OData service.
+#### 2.2.1. The "metadata:DataServiceVersion" Attribute ####
 
 ### 2.3. The "edmx:Reference" Element ###
 The `edmx:Reference` element specifies the location of other schemas referenced by this EDMX.
+#### 2.3.1. The "Url" Attribute ####
 
 ### 2.4. The "edmx:AnnotationsReference" Element ###
 The `edmx:AnnotationsReference` element specifies the location of a seperate document that annotates this EDMX.
 
+The `edmx:AnnotationsReference` element contains zero or more [`edmx:Include`](#The"edmx:Include"Element) elements that specify the annotations to include from the target document.
+#### 2.4.1. The "Url" Attribute ####
 
-#### 2.2.1. The "metadata:DataServiceVersion" Attribute ####
+### 2.5. The "edmx:Include" Element ###
+The `edmx:AnnotationsReference` element specifies the location of a seperate document that annotates this EDMX.
+#### 2.5.1. The "TermNamespace" Attribute ####
+#### 2.5.2. The "Qualifier" Attribute ####
 
 
 ## 3. Schema Constructs ##
@@ -209,6 +216,7 @@ Instances of EntityTypes live within EntitySets. Instances of Associations live 
 ### 10.4. The "edm:ValueTerm" Element ###
 #### 10.4.1. The "edm:Name" Attribue ####
 #### 10.4.2. The "edm:Type" Attribue ####
+
 
 ## 11. Expression Constructs ##
 Expressions are used to specify values in annotations. They may appear as a direct child of an [edm:PropertyValue](#The"edm:PropertyValue"Element) or an [edm:ValueAnnotation](#The"edm:ValueAnnotation"Element).

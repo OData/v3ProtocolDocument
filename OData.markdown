@@ -137,13 +137,17 @@ Query Options within the Request URL can control how a particular request is pro
 
 OData-defined system query options are prefixed with "$". Services MAY support additional query options not defined in the OData specification, but they MUST NOT begin with the "$" character.
 
-OData Services SHOULD NOT require any query options to be specified in a request, and MUST fail any request that contains query options that it does not understand.
+OData Services SHOULD NOT require any query options to be specified in a request, and MUST fail any request that contains query options that it does not understand. 
+
+*REVIEWER: Alex: is this too strong - for example WCF Data Services would be forced to fail a request with $format in the url, even though an intermediary might make it unnecessary to correctly understand it?*
 
 ## 6.2. Payload Extensibility ##
 
 OData supports extensibility in the payload, according to the specific format.
 
-Regardless of the format, additional content may be present only if it need not be understood by the receiver in order to correctly interpret the payload. Thus, clients and services may safely ignore any content not specifically defined in the version of the payload specified by the DataServiceVersion header.
+Regardless of the format, additional content MAY be present only if it need not be understood by the receiver in order to correctly interpret the payload. Thus, clients and services MAY safely ignore any content not specifically defined in the version of the payload specified by the DataServiceVersion header.
+
+*REVIEWER: Alex: may -> MAY*
 
 ### 6.3. Action/Function Extensibility ###
 
@@ -163,18 +167,19 @@ Instance annotations can be used to define additional information associated wit
 
 Annotations that apply across instances SHOULD be specified within the metadata. Where the same annotation is defined at both the metadata and instance level, the instance-annotation overrides whatever defaults have been specified at the metadata level.
 
-Metadata and instance annonations defined outside of the OData specification SHOULD NOT be required to be understood in order to correctly interact with an OData Service or correctly interpret an OData payload.
+Metadata and instance annotations defined outside of the OData specification SHOULD NOT be required to be understood in order to correctly interact with an OData Service or correctly interpret an OData payload.
 
 
 ### 6.5. Header Field Extensibility ###
 
 OData defines semantics around certain HTTP Header Fields that may be included in requests to, and responses from, the data service. Services advertising compliance with a particular version of the OData Specification MUST understand and comply with the header fields defined in that version of the specification, either by honoring the semantics of the header field or by failing the request.
 
-Individual services may define additional header fields specific to that particular service. For maximum interoperability, such header fields SHOULD be optional in making requests against the service and MUST NOT be required to be understood by the client in order to accurately interpret the response.
+Individual services may define additional header fields specific to that particular service. For maximum interoperability, such header fields SHOULD be optional when making requests against the service and MUST NOT be required to be understood by the client in order to accurately interpret the response.
 
 ----
 * do these semantics for header fields seem right? should we reserve a set of header fields, i.e., prefixed with "OData-"? 
 
+- *REVIEWER: Alex: I don't think it would hurt to reserve OData-.*
 ----
 
 # 7. Interaction Semantics #

@@ -124,11 +124,6 @@ The service MUST include a DataServiceVersion header to specify the version of t
 
 # 6. Extensibility #
 
-------
-
-- ASSIGNED TO: Review
-
-------
 The OData protocol supports both user- and version- driven extensibility through a combination of versioning, convention, and explicit extension points.
 
 ## 6.1. Query Option Extensibility ##
@@ -137,13 +132,15 @@ Query Options within the Request URL can control how a particular request is pro
 
 OData-defined system query options are prefixed with "$". Services MAY support additional query options not defined in the OData specification, but they MUST NOT begin with the "$" character.
 
-OData Services SHOULD NOT require any query options to be specified in a request, and MUST fail any request that contains query options that it does not understand.
+OData Services SHOULD NOT require any query options to be specified in a request, and MUST fail any request that contains query options that it does not understand. 
+
+*REVIEWER: Alex: is this too strong - for example WCF Data Services would be forced to fail a request with $format in the url, even though an intermediary might make it unnecessary to correctly understand it?*
 
 ## 6.2. Payload Extensibility ##
 
 OData supports extensibility in the payload, according to the specific format.
 
-Regardless of the format, additional content may be present only if it need not be understood by the receiver in order to correctly interpret the payload. Thus, clients and services may safely ignore any content not specifically defined in the version of the payload specified by the DataServiceVersion header.
+Regardless of the format, additional content MAY be present only if it need not be understood by the receiver in order to correctly interpret the payload. Thus, clients and services MAY safely ignore any content not specifically defined in the version of the payload specified by the DataServiceVersion header.
 
 ### 6.3. Action/Function Extensibility ###
 
@@ -163,7 +160,14 @@ Instance annotations can be used to define additional information associated wit
 
 Annotations that apply across instances SHOULD be specified within the metadata. Where the same annotation is defined at both the metadata and instance level, the instance-annotation overrides whatever defaults have been specified at the metadata level.
 
-Metadata and instance annonations defined outside of the OData specification SHOULD NOT be required to be understood in order to correctly interact with an OData Service or correctly interpret an OData payload.
+Metadata and instance annotations defined outside of the OData specification SHOULD NOT be required to be understood in order to correctly interact with an OData Service or correctly interpret an OData payload.
+
+
+### 6.5. Header Field Extensibility ###
+
+OData defines semantics around certain HTTP Header Fields that may be included in requests to, and responses from, the data service. Services advertising compliance with a particular version of the OData Specification MUST understand and comply with the header fields defined in that version of the specification, either by honoring the semantics of the header field or by failing the request.
+
+Individual services MAY define additional header fields specific to that particular service. Such header fields MUST NOT be begin with "OData-" and, for maximum interoperability, SHOULD be optional when making requests against the service. Custom header fields MUST NOT be required to be understood by the client in order to accurately interpret the response.
 
 # 7. Interaction Semantics #
 
@@ -321,11 +325,11 @@ In addition to the [Common Rules for FunctionImports] the following rules apply 
 - Actions MUST be side effecting, indicated by either omiting or setting the 'IsSideEffecting' attribute to 'true'.
 - Actions MUST NOT be composable, indicated by either omiting or setting the 'IsComposable' attribute  to 'false'.
 
-This is an example of an Action that creates an Order for a quantity of product using the specified discount:
+For example this FunctionImport represents an Action that Creates an Order for a customer using the specified quantity and discountCode, which can be bound to any resource path that represents a Customer entity:
 
 	<FunctionImport Name="CreateOrder" IsBindable="true" IsSideEffecting="true" 
 					m:IsAlwaysBindable="true">
-    	<Parameter Name="product" Type="SampleModel.Product" Mode="In">
+    	<Parameter Name="customer" Type="SampleModel.Customer" Mode="In">
 		<Parameter Name="quantity" Type="Edm.Int32" Mode="In">
 		<Parameter Name="discountCode" Type="Edm.String" Mode="In">
 	</FunctionImport&gt; 
@@ -341,10 +345,48 @@ The following information MUST be included when an Action is advertized:
 - A 'Metadata Url' that MUST identify the FunctionImport that declares the Action. This Url can be either relative or absolute, but when relative it MUST be assumed to be relative to the $metadata Url of the current server.
 - A 'Title' that MUST contain a human readable description of the Action.
 
-Here is an example of an Action advertized inside an Entity in JSON format:
+Example: Given this client request:
 
-TODO: Sample JSON with advertized Action.
- 
+	GET /service.svc/Customers('ALFKI') HTTP/1.1
+	Host: host
+	Accept: application/json
+	DataServiceVersion: 1.0
+	MaxDataServiceVersion: 3.0
+
+The server might respond with a Customer entity that advertizes a binding of the `SampleEntities.CreateOrder` Action to itself:
+
+	HTTP/1.1 200 OK
+	Date: Fri, 12 Dec 2008 17:17:11 GMT
+	Content-Type: application/json
+	Content-Length: nnn
+	ETag: W/"X'000000000000FA01'"
+	DataServiceVersion: 3.0
+
+	{"d":
+	 { 
+	   "__metadata": { 
+	       "uri": "Customers(\'ALFKI\')", 
+	       "type": "SampleModel.Customer",
+	       "etag": "W/\"X\'000000000000FA01\'\"" 
+	       "properties" : {
+	           "Orders" : {
+	              "__associationuri" : "Customers(\'ALFKI\')/SampleModel.Customer/$links/Orders",
+	           }
+	       },
+	       "actions" : {
+	           "SampleEntities.CreateOrder" : [{
+	               "title" : "Create Order",
+	               "target" : "Customers(\'ALFKI\')/SampleEntities.CreateOrder"
+	           }]
+	       }
+	   },  
+	   "CustomerID": "ALFKI", 
+	   "CompanyName": " Alfreds Futterkiste", 
+	   "Version": "AAAAAAAA+gE=",
+	   "Orders":  { "__deferred": { "uri": "Customers(\'ALFKI\')/SampleModel.Customer/Orders" } }
+	 }
+	} 
+
 When the resource retrieved represents a collection, the 'Target Url' of any Actions advertized MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
 
 An efficient format that assumes client knowledge of metadata SHOULD NOT advertize Actions whose availability ('IsAlwaysBindable' is set to 'true') and target url can be established via metadata. 
@@ -362,9 +404,27 @@ If the Action returns results the client SHOULD use content type negotiation to 
 
 If a client only wants an Action invoke request to be processed when the binding parameter value, an Entity or collection of Entities, is unmodified, the client SHOULD include the 'If-Match' header with the latest known ETag value for the Entity or collection of Entities. When presents a Server MUST attempt to verify that the ETag found in the 'If-Match' header is current before processing the request. If the ETag cannot be verified or is found to be out of date the server response MUST be '412 Precondition Failed'. 
 
-On success, the response SHOULD be '200 OK' for Actions with a return type or '204 No Content' for Action without a return type.  
+On success, the response SHOULD be '200 OK' for Actions with a return type or '204 No Content' for Action without a return type. 
 
-TODO: Sample invoke request and response with parameters. 
+Example: This request invokes the `SampleEntities.CreateOrder` action using `/Customers('ALFKI') `as the customer (or binding parameter): 
+
+       POST /Customers('ALFKI')/SampleEntities.CreateOrder HTTP/1.1
+       Host: host
+       Content-Type: application/json
+       DataServiceVersion: 3.0
+       MaxDataServiceVersion: 3.0
+       If-Match: ...ETag...
+       Content-Length: ####
+
+       {
+          "quantity": 2,
+          "discountCode": "BLACKFRIDAY"
+       }
+
+HTTP Response:
+     HTTP/1.1 204 OK
+     Date: Fri, 11 Oct 2008 04:23:49 GMT
+
 
 ### Functions ###
 Functions are operations exposed by an OData server which MAY have parameters and MUST return data and MUST have no observable side effects.  
@@ -382,7 +442,7 @@ This is an example of an Function called MostRecent that returns the 'MostRecent
 
 	<FunctionImport Name="MostRecent" EntitySet="Orders" ReturnType="SampleModel.Order" IsBindable="true" IsSideEffecting="false"
 					m:IsAlwaysBindable="true">
-		<Parameter Name="customer" Type="Collection(SampleModel.Order)" Mode="In">
+		<Parameter Name="orders" Type="Collection(SampleModel.Order)" Mode="In">
 	</FunctionImport>
 
 #### Advertizing currently available Functions ####
@@ -394,9 +454,68 @@ If the server chooses to advertize a Function the following information MUST be 
 - A 'Metadata Url' that MUST identify the FunctionImport (and potentially overload) that declares the Function. This Url can be either relative or absolute, but when relative it MUST be assumed to be relative to the $metadata Url of the current server.
 - A 'Title' that MUST contain a human readable description of the Function.
 
-Here is an example of an Function advertized inside an Entity in JSON format:
+Example: Given this client request:
 
-TODO: Sample JSON with advertized Function.
+	GET /service.svc/Orders HTTP/1.1
+	Host: host
+	Accept: application/json
+	DataServiceVersion: 1.0
+	MaxDataServiceVersion: 3.0
+
+The server might respond with a collection of Orders that advertizing the `SampleEntities.MostRecent` Function bound to itself:
+
+	HTTP/1.1 200 OK
+	Date: Fri, 12 Dec 2008 17:17:11 GMT
+	Content-Type: application/json
+	Content-Length: nnn
+	DataServiceVersion: 3.0
+
+	{
+		"__metadata": {
+			"functions": "SampleEntities.MostRecent" : [{
+	               "title" : "Most Recent Order",
+	               "target" : "Orders/SampleEntities.MostRecent"
+	           }]
+		},
+		"d": [
+	         {
+	            "__metadata": { "uri": "Orders(1)",
+	                            "type": "SampleModel.Order",
+	                            "properties" : {
+	                              "Customer" : {
+	                                "__associationuri" : "Orders(1)/SampleModel.Order/$links/Customer",
+	                              },
+	                              "OrderLines" : {
+	                                "__associationuri" : "Orders(1)/SampleModel.Order/$links/OrderLines",
+	                              }
+	                            } 	
+	                          },
+	            "OrderID": 1,
+	            "ShippedDate": "\/Date(872467200000)\/",
+	            "Customer":   { "__deferred": { "uri": "Orders(1)/SampleModel.Order/Customer" } }
+	            "OrderLines": { "__deferred": { "uri": "Orders(1)/SampleModel.Order/OrderLines"} }
+	         },
+	         {
+	            "__metadata": { "uri": "Orders(2)",
+	                            "type": "SampleModel.Order",
+	                            "properties" : {
+	                              "Customer" : {
+	                                "__associationuri" : "Orders(2)/SampleModel.Order/$links/Customer",
+	                              },
+	                              "OrderLines" : {
+	                                "__associationuri" : "Orders(2)/SampleModel.Order/$links/OrderLines",
+	                              }
+	                            } 
+	
+	                          },
+	            "OrderID": 2,
+	            "ShippedDate": "\/Date(875836800000)\/",
+	            "Customer":   { "__deferred": { "uri": "Orders(2)/SampleModel.Order/Customer"} }
+	            "OrderLines": { "__deferred": { "uri": "Orders(2)/SampleModel.Order/OrderLines"} }
+	
+	         }
+	]}
+ 
  
 When the resource retrieved represents a collection, the 'Target Url' of any Functions advertized MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
 
@@ -435,7 +554,7 @@ Parameters values MAY be provided to Functions in the Request Uri path using inl
 ##### Parameter Alias Syntax #####
 Another way to pass parameter values is by using Parameter Alias Syntax.
 
-To use Parameter Alias Syntax, whereever a Function is called, parameter aliases MUST be specified inside the parenthesis, i.e. `()`, appended directly to the Function name, and actual parameter values MUST be specified as Query options in the Query part of the Request Uri. The Query option name is the Name of the Parameter Alias, and the Query option value is the Value of any parameter that refers to this Parameter Alias.
+To use Parameter Alias Syntax, whereever a Function is called, parameter aliases MUST be specified inside parenthesis, i.e. `()`, appended directly to the Function name, and actual parameter values MUST be specified as Query options in the Query part of the Request Uri. The Query option name is the Name of the Parameter Alias, and the Query option value is the Value of any parameter that refers to this Parameter Alias.
 
 The parameter aliases MUST be constructed by concatenating Name/Value pairs for each parameter separated by `,`'s, where the Name/Value pairs are in the format `Name=Value` and where `Name` is the Name of the parameter to the Function and `Value` is a Parameter Alias. Parameter aliases MUST begin with `@`. 
 
@@ -452,17 +571,27 @@ Parameter Alias Syntax has a number of advantages over Inline syntax:
 If a Parameter Alias referenced by a Function call is not given a value in the Query part of the Request Uri, the value MUST be assumed to be null.
 
 ##### Parameter Name Syntax #####
+The OData protocol allows parameter values for the last Function call in a Request Uri Path to be specified by appending Name/Value pairs, representing each parameter Name and Value for that Function, as query strings to the Query part of the Request Uri. 
 
+This is useful because it means clients, in particular rudimentary clients, MAY invoke advertized Functions without parsing the advertized Target Url (as would be required to either inject parameter values using [Inline Parameter Syntax] or identify Parameter Aliases so that Parameter Values can be provided using [Parameter Alias Syntax]). 
+
+This means that all of these requests are equivalent:
+
+	GET http://server/service.svc/Entities(6)/NS.Foo(p1=3,p2="hello")/NavigationProperty HTTP/1.1
+	GET http://server/service.svc/Entities(6)/NS.Foo(p1=@p1,p2=@p2)/NavigationProperty?@p1=3&@p2="hello" HTTP/1.1
+	GET http://server/service.svc/Entities(6)/NS.Foo/NavigationProperty?p1=3&p2="hello" HTTP/1.1
+
+Notice though that only the third request can be built without complicated Parsing logic when `http://server/service.svc/Entities(6)/NS.Foo/NavigationProperty` is advertized as the [Target Url] of an available Function to a client which has knowledge of signature for `NS.Foo`.  
 
 #### Function overload resolution ####
 Functions overloads are supported in OData, meaning a server MAY expose multiple Functions with the same name that take a different set of parameters.
 
-When a function is invoked (using any of the 3 parameter syntaxes) the parameter names and parameter values are specified in the URL, and the parameter types can be deduced from each parameter value, also in the Uri. The combination of the Function name, and the unordered parameter names and types is always sufficient to identify a particular Function overload. 
+When a function is invoked (using any of the 3 parameter syntaxes) the parameter names and parameter values are specified in the URL, and the parameter types can be deduced from each parameter value. The combination of the Function name, and the unordered parameter names and types is always sufficient to identify a particular Function overload. 
 
 ### Service Operations ###
 Service Operations are Operations like Actions and Functions. However use of Service Operations is now discouraged because they are legacy and have a number of disadvantages:
 
-- Service Operation Semantics are unclear - a Service Operation that is invoked with a GET MAY have side effects and a Service Operation that is invoked with a POST MAY have no side-effects.
+- Service Operation Semantics are unclear - for example a Service Operation that is invoked with a GET MAY have side effects and a Service Operation that is invoked with a POST MAY have no side-effects.
 - Service Operations only support primitive parameter types.
 - Unlike Functions, composing Multiple Service Operations calls in the same request is not supported.
 
@@ -472,13 +601,74 @@ A server that supports Service Operations MUST declare them in $metadata using a
 In addition to the [Common Rules for FunctionImports] the following rules apply for FunctionImport elements that represent Service Operations:
 
 - Service Operations MUST specify the 'm:HttpMethod' attribute, to indicate which HttpMethod (GET or POST) is required to invoke the Service Operation.
-- Service Operations MUST omit the 'IsComposable' attribute.
-- Service Operations MUST omit the 'IsBindable' attribute.
-- Service Operations MUST omit the 'm:IsAlwaysBindable' attribute. 
+- Service Operations MUST omit the 'IsComposable' attribute or set its value to 'false'.
+- Service Operations MUST omit the 'IsBindable' attribute or set its value to 'false'.
+- Service Operations MUST omit the 'm:IsAlwaysBindable' attribute or set its value to 'false'.
 
 #### Invoking a Service Operation ####
+To invoke a ServiceOperation the Request Uri used MUST begin with the Uri of the Service Document, followed by a path segment containing the Name or Namespace Qualified Name of the ServiceOperation and optionally parentheses.
+
+For example:
+
+	http://server/service.svc/ServiceOperation or http://server/service.svc/ServiceOperation()
+
+The HttpMethod (either GET or POST) used to invoke the ServiceOperation MUST match the HttpMethod specified by the 'm:HttpMethod' attribute on the FunctionImport that defines the ServiceOperation. 
+
+Even when the Service Operation when POST is required to invoke the ServiceOperation the Body of the Invoke Request SHOULD be empty. 
+
+Any Parameter Values MUST be encoded into the Query part of the Request Uri, as individual Query string Name/Value pairs, where the Name is the Parameter Name and the Value is a UriLiteral representing the parameter value.
+
+NOTE: Because all Service Operation parameters must be primitive all Service Operation Parameter can be represented as UriLiterals.
+
+For example given this ServiceOperation:
+
+	<FunctionImport Name="CreatePerson" EntitySet="People" ReturnType="NS.Person" m:HttpMethod="POST">
+		<Parameter Name="Firstname" Type="Edm.String" Mode="In" />
+		<Parameter Name="Surname" Type="Edm.String" Mode="In" />
+		<Parameter Name="DateOfBirth" Type="Edm.Datetime" Mode="In" />
+	</FunctionImport>
+
+This request:
+
+	POST http://server/service.svc/CreatePerson?Firstname="John"&Surname="Smith"&DateOfBirth=datetime'1971-07-07T13:03:00' HTTP/1.1
+
+    DataServiceVersion: 3;
+	Accept: application/json;
+ 
+Invokes the `CreatePerson` ServiceOperation with the following Parameter values:
+
+- Firstname: `"John"`
+- Surname: `"Smith"`
+- DateOfBirth: `datetime'1971-07-07T13:03:00'`
+
+If the ServiceOperation specifies a ReturnType it MAY be possible to compose further OData path and/or Query Options after the segment that identifies the ServiceOperation. 
+
+For example given this ServiceOperation:
+
+	<FunctionImport Name="GetOrdersByDate" EntitySet="Orders" ReturnType="Collection(NS.Order)" m:HttpMethod="GET">
+		<Parameter Name="OrderDate" Type="Edm.Datetime" Mode="In" />
+	</FunctionImport>
+
+This request:
+
+	GET http://server/service.svc/GetOrdersByDate/$filter=Customer/Name eq 'ACME'&OrderDate=datetime'2012-07-07T01:03:00' HTTP/1.1
+
+    DataServiceVersion: 3;
+	Accept: application/json;
+
+Invokes the `GetOrdersByDate` ServiceOperation with the `OrderDate` parameter value of `datetime'2012-07-07T01:03:00` and then further filters the results so only the Orders for `ACME` on that date are returned.
 
 ### Batch Processing ###
+
+------
+
+- ASSIGNED TO: MikeF
+
+------
+
+# Appendices #
+
+#Appendix A: Formal Common Schema Definition Langauge (CSDL)#
 
 ------
 
@@ -486,15 +676,80 @@ In addition to the [Common Rules for FunctionImports] the following rules apply 
 
 ------
 
-# Appendices #
+OData services are described by an Entity Data Model (EDM). The Common Schema Definition Language (CSDL) defines an XML-based description of the Entity Model exposed by an OData service.
 
-## A: Formal CSDL description ##
+## 1. Common Schema Defintion Language (CSDL) Namespaces ##
 
-------
+In addition to the (default) XML namespace, attributes and elements used to describe the entity model of an OData service are defined in one of the following namespaces.
 
-- ASSIGNED TO: Alex
+### 1.1.	Entity Data Model For Data Services Packaging (EDMX) Namespace ###
 
-------
+Elements and attributes associated with the top-level wrapper that contains the CSDL used to define the entity model for an OData Service are qualified with the Entity Data Model For Data Services Packaging Namespace:  "http://schemas.microsoft.com/ado/2007/06/edmx".
+
+In this specification the namespace prefix "edmx" is used to represent the Entity Data Model for Data Services Packaging Namespace, however the prefix name is not prescriptive.
+
+### 1.2.	Entity Data Model (EDM) Namespace ###
+
+Elements and attributes that define the entity model exposed by the OData Service are qualified with the Entity Data Model Namespace:  "http://schemas.microsoft.com/ado/2007/06/edm".
+
+In this specification the namespace prefix "edm" is used to represent the Data Service Metadata Namespace, however the prefix name is not prescriptive.
+
+### 1.3.	Data Service Metadata Namespace ###
+
+Elements and attributes specific to how the entity model is exposed as an OData Service are qualified with the Data Service Metadata Namespace:  "http://schemas.microsoft.com/ado/2007/08/DataServices/Metadata".
+
+In this specification the namespace prefix "metadata" is used to represent the Data Service Metadata Namespace, however the prefix name is not prescriptive.
+
+## 2 Entity Model Wrapper Constructs ##
+The Entity Model Wrapper wraps the Schemas that describe the entity model exposed by the the OData Service. 
+
+### 2.1. The "edmx:EDMX" Element ###
+The CSDL returned by an OData Service MUST contain a single root `edmx:EDMX` Element, containing a single child `edmx:DataServices` element describing the entity model(s) exposed by the OData service.
+
+#### 2.1.1. The "Version" Attribute ####
+The `Version` attribute, as described in **todo:ref xmlschema**, MUST be present on the `edmx:EDMX` element. 
+
+The Version attribute is a string value that specifies the version of the EDMX wrapper, and must be of the form
+`majorversion + "." + minorversion`. This version of the specification defines version `"1.0"` of the EDMX Wrapper.
+
+### 2.2 The "edmx:DataServices" Element ###
+The `edmx:EDMX` element MUST contain exactly one `edmx:DataService` element. The `edmx:DataService` element contains zero or more `Schema` elements, defining the schema(s) exposed by the OData service.
+
+#### 2.2.1. The "metadata:DataServiceVersion" Attribute ####
+
+
+## 3. Schema Constructs ##
+Each Entity Model exposed by the OData service is described by a Schema.
+
+### 2.3 The "Schema" Element ###
+#### 2.3.1. The "Namespace" Attribute ####
+
+## 3. Entity Type Constructs ##
+Entity Types are nominal structured records with a key that consist of named primitive or complex properties.
+
+### 3.1. The "edm:EntityType" Element ###
+### 3.2 The "edm:Key" Element ###
+### 3.3. The "edm:PropertyRef" Element ###
+### 3.4. The "edm:Property" Element ###
+### 3.5. The "edm:NavigationProperty" Element ###
+
+## 4. Complex Type Elements ##
+Complex Types are nominal structured types also consisting of a list of properties but with no key, thus can only exist as a property of a containing Entity Type or as a temporary value. 
+
+### 4.1. The "edm:ComplexType" Element ###
+
+## 5. Association Constructs ##
+Associations define the relationship between two or more Entity Types 
+
+### 5.1. The "edm:Association" Element ###
+
+## 6. Entity Containers
+Instances of EntityTypes live within EntitySets. Instances of Associations live within AssociationSets. All Entity Sets and Association Sets are grouped in an Entity Container.
+
+### 6.1. The "edm:EntityContainer" Element ###
+### 6.2. The "edm:EntitySet" Element ###
+### 6.3. The "edm:AssociationSet" Element ###
+
 
 ## B: XSD for CSDL ##
 

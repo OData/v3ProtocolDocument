@@ -7,6 +7,7 @@
 * Actions/Functions 
 * Extensibility 
 * Encoding of primitive types
+* Streams
 
 # 1. Overview #
 

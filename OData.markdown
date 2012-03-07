@@ -236,7 +236,7 @@ On success, the response SHOULD be 200 OK.
 
 The response body MAY contain the entity representation for the entity's new state.
 
-If desired, the PUT, PATCH, or MERGE request can include a <ref>Prefer</ref> header. If this header is included in the request, then the response MUST contain the entity representation for the entity's new state.
+If desired, the PUT, PATCH, or MERGE request can include a <ref>Prefer</ref> header to suggest what the server should return.
 
 #### Delete an Entity ####
 

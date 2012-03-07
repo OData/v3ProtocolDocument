@@ -42,7 +42,7 @@ In this specification the namespace prefix "metadata" is used to represent the D
 The Entity Model Wrapper wraps the Schemas that describe the entity model exposed by the the OData Service. 
 
 ### 2.1. The "edmx:EDMX" Element ###
-The CSDL returned by an OData Service MUST contain a single root `edmx:EDMX` Element, containing a single child [`edmx:DataServices`](#The"edmx:DataServices"Element) element describing the entity model(s) exposed by the OData service. In addition, it may have zero or more [`edmx:Reference`](#The"edmx:ReferenceElement.) elements to specify the location of schemas referenced by this document and zero or more [`edmx:AnnoationsReference`](#The"edmx:AnnotationsReference"Element) elements to specify the location of annotations to be applied to this document.
+The CSDL returned by an OData Service MUST contain a single root `edmx:EDMX` Element, containing a single child [`edmx:DataServices`](#The"edmx:DataServices"Element) element describing the entity model(s) exposed by the OData service. In addition, it may have zero or more [`edmx:Reference`](#The"edmx:ReferenceElement.) elements to specify the location of schemas referenced by this document and zero or more [`edmx:AnnotationsReference`](#The"edmx:AnnotationsReference"Element) elements to specify the location of annotations to be applied to this document.
 
 #### 2.1.1. The "Version" Attribute ####
 The `Version` attribute, as described in **todo:ref xmlschema**, MUST be present on the `edmx:EDMX` element. 

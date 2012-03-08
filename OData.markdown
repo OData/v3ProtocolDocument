@@ -30,9 +30,1019 @@ Towards that end, the OData Protocol follows these design principles:
 
 # 2. Data Model #
 
-This section provides a high-level description of the Entity Data Model (EDM); the abstract data model that MUST be used to describe the data exposed by an OData service. <ref>Section XXXX</ref> defines an OData Metadata Document which is a representation of a service's data model exposed for client consumption.  
+This section provides a high-level description of the Entity Data Model (EDM); the abstract data model that MUST be used to describe the data exposed by an OData service. The 'Metadata Document' section of this document defines an OData Metadata Document which is a representation of a service's data model exposed for client consumption.  
 
 The central concepts in the EDM are **entities** and **associations**. Entities are instances of **Entity Types** (e.g. Customer, Employee, etc) which are nominal structured records with a key that consist of named primitive or complex properties. 
+
+The set of primitives defined in EDM are:
+
+
+<table border="1" cellspacing="0" cellpadding="0"><tbody>
+    <tr>
+      <td valign="bottom">
+        <p><b>EDM Primitive Type</b></p>
+      </td>
+
+      <td valign="bottom">
+        <p><b>ABNF Rule for Primitive Type Representation in URIs and HTTP Headers</b></p>
+      </td>
+
+      <td valign="bottom">
+        <p><b>Primitive Type Literal Form (ABNF Definition)</b></p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>null</p>
+      </td>
+
+      <td valign="top">
+        <p>nullLiteral</p>
+      </td>
+
+      <td valign="top">
+        <p>nullLiteral = &quot;null&quot;</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.Binary</p>
+      </td>
+
+      <td valign="top">
+        <p>binaryLiteral</p>
+      </td>
+
+      <td valign="top">
+        <p>binaryUriLiteral = caseSensitiveToken </p>
+
+        <p>SQUOTE </p>
+
+        <p>binaryLiteral </p>
+
+        <p>SQUOTE</p>
+
+        <p>binaryLiteral = hexDigPair</p>
+
+        <p>caseSensitiveToken = &quot;X&quot; / &quot;binary&quot;</p>
+
+        <p>; X is case sensitive binary is not</p>
+
+        <p>hexDigPair = 2*HEXDIG </p>
+
+        <p>[hexDigPair]</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.Boolean</p>
+      </td>
+
+      <td valign="top">
+        <p>booleanLiteral</p>
+      </td>
+
+      <td valign="top">
+        <p>booleanLiteral = true / false</p>
+
+        <p>true = &quot;true&quot; / &quot;1&quot;</p>
+
+        <p>false = &quot;false&quot; / &quot;0&quot;</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.Byte</p>
+      </td>
+
+      <td valign="top">
+        <p>byteLiteral</p>
+      </td>
+
+      <td valign="top">
+        <p>byteLiteral = 1*3DIGIT; </p>
+
+        <p>; For further information on the value range for</p>
+
+        <p>; the Edm.Byte type see &lt;MSCSDL&gt;</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.DateTime</p>
+      </td>
+
+      <td valign="top">
+        <p>dateTimeUriLiteral</p>
+      </td>
+
+      <td valign="top">
+        <p>datetimeUriLiteral = &quot;datetime&quot;</p>
+
+        <p>SQUOTE </p>
+
+        <p>dateTimeLiteral</p>
+
+        <p>SQUOTE</p>
+
+        <p>dateTimeLiteral = year &quot;-&quot; </p>
+
+        <p>month &quot;-&quot; </p>
+
+        <p>day &quot;T&quot;</p>
+
+        <p>hour &quot;:&quot; </p>
+
+        <p>minute </p>
+
+        <p>[&quot;:&quot; second [&quot;.&quot; nanoSeconds]] </p>
+
+        <p>year = 4 *Digit;</p>
+
+        <p>month = &lt;any number between 1 and 12 inclusive&gt;</p>
+
+        <p>day = nonZeroDigit </p>
+
+        <p>/(&quot;1&quot; DIGIT) </p>
+
+        <p>/ (&quot;2&quot; DIGIT ) </p>
+
+        <p>/ &quot;3&quot; (&quot;0&quot; / &quot;1&quot;)</p>
+
+        <p>hour = nonZeroDigit </p>
+
+        <p>/ (&quot;1&quot; DIGIT) </p>
+
+        <p>/ (&quot;2&quot; zeroToFour)</p>
+
+        <p>zeroToFour= &lt;any nuumber between 0 and 4 inclusive&gt;</p>
+
+        <p>minute =doubleZeroToSixty</p>
+
+        <p>second = doubleZeroToSixty</p>
+
+        <p>nanoSeconds= 1*7Digit</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.Decimal</p>
+      </td>
+
+      <td valign="top">
+        <p>decimalUriLiteral</p>
+      </td>
+
+      <td valign="top">
+        <p>decimalUriLiteral = decimalLiteral</p>
+
+        <p>(&quot;M&quot;/&quot;m&quot;)</p>
+
+        <p>decimalLiteral = sign 1*29DIGIT </p>
+
+        <p>[&quot;.&quot; 1*29DIGIT]</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.Double</p>
+      </td>
+
+      <td valign="top">
+        <p>doubleLiteral</p>
+      </td>
+
+      <td valign="top">
+        <p>doubleLiteral = nonDecimalPoint </p>
+
+        <p>/ nonExp </p>
+
+        <p>/ exp </p>
+
+        <p>/ nan </p>
+
+        <p>/ negativeInfinity </p>
+
+        <p>/ postiveInfinity</p>
+
+        <p>(&quot;D&quot; / &quot;d&quot;)</p>
+
+        <p>nonDecimalPoint= sign 1*17DIGIT</p>
+
+        <p>nonExpDecimal = sign* DIGIT &quot;.&quot; *DIGIT</p>
+
+        <p>expDecimal = sign </p>
+
+        <p>1*DIGIT </p>
+
+        <p>&quot;.&quot;</p>
+
+        <p>16DIGIT </p>
+
+        <p>(&quot;e&quot; / &quot;E&quot;)</p>
+
+        <p>sign </p>
+
+        <p>1*3DIGIT</p>
+
+        <p>; for additional information on the value range </p>
+
+        <p>; of the Edm.Double type, see [MC-CSDL]</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.Single</p>
+      </td>
+
+      <td valign="top">
+        <p>singleUriLiteral</p>
+      </td>
+
+      <td valign="top">
+        <p>singleUriLiteral = singleLiteral</p>
+
+        <p>(&quot;F&quot; / &quot;f&quot;)</p>
+
+        <p>singleLiteral = nonDecimalPoint</p>
+
+        <p>/ nonExp </p>
+
+        <p>/ exp </p>
+
+        <p>/ nan </p>
+
+        <p>/ negativeInfinity </p>
+
+        <p>/ postiveInfinity </p>
+
+        <p>nonDecimalPoint = sign 1*8DIGIT</p>
+
+        <p>nonExpDecimal = sign </p>
+
+        <p>*DIGIT</p>
+
+        <p>&quot;.&quot; </p>
+
+        <p>*DIGIT</p>
+
+        <p>expDecimal = sign </p>
+
+        <p>1*DIGIT </p>
+
+        <p>&quot;.&quot; </p>
+
+        <p>8DIGIT </p>
+
+        <p>(&quot;e&quot; / &quot;E&quot;) </p>
+
+        <p>sign </p>
+
+        <p>1*2DIGIT</p>
+
+        <p>; for additional information on the value range </p>
+
+        <p>; of the Edm.Single type, see [MC-CSDL]</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.Float</p>
+      </td>
+
+      <td valign="top">
+        <p>singleLiteral</p>
+      </td>
+
+      <td valign="top">
+        <p>Edm.Single</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.Guid</p>
+      </td>
+
+      <td valign="top">
+        <p>guidUriLiteral</p>
+      </td>
+
+      <td valign="top">
+        <p>guidUriLiteral= &quot;guid&quot; </p>
+
+        <p>SQUOTE </p>
+
+        <p>guidLiteral</p>
+
+        <p>SQUOTE</p>
+
+        <p>guidLiteral = 8*HEXDIG &quot;-&quot; </p>
+
+        <p>4*HEXDIG &quot;-&quot; </p>
+
+        <p>4*HEXDIG &quot;-&quot; </p>
+
+        <p>12*HEXDIG </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.Int16</p>
+      </td>
+
+      <td valign="top">
+        <p>int16Literal</p>
+      </td>
+
+      <td valign="top">
+        <p>int16Literal= sign 1*5DIGIT</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.Int32</p>
+      </td>
+
+      <td valign="top">
+        <p>int32Literal</p>
+      </td>
+
+      <td valign="top">
+        <p>int32Literal= sign 1*10DIGIT</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.Int64</p>
+      </td>
+
+      <td valign="top">
+        <p>int64UriLiteral</p>
+      </td>
+
+      <td valign="top">
+        <p>int64UriLiteral= int64Literal</p>
+
+        <p>(&quot;L&quot; / &quot;l&quot;)</p>
+
+        <p>int64Literal = sign 1*19DIGIT</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.SByte</p>
+      </td>
+
+      <td valign="top">
+        <p>sbyteliteral</p>
+      </td>
+
+      <td valign="top">
+        <p>sbyteliteral= sign 1*3DIGIT</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.String</p>
+      </td>
+
+      <td valign="top">
+        <p>stringUriLiteral</p>
+      </td>
+
+      <td valign="top">
+        <p>stringUriLiteral = SQUOTE </p>
+
+        <p>[*characters] </p>
+
+        <p>SQUOTE</p>
+
+        <p>characters = UTF8-char</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.Time</p>
+      </td>
+
+      <td valign="top">
+        <p>timeUriLiteral</p>
+      </td>
+
+      <td valign="top">
+        <p>timeUriLiteral = </p>
+
+        <p>&quot;time&quot;</p>
+
+        <p>SQUOTE </p>
+
+        <p>timeLiteral</p>
+
+        <p>SQUOTE</p>
+
+        <p>timeLiteral = &lt;Defined by the lexical representation for duration in [XMLSCHEMA2/2]&gt;</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.DateTimeOffset</p>
+      </td>
+
+      <td valign="top">
+        <p>dateTimeOffsetUriLiteral</p>
+      </td>
+
+      <td valign="top">
+        <p>dateTimeOffsetUriLiteral = </p>
+
+        <p>&quot;datetimeoffset&quot;</p>
+
+        <p>SQUOTE </p>
+
+        <p>dateTimeOffsetLiteral</p>
+
+        <p>SQUOTE</p>
+
+        <p>dateTimeOffsetLiteral = &lt;Defined by the lexical representation for datetime (including timezone offset) in [XMLSCHEMA2/2]&gt;</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.Geography</p>
+      </td>
+
+      <td valign="top">
+        <p>N/A</p>
+      </td>
+
+      <td valign="top">
+        <p>N/A</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.GeographyPoint</p>
+      </td>
+
+      <td valign="top">
+        <p>geographyFullPointLiteral</p>
+
+        <p>The two doubles in position literals are to be interpreted as longitude, then latitude.</p>
+      </td>
+
+      <td valign="top">
+        <p>geographyFullPointLiteral = </p>
+
+        <p>geographyPrefix</p>
+
+        <p>fullPointLiteral</p>
+
+        <p>SQUOTE</p>
+
+        <p>geographyPrefix =</p>
+
+        <p>“geography”</p>
+
+        <p>SQUOTE</p>
+
+        <p>fullPointLiteral =</p>
+
+        <p>sridLiteral</p>
+
+        <p>pointLiteral</p>
+
+        <p>pointLiteral =</p>
+
+        <p>“Point“</p>
+
+        <p>pointData</p>
+
+        <p>pointData =</p>
+
+        <p>“(“</p>
+
+        <p>positionLiteral</p>
+
+        <p>“)”</p>
+
+        <p>positionLiteral =</p>
+
+        <p>doubleLiteral</p>
+
+        <p>SP</p>
+
+        <p>doubleLiteral</p>
+
+        <p>sridLiteral =</p>
+
+        <p>“SRID”</p>
+
+        <p>EQ</p>
+
+        <p>1*5DIGIT</p>
+
+        <p>SEMI</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.GeographyLineString</p>
+      </td>
+
+      <td valign="top">
+        <p>geographyFullLineStringLiteral</p>
+
+        <p>The two doubles in position literals are to be interpreted as longitude, then latitude.</p>
+      </td>
+
+      <td valign="top">
+        <p>geographyFullLineStringLiteral = </p>
+
+        <p>geographyPrefix</p>
+
+        <p>fullLineStringLiteral</p>
+
+        <p>SQUOTE</p>
+
+        <p>fullLineStringLiteral =</p>
+
+        <p>sridLiteral</p>
+
+        <p>lineStringLiteral</p>
+
+        <p>lineStringLiteral =</p>
+
+        <p>“LineString“</p>
+
+        <p>lineStringData</p>
+
+        <p>lineStringData =</p>
+
+        <p>“(”</p>
+
+        <p>positionLiteral</p>
+
+        <p>[COMMA positionLiteral]+</p>
+
+        <p>“)”</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.GeographyPolygon</p>
+      </td>
+
+      <td valign="top">
+        <p>geographyFullPolygonLiteral</p>
+
+        <p>The two doubles in position literals are to be interpreted as longitude, then latitude.</p>
+      </td>
+
+      <td valign="top">
+        <p>geographyFullPolygonLiteral = </p>
+
+        <p>geographyPrefix</p>
+
+        <p>fullPolygonLiteral</p>
+
+        <p>SQUOTE</p>
+
+        <p>fullPolygonLiteral =</p>
+
+        <p>sridLiteral</p>
+
+        <p>polygonLiteral</p>
+
+        <p>polygonLiteral =</p>
+
+        <p>“Polygon“</p>
+
+        <p>polygonData</p>
+
+        <p>polygonData =</p>
+
+        <p>“(“</p>
+
+        <p>ringLiteral</p>
+
+        <p>[COMMA ringLiteral]*</p>
+
+        <p>“)”</p>
+
+        <p>ringLiteral =</p>
+
+        <p>“(“</p>
+
+        <p>firstPosition</p>
+
+        <p>[COMMA positionLiteral]*</p>
+
+        <p>COMMA</p>
+
+        <p>firstPosition</p>
+
+        <p>“)”</p>
+
+        <p>firstPosition =</p>
+
+        <p>positionLiteral</p>
+
+        <p>Within each ringLiteral, the two firstPosition elements MUST be an exact syntactic match to each other.</p>
+
+        <p>Within the polygonData, the ringLiterals MUST specify their points in appropriate winding order. In order of traversal, points to the left side of the ring are interpreted as being in the polygon.</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.GeographyCollection</p>
+      </td>
+
+      <td valign="top">
+        <p>geographyFullGeoCollectionLiteral</p>
+
+        <p>The two doubles in position literals are to be interpreted as longitude, then latitude.</p>
+      </td>
+
+      <td valign="top">
+        <p>geographyFullGeoCollectionLiteral = </p>
+
+        <p>geographyPrefix</p>
+
+        <p>fullGeoCollectionLiteral</p>
+
+        <p>SQUOTE</p>
+
+        <p>fullGeoCollectionLiteral =</p>
+
+        <p>sridLiteral</p>
+
+        <p>geoCollectionLiteral</p>
+
+        <p>geoCollectionLiteral =</p>
+
+        <p>“GeometryCollection(“</p>
+
+        <p>geoLiteral</p>
+
+        <p>[COMMA geoLiteral]*</p>
+
+        <p>“)”</p>
+
+        <p>geoLiteral =</p>
+
+        <p>pointLiteral</p>
+
+        <p>| lineStringLiteral</p>
+
+        <p>| polygonLiteral</p>
+
+        <p>| geoCollectionLiteral</p>
+
+        <p>| multiPointLiteral</p>
+
+        <p>| multiLineStringLiteral</p>
+
+        <p>| multiPolygonLiteral</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.GeographyMultiPoint</p>
+      </td>
+
+      <td valign="top">
+        <p>geographyFullMultiPointLiteral</p>
+
+        <p>The two doubles in position literals are to be interpreted as longitude, then latitude.</p>
+      </td>
+
+      <td valign="top">
+        <p>fullMultiPointLiteral =</p>
+
+        <p>sridLiteral</p>
+
+        <p>multiPointLiteral</p>
+
+        <p>multiPointLiteral =</p>
+
+        <p>“MultiPoint(“</p>
+
+        <p>[pointData</p>
+
+        <p>[COMMA pointData]*</p>
+
+        <p>]?</p>
+
+        <p>“)”</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.GeographyMultiLineString</p>
+      </td>
+
+      <td valign="top">
+        <p>geographyFullMultiLineStringLiteral</p>
+
+        <p>The two doubles in position literals are to be interpreted as longitude, then latitude.</p>
+      </td>
+
+      <td valign="top">
+        <p>geographyFullMultiLineStringLiteral = </p>
+
+        <p>geographyPrefix</p>
+
+        <p>fullMultiLineStringLiteral</p>
+
+        <p>SQUOTE</p>
+
+        <p>fullMultiLineStringLiteral =</p>
+
+        <p>sridLiteral</p>
+
+        <p>multiLineStringLiteral</p>
+
+        <p>multiLineStringLiteral =</p>
+
+        <p>“MultiLineString(“</p>
+
+        <p>[lineStringData</p>
+
+        <p>[COMMA lineStringData]*</p>
+
+        <p>]?</p>
+
+        <p>“)”</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.GeographyMultPolygon</p>
+      </td>
+
+      <td valign="top">
+        <p>geographyFullMultiPolygonLiteral</p>
+
+        <p>The two doubles in position literals are to be interpreted as longitude, then latitude.</p>
+      </td>
+
+      <td valign="top">
+        <p>geographyFullMultiPolygonLiteral = </p>
+
+        <p>geographyPrefix</p>
+
+        <p>fullMultiPolygonLiteral</p>
+
+        <p>SQUOTE</p>
+
+        <p>fullMultiPolygonLiteral =</p>
+
+        <p>sridLiteral</p>
+
+        <p>multiPolygonLiteral</p>
+
+        <p>multiPolygonLiteral =</p>
+
+        <p>“MultiPolygon(“</p>
+
+        <p>[polygonData</p>
+
+        <p>[COMMA polygonData]*</p>
+
+        <p>]?</p>
+
+        <p>“)”</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.Geometry</p>
+      </td>
+
+      <td valign="top">
+        <p>N/A</p>
+      </td>
+
+      <td valign="top">
+        <p>N/A</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.GeometryPoint</p>
+      </td>
+
+      <td valign="top">
+        <p>geometryFullPointLiteral</p>
+
+        <p>The two doubles in position literals are to be interpreted as X, then Y.</p>
+      </td>
+
+      <td valign="top">
+        <p>geometryFullPointLiteral = </p>
+
+        <p>geometryPrefix</p>
+
+        <p>fullPointLiteral</p>
+
+        <p>SQUOTE</p>
+
+        <p>geometryPrefix =</p>
+
+        <p>“geometry”</p>
+
+        <p>SQUOTE</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.GeometryLineString</p>
+      </td>
+
+      <td valign="top">
+        <p>geometryFullLineStringLiteral</p>
+
+        <p>The two doubles in position literals are to be interpreted as X, then Y.</p>
+      </td>
+
+      <td valign="top">
+        <p>geometryFullLineStringLiteral = </p>
+
+        <p>geometryPrefix</p>
+
+        <p>fullLineStringLiteral</p>
+
+        <p>SQUOTE</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.GeometryPolygon</p>
+      </td>
+
+      <td valign="top">
+        <p>geometryFullPolygonLiteral</p>
+
+        <p>The two doubles in position literals are to be interpreted as X, then Y.</p>
+      </td>
+
+      <td valign="top">
+        <p>geometryFullPolygonLiteral = </p>
+
+        <p>geometryPrefix</p>
+
+        <p>fullPolygonLiteral</p>
+
+        <p>SQUOTE</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.GeometryCollection</p>
+      </td>
+
+      <td valign="top">
+        <p>geometryFullGeoCollectionLiteral</p>
+
+        <p>The two doubles in position literals are to be interpreted as X, then Y.</p>
+      </td>
+
+      <td valign="top">
+        <p>geometryFullGeoCollectionLiteral = </p>
+
+        <p>geometryPrefix</p>
+
+        <p>fullGeoCollectionLiteral</p>
+
+        <p>SQUOTE</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.GeometryMultiPoint</p>
+      </td>
+
+      <td valign="top">
+        <p>geometryFullMultiPointLiteral</p>
+
+        <p>The two doubles in position literals are to be interpreted as X, then Y.</p>
+      </td>
+
+      <td valign="top">
+        <p>geometryFullMultiPointLiteral = </p>
+
+        <p>geometryPrefix</p>
+
+        <p>fullMultiPointLiteral</p>
+
+        <p>SQUOTE</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.GeometryMultiLineString</p>
+      </td>
+
+      <td valign="top">
+        <p>geometryFullMultiLineStringLiteral</p>
+
+        <p>The two doubles in position literals are to be interpreted as X, then Y.</p>
+      </td>
+
+      <td valign="top">
+        <p>geometryFullMultiLineStringLiteral = </p>
+
+        <p>geometryPrefix</p>
+
+        <p>fullMultiLineStringLiteral</p>
+
+        <p>SQUOTE</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.GeometryMultiPolygon</p>
+      </td>
+
+      <td valign="top">
+        <p>geometryFullMultiPolygonLiteral</p>
+
+        <p>The two doubles in position literals are to be interpreted as X, then Y.</p>
+      </td>
+
+      <td valign="top">
+        <p>geometryFullMultiPolygonLiteral = </p>
+
+        <p>geometryPrefix</p>
+
+        <p>fullMultiPolygonLiteral</p>
+
+        <p>SQUOTE</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Edm.Stream</p>
+      </td>
+
+      <td valign="top">
+        <p>N/A</p>
+      </td>
+
+      <td valign="top">
+        <p>N/A</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td valign="top">
+        <p>Collection</p>
+      </td>
+
+      <td valign="top">
+        <p>N/A</p>
+      </td>
+
+      <td valign="top">
+        <p>N/A</p>
+      </td>
+    </tr>
+  </tbody></table>
+
 
 **Complex Types** are nominal structured types also consisting of a list of properties but with no key, thus can only exist as a property of a containing Entity Type or as a temporary value. 
 
@@ -40,14 +1050,15 @@ The **Entity Key** of an Entity Type is formed from a subset of primitive proper
 
 Properties statically declared as part of the Entity Type's structural definition are called **declared properties** and those which are not are **dynamic properties**. Entity Types which allow dynamic properties are called Open Entity Types. If an instance of an Open Entity Type does not include a value for a dynamic property, the instance must be treated as if it included the property with a value of null. A dynamic property MAY NOT have the same name as a declared property.
 
+An Entity MAY also represent a Media Link Entry (MLE), as defined in [[RFC5023](http://www.rfc-editor.org/rfc/rfc5023.txt)].
+
 Entities are grouped in named collections called **Entity Sets** (e.g. Customers is a set of Customer Entity Type instances).
 
 **Association Types** define the relationship between two or more Entity Types (e.g. Employee WorksFor Department). Instances of Association Types are grouped in **Association Sets**. **Navigation Properties** are special properties on Entity Types which are bound to a specific association and are used to refer to specific associations of an entity. 
+
+Custom operations MAY also be defined and bound to the data model, an Entity Set or Entity Type.  Customer operations are represented as Actions or Functions in an EDM model.  
  
 Finally, all instance containers (Entity Sets and Association Sets) are grouped in an **Entity Container**.
-
-//TODO: put primitive type table here in subsection
-//TODO: what about named streams?  anything else core that I missed?
 
 
 # 3. Terminology #
@@ -56,7 +1067,7 @@ move to be an appendix -- glossary
 
 ------
 
-- ASSIGNED TO: MikeF/All
+- ASSIGNED TO: All
 
 ------
 
@@ -175,23 +1186,22 @@ Individual services MAY define additional header fields specific to that particu
 
 ### 7.1.1. Service Document ###
 
-make sure to reference service root in this section
+For a client to interact with an OData service, it needs to discover the locations of the available Entity Sets. AtomPub [RFC5023] defines Service Documents to support this discovery process. Entity Sets contained within another Entity Set MUST NOT be listed in the Service Document. 
 
-------
+In addition to the AtomPub-defined Service Document format, OData defines a JSON representation of the document which MUST be identified using the "application/json" media type. A Service Document in JSON MUST be represented as a single JSON object with a single "EntitySets" name/value pair whose value is an array of strings where each string MUST be the name of an Entity Set exposed by the service.
 
-- ASSIGNED TO: MikeP
+The Service Root of an OData service is the URI which MUST identify the Service Document for the OData service.      
 
-------
 
 ### 7.1.2. Metadata Document ###
 
-An OData Metadata Document is an representation of the data model (<ref> see section 2. Data Model</ref>) that describes the data and operations exposed by an OData service. 
+An OData Metadata Document is an representation of the data model (see the "Data Model" section of this document) that describes the data and operations exposed by an OData service. 
 
-<ref>Appendix A</ref> describes an XML representation for OData Metadata Documents and provides an XSD to validate its syntax rules. The media type of the XML representation of an OData Metadata Document is 'application/xml'      
+Appendix A describes an XML representation for OData Metadata Documents and provides an XSD to validate its syntax rules. The media type of the XML representation of an OData Metadata Document is 'application/xml'      
 
-As of OData v3, OData services MUST expose a Metadata Document which defines all data exposed by the service.  The URI of the document MUST be http://<service root>/$metadata, where <service root> is the root URI of the OData service as described in <ref>//TODO</ref>. 
+As of OData v3, OData services MUST expose a Metadata Document which defines all data exposed by the service.  The URI of the document MUST be http://< service root >/$metadata, where < service root > is the root URI of the OData service as described in //TODO once URI addressing section is there. 
 
-Retrieval of a Metadata Document by a client MUST be done by issuing a HTTP GET request to document's URI.  If the request doesn't specify a format preference (via Accept header or <ref>$format query string option</ref>) then the XML representation MUST be returned.
+Retrieval of a Metadata Document by a client MUST be done by issuing a HTTP GET request to document's URI.  If the request doesn't specify a format preference (via Accept header or $format query string option) then the XML representation MUST be returned.
 
 ## 7.2. Querying Data ##
 

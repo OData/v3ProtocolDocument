@@ -1186,13 +1186,12 @@ Individual services MAY define additional header fields specific to that particu
 
 ### 7.1.1. Service Document ###
 
-make sure to reference service root in this section
+For a client to interact with an OData service, it needs to discover the locations of the available Entity Sets. AtomPub [RFC5023] defines Service Documents to support this discovery process. Entity Sets contained within another Entity Set MUST NOT be listed in the Service Document. 
 
-------
+In addition to the AtomPub-defined Service Document format, OData defines a JSON representation of the document which MUST be identified using the "application/json" media type. A Service Document in JSON MUST be represented as a single JSON object with a single "EntitySets" name/value pair whose value is an array of strings where each string MUST be the name of an Entity Set exposed by the service.
 
-- ASSIGNED TO: MikeP
+The Service Root of an OData service is the URI which MUST identify the Service Document for the OData service.      
 
-------
 
 ### 7.1.2. Metadata Document ###
 

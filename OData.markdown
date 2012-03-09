@@ -254,7 +254,7 @@ On failure, the server MUST NOT create any of the Entities requested.
 
 #### Update an Entity ####
 
-To update an existing entity, send a PUT, PATCH, or MERGE request to that entity's edit URI. The request body must contain a single valid entity representation.
+To update an existing entity, send a PUT, PATCH, or MERGE request to that entity's edit URI. The request body MUST contain a single valid entity representation.
 
 If the request is a PUT request, the server MUST replace all property values with those specified in the request body. Missing properties MUST be set to their default values.
 
@@ -264,13 +264,53 @@ On success, the response SHOULD be 200 OK.
 
 The response body MAY contain the entity representation for the entity's new state.
 
-If desired, the PUT, PATCH, or MERGE request can include a <ref>Prefer</ref> header to suggest what the server should return.
+The PUT, PATCH, or MERGE request MAY include a <ref>Prefer</ref> header to suggest what the server should return.
 
 #### Delete an Entity ####
 
 To delete an existing entity, send a DELETE request to that entity's edit URI. The request body SHOULD be empty.
 
 On success, the response SHOULD be 200 OK.
+
+#### Create a New Link Between Two Existing Entities in a One to Many NavigationProperty ####
+
+To add an existing Entity to another Entity's NavigationProperty, send a POST request to the URI for that NavigationProperty's links collection. The request body MUST contain a URI that identifies the Entity to be added.
+
+The body MUST be formatted as for Edm.SimpleType Property that contains a single link.
+
+On success, the response MUST be 204 and contain an empty body.
+
+#### Remove a Link Between Two Entities in a One to Many NavigationProperty ####
+
+To remove an Entity from another Entity's NavigationProperty, send a DELETE request to ...
+
+#### Change the Relation in a One to One NavigationProperty ####
+
+
+
+#### Manage a Media Resource Using MLEs ####
+
+A server MAY expose Media Resoruces using Media Link Entries. These are Entities which represent a single data BLOB. They behave very similarly to normal Entities, but they have a different representation for some operations.
+
+MLE Entities have two parts: data and metadata. A given request body may refer to either of these parts, but not both.
+
+The representation for the data part is however that data would normally be transmitted in raw HTTP. For example, the data portion of an image resource would have a content type of image/png, with a request body that contains the image data.
+
+The metadata is always represented as a standard Entity. All MLE Entities have a certain set of common properties. They may have additional metadata properties. See <ref>MLE Metadata</ref> for details.
+
+Because a MLE has two parts, it has two URIs. The edit URI for the Entity represents the metadata Entity. This metadata entity is manipulated as per a normal Entity.
+
+A MLE MUST NOT exist with only one of data and metadata. Any time the server creates or destroys one part it MUST create or destroy the other part in the same request. This invariant MUST be maintained even when an error occurs while handling such a request.
+
+##### Creating a MLE #####
+
+To create a MLE, send a POST request to the MLE metadata's EnititySet. The request body MUST contain the representation of the data for the resource, not the representation for the metadata.
+
+The server MUST respond with the representation for the metadata. All MLE metadata entities include a property which contains the data URI for that resource.
+
+##### Referencing a Media Resource Modeled as a MLE #####
+
+To refer to a MLE Media Resource from an Entitiy, associate a NavigationProperty with that resource's metadata Entity. Manage this relationship as per any other Entity to Entity relationship.
 
 -------
 

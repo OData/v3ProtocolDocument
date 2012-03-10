@@ -272,7 +272,9 @@ To delete an existing entity, send a DELETE request to that entity's edit URI. T
 
 On success, the response SHOULD be 200 OK.
 
-### Managing Relationships Between Entities ###
+### Modifying Relationships Between Entities ###
+
+Relationships between Entities are described by NavigationProperties. NavigationProperties are described in <ref>[Section ??](#navigationproperties)</ref>. URI conventions for NavigationProperties are described in [URI Conventions](uri_conventions).
 
 #### Create a New Link Between Two Existing Entities in a One to Many NavigationProperty ####
 
@@ -294,6 +296,12 @@ If the NavigationProperty is nullable, then a change MAY be perfomed by first re
 
 Alternatively, a relationship MAY be updated as part of an update to the source Entity. Update the entity; the NavigationProperty MUST include the required binding information for the new target Entity. This binding information MUST be formatted as for a deferred NavigationProperty in a response.
 
+### Managing Resources ###
+
+Binary resources are one of the primitive types that can be used in the difinition of a Property. However, they are complex enough that there are special rules for manipulating them.
+
+There are two ways to associate a Property with a particular value Resoruce: Media Link Entries (MLEs) or Named Streams.
+
 #### Manage a Media Resource Using MLEs ####
 
 A server MAY expose Media Resoruces using Media Link Entries. These are Entities which represent a single data BLOB. They behave very similarly to normal Entities, but they have a different representation for some operations.
@@ -308,15 +316,37 @@ Because a MLE has two parts, it has two URIs. The edit URI for the Entity repres
 
 A MLE MUST NOT exist with only one of data and metadata. Any time the server creates or destroys one part it MUST create or destroy the other part in the same request. This invariant MUST be maintained even when an error occurs while handling such a request.
 
-##### Creating a MLE #####
+##### Create a MLE #####
 
 To create a MLE, send a POST request to the MLE metadata's EnititySet. The request body MUST contain the representation of the data for the resource, not the representation for the metadata.
 
 The server MUST respond with the representation for the metadata. All MLE metadata entities include a property which contains the data URI for that resource.
 
-##### Referencing a Media Resource Modeled as a MLE #####
+##### Reference a Media Resource Modeled as a MLE #####
 
 To refer to a MLE Media Resource from an Entitiy, associate a NavigationProperty with that resource's metadata Entity. Manage this relationship as per any other Entity to Entity relationship.
+
+##### Delete a MLE #####
+
+To delete a MLE, delete the MLE's metadata Entity, as described in [Delete An Entity](#deleteanentity).
+
+#### Managing Resources Using Named Streams ####
+
+TBD.
+
+### Managing Values and Properties Directly ###
+
+#### Update a Value ####
+
+#### Null a Value ####
+
+(DELETE request)
+
+#### Update a ComplexType ####
+
+#### Update a PrimitiveProperty ####
+
+#### Update a CollectionProperty ####
 
 -------
 

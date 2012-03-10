@@ -1,2 +1,4 @@
 I think my stuff about MLEs is both complete and does not introduce protocol changes. But I'm not sure - I tried to re-write for clarity. Please review this area carefully.
 
+I intentionally left out the content in section 2.2.7.3.8 Update Request Containing a Customizable Feed Property Mapping.
+

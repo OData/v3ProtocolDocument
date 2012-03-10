@@ -272,6 +272,8 @@ To delete an existing entity, send a DELETE request to that entity's edit URI. T
 
 On success, the response SHOULD be 200 OK.
 
+### Managing Relationships Between Entities ###
+
 #### Create a New Link Between Two Existing Entities in a One to Many NavigationProperty ####
 
 To add an existing Entity to another Entity's NavigationProperty, send a POST request to the URI for that NavigationProperty's links collection. The request body MUST contain a URI that identifies the Entity to be added.
@@ -282,11 +284,15 @@ On success, the response MUST be 204 and contain an empty body.
 
 #### Remove a Link Between Two Entities in a One to Many NavigationProperty ####
 
-To remove an Entity from another Entity's NavigationProperty, send a DELETE request to ...
+To remove an Entity from another Entity's NavigationProperty, send a DELETE request to a URI that represents the single link between those two Entities.
+
+On success, the response MUST be 204 and contain an empty body.
 
 #### Change the Relation in a One to One NavigationProperty ####
 
+If the NavigationProperty is nullable, then a change MAY be perfomed by first removing the existing relationship and then adding the new one. Use the approach described for adding and removing links in one to many NavigationProperties.
 
+Alternatively, a relationship MAY be updated as part of an update to the source Entity. Update the entity; the NavigationProperty MUST include the required binding information for the new target Entity. This binding information MUST be formatted as for a deferred NavigationProperty in a response.
 
 #### Manage a Media Resource Using MLEs ####
 

@@ -220,6 +220,14 @@ Any response may use any valid HTTP status code, as appropriate for the action t
 
 In all failure responses, the server MUST provide an accurate failure HTTP status code. The response body MUST contain a human-readable description of the problem, and SHOULD contain suggested resolution steps, if the server knows what those are. This information MUST be supplied in the <ref>Error format</ref>.
 
+### Responses for Updates ###
+
+Many different parts of the model can be updated. Responses to update requests for all parts of the model share some common traits. Rather than repeating them for all responses, the common traits are identified here.
+
+On success, the response to any update request MUST be either 204 with an empty response body or 200 with a valid response body.
+
+A non-empty body MUST contain the new, post-update, value for the identified resource. This MUST be formatted exactly as would the response for a GET to the same URL as was specified in the update request.
+
 ### Modifying Entities ###
 
 Entities are described in [Section 2.1](#entities). URI conventions for entites are described in [URI Conventions](uri_conventions).
@@ -228,7 +236,9 @@ Entities are described in [Section 2.1](#entities). URI conventions for entites 
 
 To create an Entity in an entity set, send a POST request to that entity set's URI. The POST body MUST contain a single valid entity representation.
 
-On success, the response SHOULD be 201 Created, with the Location header set to the edit URI for the new entity.
+On success, the response MUST be 201 and contain a Location header that expresses the edit URL of the created Entity. The response body MUST contain a representation of the new Entity. This MUST be formatted as would the response body for a GET request to the new Entity's edit URL.
+
+The update request MAY include a <ref>Prefer</ref> header to suggest what the server should return.
 
 ##### Link to Related Entities When Creating Entity #####
 
@@ -258,13 +268,9 @@ To update an existing entity, send a PUT, PATCH, or MERGE request to that entity
 
 If the request is a PUT request, the server MUST replace all property values with those specified in the request body. Missing properties MUST be set to their default values.
 
-If the request is a PATCH or MERGE request, the server MUST replace exactly those property values that are specified in the request body. Missing properties MUST NOT be altered.
+If the request is a PATCH or MERGE request, the server MUST replace exactly those property values that are specified in the request body. Missing properties MUST NOT be altered. Exact semantics are defined in <ref>PATCH and MERGE</ref>.
 
-On success, the response SHOULD be 200 OK.
-
-The response body MAY contain the entity representation for the entity's new state.
-
-The PUT, PATCH, or MERGE request MAY include a <ref>Prefer</ref> header to suggest what the server should return.
+On success, the response must be a valid <ref>update response</ref>.
 
 #### Delete an Entity ####
 
@@ -336,15 +342,41 @@ TBD.
 
 ### Managing Values and Properties Directly ###
 
+Values and Properties can be explicitly addressed with URIs. This allows them to be individually modified. See <ref>Uri conventions</ref> for details on addressing.
+
 #### Update a Value ####
+
+To update a value, the client MAY send a PUT, MERGE, or PATCH request to an edit URI for the value. The message body MUST contain the desired new value, formatted as a <ref>SimpleTypeProperty</ref>.
+
+Regardless of which verb is used, the server MUST replace the entire value with the value supplied in the request body.
+
+On success, the response must be a valid <ref>update response</ref>.
 
 #### Null a Value ####
 
-(DELETE request)
+There are two ways to set a value to NULL. The client may <ref>Update a Value</ref> to NULL. Alternatively the client MAY send a DELETE request with an empty message body to an edit URI for that value.
+
+The server SHOULD consider a DELETE request to a non-nullable value to be malformed.
+
+On success, the server MUST respond with 204 and an empty body.
 
 #### Update a ComplexType ####
 
+To update an complex type, send a PUT, PATCH, or MERGE request to that value's edit URI. The request body MUST contain a single valid representation for that type.
+
+If the request is a PUT request, the server MUST replace all property values with those specified in the request body. Missing properties MUST be set to their default values.
+
+If the request is a PATCH or MERGE request, the server MUST replace exactly those property values that are specified in the request body. Missing properties MUST NOT be altered. Exact semantics are defined in <ref>PATCH and MERGE</ref>.
+
+On success, the response must be a valid <ref>update response</ref>.
+
 #### Update a PrimitiveProperty ####
+
+To update a value, the client MAY send a PUT, MERGE, or PATCH request to an edit URI for a SimpleProperty. The message body MUST contain the desired new value, formatted as a <ref>SimpleTypeProperty</ref>.
+
+Regardless of which verb is used, the server MUST replace the entire value with the value supplied in the request body.
+
+On success, the response must be a valid <ref>update response</ref>.
 
 #### Update a CollectionProperty ####
 

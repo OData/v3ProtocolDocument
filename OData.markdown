@@ -270,7 +270,7 @@ If the request is a PUT request, the server MUST replace all property values wit
 
 If the request is a PATCH or MERGE request, the server MUST replace exactly those property values that are specified in the request body. Missing properties MUST NOT be altered. Exact semantics are defined in <ref>PATCH and MERGE</ref>.
 
-On success, the response must be a valid <ref>update response</ref>.
+On success, the response must be a valid [update response](#responsesforupdates).
 
 #### Delete an Entity ####
 
@@ -350,7 +350,7 @@ To update a value, the client MAY send a PUT, MERGE, or PATCH request to an edit
 
 Regardless of which verb is used, the server MUST replace the entire value with the value supplied in the request body.
 
-On success, the response must be a valid <ref>update response</ref>.
+On success, the response must be a valid [update response](#responsesforupdates).
 
 #### Null a Value ####
 
@@ -368,7 +368,7 @@ If the request is a PUT request, the server MUST replace all property values wit
 
 If the request is a PATCH or MERGE request, the server MUST replace exactly those property values that are specified in the request body. Missing properties MUST NOT be altered. Exact semantics are defined in <ref>PATCH and MERGE</ref>.
 
-On success, the response must be a valid <ref>update response</ref>.
+On success, the response must be a valid [update response](#responsesforupdates).
 
 #### Update a PrimitiveProperty ####
 
@@ -376,25 +376,15 @@ To update a value, the client MAY send a PUT, MERGE, or PATCH request to an edit
 
 Regardless of which verb is used, the server MUST replace the entire value with the value supplied in the request body.
 
-On success, the response must be a valid <ref>update response</ref>.
+On success, the response must be a valid [update response](#responsesforupdates).
 
 #### Update a CollectionProperty ####
 
--------
+To update a value, the client MAY send a PUT request to an edit URI for a CollectionProperty. The message body MUST contain the desired new value, formatted as a <ref>CollectionProperty</ref>.
 
-This section is all stuff to cover, but not in the right ToC. I want to follow the Atom approach of discussing everything from the perspective of what the person is trying to accomplish, rather than from the perspective of stating the meaning of each thing (and all of its conditions and exceptions).
+The server MUST replace the entire value with the value supplied in the request body.
 
-  ### POST ###
-
-  ### DELETE ###
-
-  ### PUT ###
-
-  ### PATCH/MERGE ###
-
-  ## Additional Operations ##
-
--------
+On success, the response must be a valid [update response](#responsesforupdates).
 
 ### Common Rules for FunctionImport elements (or Operations) ###
 

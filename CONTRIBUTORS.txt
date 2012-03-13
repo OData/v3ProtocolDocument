@@ -1,0 +1,2 @@
+The following contributors have generously contributed to the OData specification under the terms of the OWF Contributor License Agreement 1.0 - Copyright and Patent (http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owf-contributor-license-agreement-1-0---copyright-and-patent).
+

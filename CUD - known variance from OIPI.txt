@@ -1,0 +1,10 @@
+I think my stuff about MLEs is both complete and does not introduce protocol changes. But I'm not sure - I tried to re-write for clarity. Please review this area carefully.
+
+I intentionally left out the content in section 2.2.7.3.8 Update Request Containing a Customizable Feed Property Mapping.
+
+Check that I always indicated the required success response from the server (status code and body).
+
+Related to the above, I indicated that other HTTP success codes could be used if they were more specific (eg, for async processing). Is this true?
+
+I left out details that explicitly applied only to v1.0 and v2.0 requests & responses, as long as those requests & responses would still be valid in 3.0. For example, many update requests were required to return 204 & an empty body in 1.0 and 2.0, but are allowed to return either 204 or 200 (with a representation of the udpated result) in 3.0. So I only documented the 3.0 behavior in this case.
+

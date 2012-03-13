@@ -358,6 +358,8 @@ To update a value, the client MAY send a PUT, MERGE, or PATCH request to an edit
 
 Regardless of which verb is used, the server MUST replace the entire value with the value supplied in the request body.
 
+The same rules apply whether this is the value of a regular property or the value of a dynamic property.
+
 On success, the response must be a valid [update response](#responsesforupdates).
 
 #### Null a Value ####
@@ -365,6 +367,8 @@ On success, the response must be a valid [update response](#responsesforupdates)
 There are two ways to set a value to NULL. The client may <ref>Update a Value</ref> to NULL. Alternatively the client MAY send a DELETE request with an empty message body to an edit URI for that value.
 
 The server SHOULD consider a DELETE request to a non-nullable value to be malformed.
+
+The same rules apply whether this is the value of a regular property or the value of a dynamic property. A missing dynamic property is defined to be the same as a dynamic property with value NULL. Therefore, all dynamical properties are implicitly nullable.
 
 On success, the server MUST respond with 204 and an empty body.
 
@@ -383,6 +387,8 @@ On success, the response must be a valid [update response](#responsesforupdates)
 To update a value, the client MAY send a PUT, MERGE, or PATCH request to an edit URI for a SimpleProperty. The message body MUST contain the desired new value, formatted as a <ref>SimpleTypeProperty</ref>.
 
 Regardless of which verb is used, the server MUST replace the entire value with the value supplied in the request body.
+
+The same rules apply whether this is a regular property or a dynamic property.
 
 On success, the response must be a valid [update response](#responsesforupdates).
 

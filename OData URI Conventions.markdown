@@ -26,6 +26,7 @@ The following are two example URIs broken down into their component parts:
 
 ## Service Root URI ##
 
+
 ## Resource Path ##
 
 ### Addressing Entities ###
@@ -76,24 +77,28 @@ The following are two example URIs broken down into their component parts:
 
 TODO:
 
-	$metadata
-	servicedoc
-	
-	entitysets
+	DONE $metadata
+	$metadata # links
+	DONE primitive literals
+	TODO: arlo - spatial literals
+	DONE servicedoc
+	DONE entitysets
 	DONE keys
+	navigationPath
 	$links
-	$count
+	DONE $count
 	DONE $select 
 	DONE $expand 
 	DONE $top
 	DONE $skip 
+	DONE $skiptoken
 	$orderby 
 	$filter 
 	DONE $format 
 	DONE $inlinecount
 	serviceOperations
 	functions
-	actions
+	DONE actions
 	$value
 
 	odataUri      				= 	scheme           ; see section 3.1 of [RFC3986]
@@ -115,8 +120,9 @@ TODO:
 	
 	queryOption					= 	systemQueryOption / 
 									customQueryOption / 
-									serviceOperationParameterValue / 
-									functionAliasAndValue
+									sopParameterNameAndValue / 
+									aliasAndValue /
+									parameterNameAndValue
 	
 	systemQueryOption			= 	expand / 
 								  	filter /
@@ -133,7 +139,7 @@ TODO:
 	expandClause  				= 	[ qualifiedEntityTypeName "/" ] navigationPropertyName 
 									*([ "/" qualifiedEntityTypeName ] "/" navigationPropertyName)  
 
-	count						= 
+	count						= 	"/$count" 
 
 	filter						= 	"$filter="
 	
@@ -183,17 +189,46 @@ TODO:
 
 	parameterTypeName     		= 	qualifiedTypeName 
 
-	skiptoken					=  	"$skiptoken="
+	skiptoken					=  	"$skiptoken=" 1*pchar
 
 	customQueryOption   		= 	;TODO: look for something in RFC3986
 
 	resourcePath				= 	"/"	
-									( [entityContainerName "."] entitySetName / serviceOperationEntColCall ) [ paren ] ["/" qualifiedEntityTypeName] [ navPath ] [ count ] / 
-									functionCall ["/" qualifiedEntityTypeName] [ navigationPath ] [ count ] / 
-									serviceOperation ["/" qualifiedEntityTypeName] / 
+									( [entityContainerName "."] entitySetName / serviceOperationEntColCall ) [ paren ] ["/" qualifiedEntityTypeName ] [ navPath ] [ count ] / 
+									functionCall ["/" qualifiedEntityTypeName ] [ navigationPath ] [ count ] / 
+									serviceOperation ["/" qualifiedEntityTypeName ] / 
 									actionCall
 
-	navigationPath				= 	TODO
+    navigationPath     			=	( "("keyPredicate")"  [navigationPathOptions] ) / 
+                                  	operation
+                        
+    operation                   = 	"/" actionCall / ( boundFunctionCall [navigationPathOptions] )
+                                    ; operation segments can only be composed if the type of the previous segment matches 
+                                    ; the type of the first parameter of the action or function being called.
+
+    navigationPathOptions   	=	[
+                                  		navPathNP / 
+                                        propertyPath / 
+                                        complexPropertyPath / 
+                                        namedStreamPath / 
+                                        value /
+                                        operation 
+                                  	]
+
+    navPathNP            		= 	[ "/" qualifiedEntityTypeName ] "/"
+                                    ( 
+                               			( "$links" / entityNavProperty ) / 
+                                        ( collectionNavPropName [ paren ] [ navigationPath ] ) /
+                                        ( singleNavPropName [ navigationPathOptions ] )
+                               		)
+
+    propertyPath                = 	TODO
+    
+    complexPropertyPath     	=  	TODO
+
+    namedStreamPath       		= 	TODO
+
+    value                   	= 	"/$value"
 
 	odataIdentifier				= 	1*479pchar
 
@@ -205,7 +240,13 @@ TODO:
 
 	qualifiedTypeName			= 	qualifiedEntityTypeName /
 									qualifiedComplexTypeName / 
-									primitiveTypeName 
+									primitiveTypeName /
+									"collection(" (
+										qualifiedEntityTypeName /
+										qualifiedComplexTypeName / 
+										primitiveTypeName 
+									) ")"
+									; TODO verify here.
 
 	qualifiedEntityTypeName 	= 	namespace "." entityTypeName
 
@@ -288,7 +329,21 @@ TODO:
 
 	actionCall					= 	fullActionName ["()"]
 
+    boundActionCall           	=   actionCall
+                                    ; with the added restriction that the binding parameter MUST be either an Entity or Collection of Entities
+                                    ; and is specified by reference using the Uri immediately preceding (to the left) of the boundActionCall
+
 	functionCall 				= 	fullFunctionName "(" functionParameters ")"
+
+    boundFunctionCall          	=   functionCall
+                                    ; with the added restriction that the binding parameter MUST be either an Entity or Collection of Entities
+                                    ; and is specified by reference using the Uri immediately preceding (to the left) of the boundFunctionCall
+
+    boundFunctionEntityCall    	=    boundFunctionCall
+                                    ; with the added restriction that the function MUST return a single Entity
+
+    boundFunctionEntColCall    =    boundFunctionCall
+                                    ; with the added restriction that the function MUST return a collection of Entities
 
 	functionParameters 			= 	[ functionParameter *( "," functionParameter ) ]
 
@@ -298,7 +353,12 @@ TODO:
 
     parameterAlias 				= 	"@" *pchar
 
-	functionAliasAndValue		= 	parameterAlias "=" parameterValue
+	aliasAndValue				= 	parameterAlias "=" parameterValue
+
+	parameterAndValue			= 	functionParameterName "=" parameterValue
+
+	sopParameterNameAndValue	= 	serviceOperationParameterName "=" primitiveParameterValue
+									; when a serviceOperation Parameter is omitted the parameter value MUST be assumed to be null
 
 	parameterValue				= 	primitiveLiteral / 
 									complexTypeInJson / 
@@ -327,10 +387,197 @@ TODO:
 
 	entityContainerName 		= 	odataIdentifier
 
-    primitiveLiteral 			=
+    primitiveLiteral 			=	null /
+									binary / 
+									boolean /
+									byte /
+									dateTime /
+									dateTimeOffset /
+									decimal /
+									double /
+									geography /
+									geographyCollection / 
+									geographyLineString /
+									geographyMultiLineString /
+									geographyMultiPoint /
+									geographyMultiPolygon /
+									geographyPoint / 
+									geographyPolygon /
+									geometry /
+									geometryCollection / 
+									geometryLineString /
+									geometryMultiLineString /
+									geometryMultiPoint /
+									geometryMultiPolygon /
+									geometryPoint / 
+									geometryPolygon /
+									guid / 
+									int16 /
+									int32 /
+									int64 / 
+									sbyte /
+									single /
+									string / 
+									time 
 
-    pchar 						= 	; section 3.3 of [RFC3986]                      
+  	null 						= 	"null" [ "'" qualifiedTypeName "'" ] 
+         							; The optional qualifiedTypeName is used to specify what type this null value should be considered. 
+									; Knowing the type is useful for function overload resolution purposes. 
+						
+	binary						= 	( "X" / "binary" )
+                     				SQUOTE 
+                     				2*HEXDIG 
+                     				SQUOTE
+									; note: "X" is case sensitive "binary" is not hence using the character code.
 
+	boolean						=  	( "true" / "1" ) / 
+									( "false" / "0" )
+	
+	byte						=	3*DIGIT
+									; numbers in the range from 0 to 257
+
+	dateTime					= 	"datetime" SQUOTE dateTimeBody SQUOTE
+
+	dateTimeOffset				= 	"datetimeoffset" SQUOTE dateTimeOffsetBody SQUOTE
+
+	dateTimeBody				= 	year "-" month "-" day "T" hour ":" minute [ ":" second [ "." nanoSeconds ] ] 
+
+	dateTimeOffsetBody			= 	dateTimeBody "Z" / ; TODO: is the Z optional?
+									dateTimeBody sign zeroToThirteen [ ":00" ] /
+									dateTimeBody sign zeroToTwelve [ ":" zeroToSixty ] 
+	
+	decimal						= 	sign 1*29DIGIT ["." 1*29DIGIT] ("M"/"m")
+	
+	double						=	(  
+										sign 1*17DIGIT /
+ 										sign *DIGIT "." *DIGIT /
+										sign 1*DIGIT "." 16*DIGIT ( "e" / "E" ) sign 1*3DIGIT
+									) ("D" / "d") /
+									nanInfinity [ "D" / "d" ]
+
+	geography 					= 	TODO: arlo
+
+	geographyCollection 		= 	TODO: arlo 
+
+	geographyLineString 		= 	TODO: arlo
+
+	geographyMultiLineString 	= 	TODO: arlo
+
+	geographyMultiPoint 		= 	TODO: arlo
+
+	geographyMultiPolygon 		= 	TODO: arlo
+
+	geographyPoint 				= 	TODO: arlo
+
+	geographyPolygon 			= 	TODO: arlo
+
+	geometry 					= 	TODO: arlo
+
+	geometryCollection 			= 	TODO: arlo 
+
+	geometryLineString 			= 	TODO: arlo
+
+	geometryMultiLineString 	= 	TODO: arlo
+
+	geometryMultiPoint 			= 	TODO: arlo
+
+	geometryMultiPolygon 		= 	TODO: arlo
+
+	geometryPoint 				= 	TODO: arlo 
+
+	geometryPolygon 			= 	TODO: arlo
+
+	guid						= 	"guid" SQUOTE 8*HEXDIG "-" 4*HEXDIG "-" 4*HEXDIG "-" 12*HEXDIG SQUOTE
+
+	int16						= 	[ sign ] 5*DIGIT
+									; numbers in the range from -32768 to 32767
+	
+	int32						= 	[ sign ] 10*DIGIT
+									; numbers in the range from -2147483648 to 2147483647
+
+	int64						= 	[ sign ] 19*DIGIT ( "L" / "l" )
+									; numbers in the range from -9223372036854775808 to 9223372036854775807
+
+	sbyte						= 	[ sign ] 3*DIGIT
+									; numbers in the range from -128 to 127
+
+	single						= 	(  
+										sign 1*8DIGIT /
+ 										sign *DIGIT "." *DIGIT /
+										sign 1*DIGIT "." 8*DIGIT ( "e" / "E" ) sign 1*2DIGIT
+									) ("F" / "f") /
+									nanInfinity [ "F" / "f" ]
+
+	string						= 	SQUOTE *UTF8-char SQUOTE
+
+	time						= 	time SQUOTE sign "P" [ 1*DIGIT "Y" ] [ 1*DIGIT "M" ] [ 1*DIGIT "D" ] [ "T" [ 1*DIGIT "H" ] [ 1*DIGIT "M" ] [ 1*DIGIT "S" ] ] SQUOTE
+									; the above is an approximation of the rules for an xml duration.
+									; see the lexical representation for duration in http://www.w3.org/TR/xmlschema-2 for more information
+
+	commonExpression			= 	TODO
+
+	year 						=	4*DIGIT;
+
+	month 						= 	zeroToTwelve
+
+	day 						= 	"0" oneToNine /
+									( "1" / "2" ) DIGIT /
+									"30" /
+									"31"
+
+	hour						=  	"0" oneToNine /
+									"1" DIGIT / 
+									"2" ( "1" / "2" / "3" / "4" )
+
+	minute 						=	zeroToSixty
+
+	second						= 	zeroToSixty
+	
+	nanoSeconds					= 	1*7DIGIT
+
+	zeroToSixty					= 	"0" oneToNine  /
+									( "1" / "2" / "3" / "4" / "5" ) DIGIT /
+									"60"
+
+	zeroToTwelve				= 	"0" oneToNine /
+									"1" ( "0" / "1" / "2" )								
+
+	zeroToThirteen				= 	"0" oneToNine /
+									"1" ( "0" / "1" / "2" / "3" )
+
+	oneToNine					=   "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9" 
+
+	sign						= 	"+" / "-"
+
+    pchar 						= 	; section 3.3 of [RFC3986]   
+
+	WSP							= 	; core to ABNF, see [RFC5234]
+
+	DIGIT						= 	; core to ABNF, see [RFC5234]
+                   
+	HEXDIG						= 	; core to ABNF, see [RFC5234]
+
+	SQUOTE            			= 	%x27              ; ' (single quote)
+	
+	EQ                			=   %x3D              ; = (equal sign)
+
+	SEMI              			=  	%x3B              ; ; (semicolon)
+
+	SP                			=  	%x20              ;   (single-width horizontal space character)
+
+	COMMA             			=  	%x2C              ; , (comma)
+
+	nan               			=  	"NaN"
+
+	negativeInfinity  			=  	"-INF"
+
+	positiveInfinity   			=  	"INF"
+
+	nanInfinity       			=  	nan / negativeInfinity / positiveInfinity
+
+	DIGIT             			=  	; core to ABNF, see [RFC5234]
+
+	UTF8-char         			=  	; see [RFC3629]
 
 
 

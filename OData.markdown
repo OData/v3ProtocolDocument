@@ -212,11 +212,21 @@ Retrieval of a Metadata Document by a client MUST be done by issuing a HTTP GET 
 
 ------
 
+An OData server MAY support Create, Update, and Delete operations for some of all of the Entities that it exposes.
+
 For all operations, the format of request and response bodies is format specific. See the format-specific specifications ([[JSON](JSON)], [[JSON Verbose](JSON_Verbose_format)], [[Atom](Atom_Format)]) for details.
 
 Any response may use any valid HTTP status code, as appropriate for the action taken. A server SHOULD be as specific as possible in its choice of HTTP status codes. Each request specification, below, indicates the most common success response code. In some cases, a server might respond with a more specific success code. For example, a server might decide to perform an action asynchronously, in which case it SHOULD use the HTTP status codes designed for that purpose.
 
 In all failure responses, the server MUST provide an accurate failure HTTP status code. The response body MUST contain a human-readable description of the problem, and SHOULD contain suggested resolution steps, if the server knows what those are. This information MUST be supplied in the <ref>Error format</ref>.
+
+### Responses for Updates ###
+
+Many different parts of the model can be updated. Responses to update requests for all parts of the model share some common traits. Rather than repeating them for all responses, the common traits are identified here.
+
+On success, the response to any update request MUST be either 204 with an empty response body or 200 with a valid response body.
+
+A non-empty body MUST contain the new, post-update, value for the identified resource. This MUST be formatted exactly as would the response for a GET to the same URL as was specified in the update request.
 
 ### Modifying Entities ###
 
@@ -226,21 +236,49 @@ Entities are described in [Section 2.1](#entities). URI conventions for entites 
 
 To create an Entity in an entity set, send a POST request to that entity set's URI. The POST body MUST contain a single valid entity representation.
 
-On success, the response SHOULD be 201 Created, with the Location header set to the edit URI for the new entity.
+If the type being created is an OpenType, then additional values for properties beyond those specified in the metadata MAY be sent in the request body. The server MUST treat these as dynamic properties and add them to the created instance.
+
+If the type being created is not an OpenType, then additional values for properties beyond those specified in the metadata SHOULD NOT be sent in the request body. The server MUST ignore any such values supplied.
+
+On success, the response MUST be 201 and contain a Location header that expresses the edit URL of the created Entity. The response body MUST contain a representation of the new Entity. This MUST be formatted as would the response body for a GET request to the new Entity's edit URL.
+
+The update request MAY include a <ref>Prefer</ref> header to suggest what the server should return.
+
+##### Link to Related Entities When Creating Entity #####
+
+A server that supports creating Entities SHOULD support linking those new Entities to existing Entities when they are created.
+
+A request to create an Entity the MAY specify that the Entity should be automatically linked to other already-existing entities in the data service. To bind the new entity to one or more existing Entities, include the required <ref>binding information</ref> in the appropriate NavigationProperty in the request body.
+
+The representation for binding information is format specific.
+
+On success, the server MUST create the requested Entity and associate its NavigationProperty to the requested existing entity.
+
+On failure, the server MUST NOT create the new Entity. In particular, it MUST NOT create an Entity in a partially-valid state (with the NavigationProperty not set).
+
+##### Create Related Entities When Creating Entity #####
+
+A server that supports creating Entities SHOULD support creating related Entities as part of the same request.
+
+A request to create an Entity the MAY specify related Entites that should also be created. The related entities MUST be represented using the <ref>inline representation of the NavigationProperty</ref>.
+
+On success, the server MUST create eaqch Entity requested and associate them via the NavigationProperty.
+
+On failure, the server MUST NOT create any of the Entities requested.
 
 #### Update an Entity ####
 
-To update an existing entity, send a PUT, PATCH, or MERGE request to that entity's edit URI. The request body must contain a single valid entity representation.
+To update an existing entity, send a PUT, PATCH, or MERGE request to that entity's edit URI. The request body MUST contain a single valid entity representation.
 
-If the request is a PUT request, the server MUST replace all property values with those specified in the request body. Missing properties MUST be set to their default values.
+If the request is a PUT request, the server MUST replace all property values with those specified in the request body. Missing properties MUST be set to their default values. Missing dynamic properties MUST be removed or set to NULL.
 
-If the request is a PATCH or MERGE request, the server MUST replace exactly those property values that are specified in the request body. Missing properties MUST NOT be altered.
+If the request is a PATCH or MERGE request, the server MUST replace exactly those property values that are specified in the request body. Missing properties, including dynamic properties, MUST NOT be altered. Exact semantics are defined in <ref>PATCH and MERGE</ref>.
 
-On success, the response SHOULD be 200 OK.
+If the type being updated is an OpenType, then additional values for properties beyond those specified in the metadata MAY be sent in the request body. The server MUST treat these as dynamic properties and involve them in the update.
 
-The response body MAY contain the entity representation for the entity's new state.
+If the type being updated is not an OpenType, then additional values for properties beyond those specified in the metadata SHOULD NOT be sent in the request body. The server MUST ignore any such values supplied.
 
-If desired, the PUT, PATCH, or MERGE request can include a <ref>Prefer</ref> header. If this header is included in the request, then the response MUST contain the entity representation for the entity's new state.
+On success, the response must be a valid [update response](#responsesforupdates).
 
 #### Delete an Entity ####
 
@@ -248,19 +286,119 @@ To delete an existing entity, send a DELETE request to that entity's edit URI. T
 
 On success, the response SHOULD be 200 OK.
 
--------
+### Modifying Relationships Between Entities ###
 
-This section is all stuff to cover, but not in the right ToC. I want to follow the Atom approach of discussing everything from the perspective of what the person is trying to accomplish, rather than from the perspective of stating the meaning of each thing (and all of its conditions and exceptions).
+Relationships between Entities are described by NavigationProperties. NavigationProperties are described in <ref>[Section ??](#navigationproperties)</ref>. URI conventions for NavigationProperties are described in [URI Conventions](uri_conventions).
 
-  ### POST ###
+#### Create a New Link Between Two Existing Entities in a One to Many NavigationProperty ####
 
-  ### DELETE ###
+To add an existing Entity to another Entity's NavigationProperty, send a POST request to the URI for that NavigationProperty's links collection. The request body MUST contain a URI that identifies the Entity to be added.
 
-  ### PUT ###
+The body MUST be formatted as for Edm.SimpleType Property that contains a single link.
 
-  ### PATCH/MERGE ###
+On success, the response MUST be 204 and contain an empty body.
 
-  ## Additional Operations ##
+#### Remove a Link Between Two Entities in a One to Many NavigationProperty ####
+
+To remove an Entity from another Entity's NavigationProperty, send a DELETE request to a URI that represents the single link between those two Entities.
+
+On success, the response MUST be 204 and contain an empty body.
+
+#### Change the Relation in a One to One NavigationProperty ####
+
+If the NavigationProperty is nullable, then a change MAY be perfomed by first removing the existing relationship and then adding the new one. Use the approach described for adding and removing links in one to many NavigationProperties.
+
+Alternatively, a relationship MAY be updated as part of an update to the source Entity. Update the entity; the NavigationProperty MUST include the required binding information for the new target Entity. This binding information MUST be formatted as for a deferred NavigationProperty in a response.
+
+### Managing Resources ###
+
+Binary resources are one of the primitive types that can be used in the difinition of a Property. However, they are complex enough that there are special rules for manipulating them.
+
+There are two ways to associate a Property with a particular value Resoruce: Media Link Entries (MLEs) or Named Streams.
+
+#### Manage a Media Resource Using MLEs ####
+
+A server MAY expose Media Resoruces using Media Link Entries. These are Entities which represent a single data BLOB. They behave very similarly to normal Entities, but they have a different representation for some operations.
+
+MLE Entities have two parts: data and metadata. A given request body may refer to either of these parts, but not both.
+
+The representation for the data part is however that data would normally be transmitted in raw HTTP. For example, the data portion of an image resource would have a content type of image/png, with a request body that contains the image data.
+
+The metadata is always represented as a standard Entity. All MLE Entities have a certain set of common properties. They may have additional metadata properties. See <ref>MLE Metadata</ref> for details.
+
+Because a MLE has two parts, it has two URIs. The edit URI for the Entity represents the metadata Entity. This metadata entity is manipulated as per a normal Entity.
+
+A MLE MUST NOT exist with only one of data and metadata. Any time the server creates or destroys one part it MUST create or destroy the other part in the same request. This invariant MUST be maintained even when an error occurs while handling such a request.
+
+##### Create a MLE #####
+
+To create a MLE, send a POST request to the MLE metadata's EnititySet. The request body MUST contain the representation of the data for the resource, not the representation for the metadata.
+
+The server MUST respond with the representation for the metadata. All MLE metadata entities include a property which contains the data URI for that resource.
+
+##### Reference a Media Resource Modeled as a MLE #####
+
+To refer to a MLE Media Resource from an Entitiy, associate a NavigationProperty with that resource's metadata Entity. Manage this relationship as per any other Entity to Entity relationship.
+
+##### Delete a MLE #####
+
+To delete a MLE, delete the MLE's metadata Entity, as described in [Delete An Entity](#deleteanentity).
+
+#### Managing Resources Using Named Streams ####
+
+TBD.
+
+### Managing Values and Properties Directly ###
+
+Values and Properties can be explicitly addressed with URIs. This allows them to be individually modified. See <ref>Uri conventions</ref> for details on addressing.
+
+#### Update a Value ####
+
+To update a value, the client MAY send a PUT, MERGE, or PATCH request to an edit URI for the value. The message body MUST contain the desired new value, formatted as a <ref>SimpleTypeProperty</ref>.
+
+Regardless of which verb is used, the server MUST replace the entire value with the value supplied in the request body.
+
+The same rules apply whether this is the value of a regular property or the value of a dynamic property.
+
+On success, the response must be a valid [update response](#responsesforupdates).
+
+#### Null a Value ####
+
+There are two ways to set a value to NULL. The client may <ref>Update a Value</ref> to NULL. Alternatively the client MAY send a DELETE request with an empty message body to an edit URI for that value.
+
+The server SHOULD consider a DELETE request to a non-nullable value to be malformed.
+
+The same rules apply whether this is the value of a regular property or the value of a dynamic property. A missing dynamic property is defined to be the same as a dynamic property with value NULL. Therefore, all dynamical properties are implicitly nullable.
+
+On success, the server MUST respond with 204 and an empty body.
+
+#### Update a ComplexType ####
+
+To update an complex type, send a PUT, PATCH, or MERGE request to that value's edit URI. The request body MUST contain a single valid representation for that type.
+
+If the request is a PUT request, the server MUST replace all property values with those specified in the request body. Missing properties MUST be set to their default values.
+
+If the request is a PATCH or MERGE request, the server MUST replace exactly those property values that are specified in the request body. Missing properties MUST NOT be altered. Exact semantics are defined in <ref>PATCH and MERGE</ref>.
+
+On success, the response must be a valid [update response](#responsesforupdates).
+
+#### Update a PrimitiveProperty ####
+
+To update a value, the client MAY send a PUT, MERGE, or PATCH request to an edit URI for a SimpleProperty. The message body MUST contain the desired new value, formatted as a <ref>SimpleTypeProperty</ref>.
+
+Regardless of which verb is used, the server MUST replace the entire value with the value supplied in the request body.
+
+The same rules apply whether this is a regular property or a dynamic property.
+
+On success, the response must be a valid [update response](#responsesforupdates).
+
+#### Update a CollectionProperty ####
+
+To update a value, the client MAY send a PUT request to an edit URI for a CollectionProperty. The message body MUST contain the desired new value, formatted as a <ref>CollectionProperty</ref>.
+
+The server MUST replace the entire value with the value supplied in the request body.
+
+On success, the response must be a valid [update response](#responsesforupdates).
 
 ### Common Rules for FunctionImport elements (or Operations) ###
 

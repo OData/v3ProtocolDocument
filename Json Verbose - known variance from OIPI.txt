@@ -27,4 +27,6 @@ Inlinecount needs to be in core, not in the format-specific doc. In particular, 
   The countNVP name/value pair MUST NOT be inside the Inline Representation of a related collection (section 2.2.6.3.9.1).
 
 
+Should the stuff in "3.1 Client/Server Format Compatibility and Versions" related to headers and versioning be in the core doc? It includes a useful set of examples; I'm not sure whether they should be in core or in this format.
+
 

@@ -17,13 +17,15 @@ An OData Json payload may represent:
 * a batch of requests to be executed in a single request
 * a set of responses returned from a batch request
 
-Most payloads are represented identically in requests and responses. There are some differences. This document first defines the common formats, then discusses formats that are specific to request or responses.
+Most payloads are represented identically in requests and responses. There are some differences. This document first defines the common formats, then discusses details that are specific to request or response.
 
 # 2. Notational Conventions #
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[RFC2119](http://tools.ietf.org/html/rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")].
 
 ## 2.1 Normative References ##
+
+-- TODO: fixx in the normative refs.
 
 - Normative reference to the OData core document
 - Normative reference to the ABNF for OData
@@ -50,20 +52,18 @@ Clients and servers SHOULD prefer the new <ref>Json Light</ref> format as long a
 
 If the client does not understand OData version 3.0:
 
--- TODO: fix the formatting on these headers.
-
-`MaxDataServiceVersion: 2.0
-Accept: application/json`
+	MaxDataServiceVersion: 2.0
+	Accept: application/json
 
 If the client understands OData version 3.0 but does not support Json Light:
 
-`MaxDataServiceVersion: 3.0
-Accept: application/json;odata=verbose`
+	MaxDataServiceVersion: 3.0
+	Accept: application/json;odata=verbose
 
 If the client fully supports OData version 3.0:
 
-`MaxDataServiceVersion: 3.0
-Accept: application/json;odata=light;q=1,application/json;odata=verbose;q=0.5`
+	MaxDataServiceVersion: 3.0
+	Accept: application/json;odata=light;q=1,application/json;odata=verbose;q=0.5
 
 Optionally, Atom can be added as a further fallback in case the server supports neither Json format.
 
@@ -196,6 +196,8 @@ In the example, the presence of the "__deferred" name/value pair signifies that 
 As described in Expand System Query Option ($expand) (section 2.2.3.6.1.3), a request URI may include the $expand system query option to explicitly request the entity or entities represented by a NavigationProperty be serialized inline, rather than deferred. The example below uses the same data model as the Deferred Content example referenced above; however, this example shows the value of the Orders NavigationProperty serialized inline.
 
 A NavigationProperty which is serialized inline MUST be represented as a name/value pair on the JSON object with the name equal to the NavigationProperty name. If the NavigationProperty identifies a single EntityType instance, the value MUST be a JSON object representation of that EntityType instance, as specified in Entity Type (as a JSON object) (section 2.2.6.3.3). If the NavigationProperty represents an EntitySet, the value MUST be as specified in Entity Set (as a JSON array) (section 2.2.6.3.2).
+
+**Now back to the parts that are fully written, not just excerpts.**
 
 ## 4.3 Representing a Primitive Value ##
 

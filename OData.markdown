@@ -404,9 +404,10 @@ The following rules apply to all FunctionImport elements:
 - TODO: overload rules (i.e. unordered combination of parameter names & types must be unique).
 
 #### EntitySetPathExpression ####
+
 Functions or Actions that return an Entity or Entities MAY return results from an EntitySet that is dependent upon the EntitySet of one the parameter values used to invoke the Operation.
 
-When such a dependency exists an EntitySetPathExpression is used. An EntitySetPathExpression MUST begins with the name of a parameter to the Operation, and optionally include a series NavigationProperties (and occasional type casts) as a succinct way to describe the series of EntitySet transitions. 
+When such a dependency exists an EntitySetPathExpression is used. An EntitySetPathExpression MUST begin with the name of a parameter to the Operation, and optionally includes a series NavigationProperties (and occasional type casts) as a succinct way to describe the series of EntitySet transitions. 
 
 The actual EntitySet transitions may be deduced by finding the AssociationSet backing each NavigationProperty, and moving from the current EntitySet which will be found on one End to the EntitySet found on the other End. 
 
@@ -415,25 +416,26 @@ The EntitySet of the results of an Operation Invocation with an EntitySetPathExp
 For example this EntitySetPathExpression: "p1/Orders/Customer" can only be evaluted once the EntitySet of the p1 parameter value is known.
 
 ### Common Rules for Binding Operations ###
+
 Some Operations (Actions and Functions but not ServiceOperations) support binding if the 'IsBindable' attribute is set to 'true'. When Binding is supported the first parameter of an Operation is the 'Binding Parameter'. 
 
 In OData version 3 binding parameters MUST be of a Type that is either an EntityType or a collection of EntityType.
 
 Any url that can identify a 'Binding Parameter' of the correct type MAY be used as the foundation of a uri to invoke an Operation that supports Binding using the resource identified by that url as the 'Binding Parameter Value'.
 
-For example this Function:
+For example, the Function
 
-&lt;FunctionImport Name="MostRecentOrder" ReturnType="SampleModel.Order" EntitySet="Orders" IsBindable="true" IsSideEffecting="false" m:IsAlwaysBindable="true"&gt;
-&lt;Parameter Name="customer" Type="SampleModel.Customer" Mode="In" /&gt;
-&lt;/FunctionImport&gt;
+	<FunctionImport Name="MostRecentOrder" ReturnType="SampleModel.Order" EntitySet="Orders" IsBindable="true" IsSideEffecting="false" m:IsAlwaysBindable="true">
+		<Parameter Name="customer" Type="SampleModel.Customer" Mode="In" />
+	</FunctionImport>`
 
-Can be bound to any url that identifies a SampleModel.Customer, two examples might be:
+can be bound to any url that identifies a SampleModel.Customer, two examples might be:
 
-GET http://server/Customers(6)/MostRecentOrder() HTTP/1.1
+`GET http://server/Customers(6)/MostRecentOrder() HTTP/1.1`
 
 Which invokes the MostRecentOrder Function with the 'customer' or binding parameter value being the resource identified by http://server/Customers(6)/.
 
-GET http://server/Contacts(23123)/Company/MostRecentOrder() HTTP/1.1
+`GET http://server/Contacts(23123)/Company/MostRecentOrder() HTTP/1.1`
 
 Which again invokes the MostRecentOrder function, this time with the 'customer' or binding parameter value being the resource identified by http://server/Contacts(23123)/Company/. 
 
@@ -441,10 +443,11 @@ Which again invokes the MostRecentOrder function, this time with the 'customer' 
 
 Actions are operations exposed by an OData server that have side effects when invoked and optionally return some data.
 
-#### Declaring Actions in metadata ####
+#### Declaring Actions in Metadata ####
+
 A server that supports Actions SHOULD declare them in $metadata. Actions that are declared MUST be specified using a FunctionImport element, that indicates the signature (Name, ReturnType and Parameters) of the Action. 
 
-In addition to the [Common Rules for FunctionImports] the following rules apply for FunctionImport elements that represent Actions:
+In addition to the [Common Rules for FunctionImports](#commonrulesforfunctionimports) the following rules apply for FunctionImport elements that represent Actions:
 
 - Actions MUST NOT specify the 'm:HttpMethod' attribute as this is reserved for ServiceOperations.
 - Actions MUST be side effecting, indicated by either omiting or setting the 'IsSideEffecting' attribute to 'true'.
@@ -457,12 +460,13 @@ For example this FunctionImport represents an Action that Creates an Order for a
     	<Parameter Name="customer" Type="SampleModel.Customer" Mode="In">
 		<Parameter Name="quantity" Type="Edm.Int32" Mode="In">
 		<Parameter Name="discountCode" Type="Edm.String" Mode="In">
-	</FunctionImport&gt; 
+	</FunctionImport>
 
-#### Advertizing currently available Actions ####
-The existing OData Formats (application/atom+xml and application/json) require all Actions that are currently available for the current entity or current collection of entities be advertized inside any representation of the entity or collection entities returned from the Server.
+#### Advertising Currently Available Actions ####
 
-If calculating whether an Action is currently available is too resource intensive a server SHOULD advertize the Action as if it is available and fail only later if the client attempts to invoke the Action AND it is found to be not available.
+The existing OData Formats (application/atom+xml and application/json;odata=verbose) require all Actions that are currently available for the current entity or current collection of entities be advertized inside any representation of the entity or collection entities returned from the Server.
+
+It may be resource intensive to determine whether an Action is currently available on a particular Entity or EntitySet. If this calculation would be too expensive, a server SHOULD advertize the Action as if it is available. The server MAY fail later if the client attempts to invoke the Action and it is found to be not available.
 
 The following information MUST be included when an Action is advertized: 
 

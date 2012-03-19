@@ -125,9 +125,9 @@ Starting in the OData 3.0 protocol, the `actions` name/value pair MAY be include
 
 For each name/value pair, the name MUST be an Action Metadata URL. The value MUST be an array of JSON objects. Any number of JSON objects is allowed in this array. Each object in this array MUST have at least two name/value pairs: `title` and `target`. The order of these name/value pairs MUST be considered insignificant.
 
-The `target` name/value pair MUST contain a bound action invocation URL.
+The `target` name/value pair MUST contain a bound Action Target URL.
 
-The `title` name/value pair MUST contain a simple string. Servers SHOULD specify a value that would be easily understood by any user. The title is likely to be used by clients to display options to an end user.
+The `title` name/value pair MUST contain the Action Title as a string.
 
 #### 4.1.1.3 Entity Metadata for Functions ####
 
@@ -143,9 +143,9 @@ The name MUST only identify functions that are bindable to the current EntityTyp
 
 If all Function overloads can be bound to the current EntityType, the server SHOULD advertise a single Function Metadata URL that identifies all of the overloads.
 
-The `target` name/value pair MUST contain a bound function invocation URL.
+The `target` name/value pair MUST contain a bound Function Target URL.
 
-The `title` name/value pair MUST contain a simple string. Servers SHOULD specify a value that would be easily understood by any user. The title is likely to be used by clients to display options to an end user.
+The `title` name/value pair MUST contain the Function Title as a string.
 
 ## 4.2 Representing a Property ##
 
@@ -269,9 +269,9 @@ Actions are advertised in the metadata for a set of Entities. The metadata objec
 
 For each name/value pair, the name MUST be an Action Metadata URL. The value MUST be an array of JSON objects. Any number of JSON objects is allowed in this array. Each object in this array MUST have at least two name/value pairs: `title` and `target`. The order of these name/value pairs MUST be considered insignificant.
 
-The `target` name/value pair MUST contain a bound action invocation URL.
+The `target` name/value pair MUST contain a bound Action Target URL.
 
-The `title` name/value pair MUST contain a simple string. Servers SHOULD specify a value that would be easily understood by any user. The title is likely to be used by clients to display options to an end user.
+The `title` name/value pair MUST contain the Action Title as a string.
 
 Actions advertised in the set of Entities MUST be interpreted as being bound to the definition of the set and not to the items that are contained in it.
 
@@ -293,9 +293,9 @@ Functions are advertised in the metadata for a set of Entities. The metadata obj
 
 For each name/value pair, the name MUST be a Function Metadata URL. The value MUST be an array of JSON objects. Any number of JSON objects is allowed in this array. Each object in this array MUST have at least two name/value pairs: `title` and `target`. The order of these name/value pairs MUST be considered insignificant.
 
-The `target` name/value pair MUST contain a bound function invocation URL.
+The `target` name/value pair MUST contain a bound Function Target URL.
 
-The `title` name/value pair MUST contain a simple string. Servers SHOULD specify a value that would be easily understood by any user. The title is likely to be used by clients to display options to an end user.
+The `title` name/value pair MUST contain the Function Title as a string.
 
 Functions advertised in the set of Entities MUST be interpreted as being bound to the definition of the set and not to the items that are contained in it.
 

@@ -510,17 +510,18 @@ The server might respond with a Customer entity that advertizes a binding of the
 	       }
 	   },  
 	   "CustomerID": "ALFKI", 
-	   "CompanyName": " Alfreds Futterkiste", 
+	   "CompanyName": "Alfreds Futterkiste", 
 	   "Version": "AAAAAAAA+gE=",
 	   "Orders":  { "__deferred": { "uri": "Customers(\'ALFKI\')/SampleModel.Customer/Orders" } }
 	 }
-	} 
+	}
 
 When the resource retrieved represents a collection, the 'Target Url' of any Actions advertized MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
 
 An efficient format that assumes client knowledge of metadata SHOULD NOT advertize Actions whose availability ('IsAlwaysBindable' is set to 'true') and target url can be established via metadata. 
 
 #### Invoking an Action ####
+
 To invoke an Action a client MUST make a POST request to the 'Target Url' of the Action. 
 
 If the Action supports binding the binding parameter value MUST be encoded in the 'Target Url'. Background: In OData version 3 only parameters of an EntityType or collection of EntityType are permitted to be binding parameters, and there is no way to specify these types of parameter values in the request body, hence the binding parameters can only be specified in the 'Target Url'.
@@ -556,12 +557,14 @@ HTTP Response:
 
 
 ### Functions ###
+
 Functions are operations exposed by an OData server which MAY have parameters and MUST return data and MUST have no observable side effects.  
 
-#### Declaring Functions in metadata ####
+#### Declaring Functions in Metadata ####
+
 A server that supports Functions SHOULD declare them in $metadata. Functions that are declared MUST be specified using a FunctionImport element, that indicates the signature (Name, ReturnType and Parameters) and semantics (composability, bindability and result entityset) of the Function. 
 
-In addition to the [Common Rules for FunctionImports] the following rules apply for FunctionImport elements that represent Functions:
+In addition to the [Common Rules for FunctionImports](#commonrulesforfunctionimports) the following rules apply for FunctionImport elements that represent Functions:
 
 - Functions MUST NOT specify the 'm:HttpMethod' attribute as this is reserved for ServiceOperations.
 - Functions MUST NOT be side effecting, indicated by setting the 'IsSideEffecting' attribute to 'false'.
@@ -575,6 +578,7 @@ This is an example of an Function called MostRecent that returns the 'MostRecent
 	</FunctionImport>
 
 #### Advertizing currently available Functions ####
+
 Servers are allowed to choose whether to advertize Functions that can be bound to the current entity or current collection of entities inside representations of the entity or collection entities returned from the Server. 
 
 If the server chooses to advertize a Function the following information MUST be included: 
@@ -650,7 +654,8 @@ When the resource retrieved represents a collection, the 'Target Url' of any Fun
 
 An efficient format that assumes client knowledge of metadata SHOULD NOT advertize Functions whose availability ('IsAlwaysBindable' is set to 'true') and target url can be established via metadata.
 
-#### Invoking an Function ####
+#### Invoking a Function ####
+
 To invoke a Function directly a client MUST issue a GET request to a Url that identifies the Function and that specifies any parameter values required by the Function. 
 
 It is also possible to invoke a Function indirectly using GET, PUT, POST, PATCH or DELETE requests by formulating a Uri that identifies a Function and its parameters and then appending further path segments to create a Request Uri that identifies resources related to the results of the Function.
@@ -660,6 +665,7 @@ Parameter Values passed to Functions MUST be specified either as a Uri Literal (
 Functions calls MAY be present in the Request Uri Path or the Request Uri Query inside either the $filter or $orderby Query Options. 
 
 ##### Inline Parameter Syntax #####
+
 The simpliest way to pass parameter values to a Function is using inline parameter syntax.
 
 To use Inline Parameter Syntax, whereever a Function is called, parameter values MUST be specified inside the parenthesis, i.e. `()`, appended directly to the Function name. 
@@ -681,6 +687,7 @@ Filters `Customers` to those in the `Western` sales region, calculated for each 
 Parameters values MAY be provided to Functions in the Request Uri path using inline syntax for primitive parameter types only, all other parameter types MUST be provided externally. 
 
 ##### Parameter Alias Syntax #####
+
 Another way to pass parameter values is by using Parameter Alias Syntax.
 
 To use Parameter Alias Syntax, whereever a Function is called, parameter aliases MUST be specified inside parenthesis, i.e. `()`, appended directly to the Function name, and actual parameter values MUST be specified as Query options in the Query part of the Request Uri. The Query option name is the Name of the Parameter Alias, and the Query option value is the Value of any parameter that refers to this Parameter Alias.
@@ -700,6 +707,7 @@ Parameter Alias Syntax has a number of advantages over Inline syntax:
 If a Parameter Alias referenced by a Function call is not given a value in the Query part of the Request Uri, the value MUST be assumed to be null.
 
 ##### Parameter Name Syntax #####
+
 The OData protocol allows parameter values for the last Function call in a Request Uri Path to be specified by appending Name/Value pairs, representing each parameter Name and Value for that Function, as query strings to the Query part of the Request Uri. 
 
 This is useful because it means clients, in particular rudimentary clients, MAY invoke advertized Functions without parsing the advertized Target Url (as would be required to either inject parameter values using [Inline Parameter Syntax] or identify Parameter Aliases so that Parameter Values can be provided using [Parameter Alias Syntax]). 
@@ -713,18 +721,21 @@ This means that all of these requests are equivalent:
 Notice though that only the third request can be built without complicated Parsing logic when `http://server/service.svc/Entities(6)/NS.Foo/NavigationProperty` is advertized as the [Target Url] of an available Function to a client which has knowledge of signature for `NS.Foo`.  
 
 #### Function overload resolution ####
+
 Functions overloads are supported in OData, meaning a server MAY expose multiple Functions with the same name that take a different set of parameters.
 
 When a function is invoked (using any of the 3 parameter syntaxes) the parameter names and parameter values are specified in the URL, and the parameter types can be deduced from each parameter value. The combination of the Function name, and the unordered parameter names and types is always sufficient to identify a particular Function overload. 
 
 ### Service Operations ###
+
 Service Operations are Operations like Actions and Functions. However use of Service Operations is now discouraged because they are legacy and have a number of disadvantages:
 
 - Service Operation Semantics are unclear - for example a Service Operation that is invoked with a GET MAY have side effects and a Service Operation that is invoked with a POST MAY have no side-effects.
 - Service Operations only support primitive parameter types.
 - Unlike Functions, composing Multiple Service Operations calls in the same request is not supported.
 
-#### Declaring Service Operations in metadata ####
+#### Declaring Service Operations in Metadata ####
+
 A server that supports Service Operations MUST declare them in $metadata using a FunctionImport element, that indicates the signature (Name, ReturnType and Parameters) and semantics (http verb and result entityset) of the Service Operation. 
 
 In addition to the [Common Rules for FunctionImports] the following rules apply for FunctionImport elements that represent Service Operations:
@@ -735,6 +746,7 @@ In addition to the [Common Rules for FunctionImports] the following rules apply 
 - Service Operations MUST omit the 'm:IsAlwaysBindable' attribute or set its value to 'false'.
 
 #### Invoking a Service Operation ####
+
 To invoke a ServiceOperation the Request Uri used MUST begin with the Uri of the Service Document, followed by a path segment containing the Name or Namespace Qualified Name of the ServiceOperation and optionally parentheses.
 
 For example:

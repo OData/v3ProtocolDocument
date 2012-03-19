@@ -69,9 +69,15 @@ The `etag` name/value pair MAY be included. When included, it MUST represent the
 
 The `id` name/value pair MAY be included if the server is using OData 2.0 and MUST be included if the server is using OData 3.0.
 
-The value of the `properties` name/value pair MAY contain a JSON object for each NavigationProperty. See [Representing a NavigationProperty](#representinganavigationproperty) for details.
+The value of the `properties` name/value pair MUST be an array. It MAY contain a JSON object for each NavigationProperty. See [Representing a NavigationProperty](#representinganavigationproperty) for details.
 
-### 4.1.1.1 Entity Metadata for Media Link Entries ###
+The `actions` name/value pair MAY be included in a response if the server is advertising actions. See [Entity Metadata for Actions](#entitymetadataforactions) for details.
+
+The `functions` name/value pair MAY be included in a response if the server is advertising functions. See [Entity Metadata for Functions](#entitymetadataforfunctions) for details.
+
+The `actions` and `functions` name/value pairs MAY be included in request payloads. In requests they are without meaning and MUST be ignored by the server.
+
+#### 4.1.1.1 Entity Metadata for Media Link Entries ####
 
 The `media_src` and `content_type` name/value pairs MUST be included and the `edit_media` and `media_etag` name/value pairs MAY be included if the Entity is a Media Link Entry.
 
@@ -83,37 +89,49 @@ The value of the `edit_media` name/value pair MUST be the edit URI for the data 
 
 The value of the `media_etag` name/value pair MUST be the concurrency token for the data corresponding to this MLE.
 
+#### 4.1.1.2 Entity Metadata for Actions ####
+
+Starting in the OData 3.0 protocol, the `actions` name/value pair MAY be included in `__metadata`. The value is a JSON object that contains one name/value pair for each Action that the server wishes to advertise.
+
+For each name/value pair, the name MUST be an Action Metadata URL. The value MUST be an array of JSON objects. Any number of JSON objects is allowed in this array. Each object in this array MUST have at least two name/value pairs: `title` and `target`. The order of these name/value pairs MUST be considered insignificant.
+
+The `target` name/value pair MUST contain a bound action invocation URL.
+
+The `title` name/value pair MUST contain a simple string. Servers SHOULD specify a value that would be easily understood by any user. The title is likely to be used by clients to display options to an end user.
+
+#### 4.1.1.3 Entity Metadata for Functions ####
+
+Starting in the OData 3.0 protocol, the `functions` name/value pair MAY be included in `__metadata`. The value is a JSON object that contains one name/value pair for each Action that the server wishes to advertise.
+
+For each name/value pair, the name MUST be a Function Metadata URL. The value MUST be an array of JSON objects. Any number of JSON objects is allowed in this array. Each object in this array MUST have at least two name/value pairs: `title` and `target`. The order of these name/value pairs MUST be considered insignificant.
+
+The name MUST only identify functions that are bindable to the current EntityType. If overloads exist that cannot be bound to the current EntityType, 
+
+-- TODO:
+
+**Don't know what to do here. The OIPI had a bug; Alex will answer and then I'll fix it**.
+
+If all Function overloads can be bound to the current EntityType, the server SHOULD advertise a single Function Metadata URL that identifies all of the overloads.
+
+The `target` name/value pair MUST contain a bound function invocation URL.
+
+The `title` name/value pair MUST contain a simple string. Servers SHOULD specify a value that would be easily understood by any user. The title is likely to be used by clients to display options to an end user.
+
 ## 4.2 Representing a Property ##
 
-### 4.2.1 Representing a PrimitiveProperty ###
+A Property is represented as a name/value pair. The name is the Property's name.
 
-### 4.2.2 Representing a ComplexProperty ###
+The value for a PrimitiveProperty or ComplexTypeProperty is the Property's value. It MUST be formatted appropriately for its type.
 
-### 4.2.3 Representing a NavigationProperty ###
-
-*** Work in Progress ***
-
-The rest of this section is random stuff copied in from elsewhere in the original document.
-
-
-
-
-Each NavigationProperty is serialized as name/value pairs in which the value is a JSON object that contains a single name/value pair, with the name equal to the name of the NavigationProperty and a value equal to the URI that can be used to manage the relationship between the related entities.
-
-
+The value for a NavigationProperty MUST be a string. This string MUST be  the URI that can be used to manage the relationship between the related entities.
 
 ## 4.3 Representing Multiple Entities ##
 
-## Primitive Values ##
+## 4.4 Representing a Primitive Value ##
 
-- All of the types, by category (numeric, string, spatial, temporal, special)
-- Specific statement of representation in payload.
+The representation for primitives in Json Verbose is specified in <ref>the ABNF</ref>.
 
-## Complex Types ##
-
-### Properties ###
-
-### Metadata ###
+## 4.5 Representing a ComplexType ##
 
 # Request Specifics #
 

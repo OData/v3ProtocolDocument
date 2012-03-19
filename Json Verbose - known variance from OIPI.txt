@@ -1,0 +1,17 @@
+Actions & functions: I removed anything that is common across all formats, leaving only the Json-specific stuff. This means that I removed the following:
+
+ * Anything related to when an action / function is advertised (the format just says how; the core should say when).
+ * Bound URLs.
+
+
+Re: bound URLs. I introduced the term "bound action URL." This is what is described in the following paragraph:
+
+  A client can issue an Invoke Action Request using this value as the URL. The binding parameter is assumed to be bound to the encompassing entity. Therefore, if the client invokes the Action via the target URL, it MUST NOT include a value for the binding parameter in the request body.
+
+That definition is not format-specific. It should be shared in core.
+
+
+Some stuff related to when an action is advertised:
+
+  Actions can also be selectively requested or omitted by using different Select System Query Option (section 2.2.3.6.1.11) combinations. If the EntityType JSON Object is retrieved as part of a Feed (see section 2.2.6.3.2) and it is expensive to identify whether an Action that is requested, either implicitly or explicitly, by using Select System Query Options (section 2.2.3.6.1.11) can be bound to a particular entity, a server SHOULD advertise the Action and fail later if the Action is invoked and found to be unavailable.
+

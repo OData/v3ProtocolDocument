@@ -121,19 +121,11 @@ The value of the `media_etag` name/value pair MUST be the concurrency token for 
 
 #### 4.1.1.2 Entity Metadata for Actions ####
 
-Starting in the OData 3.0 protocol, the `actions` name/value pair MAY be included in `__metadata`. The value is a JSON object that contains one name/value pair for each Action that the server wishes to advertise.
-
-For each name/value pair, the name MUST be an Action Metadata URL. The value MUST be an array of JSON objects. Any number of JSON objects is allowed in this array. Each object in this array MUST have at least two name/value pairs: `title` and `target`. The order of these name/value pairs MUST be considered insignificant.
-
-The `target` name/value pair MUST contain a bound Action Target URL.
-
-The `title` name/value pair MUST contain the Action Title as a string.
+Starting in the OData 3.0 protocol, the `actions` name/value pair MAY be included in `__metadata`. The value is a JSON object that contains Action advertisement name/value pairs. See [Advertisement for a Function or Action](#advertisementforafunctionoraction) for details.
 
 #### 4.1.1.3 Entity Metadata for Functions ####
 
-Starting in the OData 3.0 protocol, the `functions` name/value pair MAY be included in `__metadata`. The value is a JSON object that contains one name/value pair for each Action that the server wishes to advertise.
-
-For each name/value pair, the name MUST be a Function Metadata URL. The value MUST be an array of JSON objects. Any number of JSON objects is allowed in this array. Each object in this array MUST have at least two name/value pairs: `title` and `target`. The order of these name/value pairs MUST be considered insignificant.
+Starting in the OData 3.0 protocol, the `functions` name/value pair MAY be included in `__metadata`. The value is a JSON object that contains Function advertisement name/value pairs. See [Advertisement for a Function or Action](#advertisementforafunctionoraction) for details.
 
 The name MUST only identify functions that are bindable to the current EntityType. If overloads exist that cannot be bound to the current EntityType, 
 
@@ -142,10 +134,6 @@ The name MUST only identify functions that are bindable to the current EntityTyp
 **Don't know what to do here. The OIPI had a bug; Alex will answer and then I'll fix it**.
 
 If all Function overloads can be bound to the current EntityType, the server SHOULD advertise a single Function Metadata URL that identifies all of the overloads.
-
-The `target` name/value pair MUST contain a bound Function Target URL.
-
-The `title` name/value pair MUST contain the Function Title as a string.
 
 ## 4.2 Representing a Property ##
 
@@ -219,6 +207,16 @@ The representation for primitives in Json Verbose is specified in <ref>the ABNF<
 
 -- TODO: write this.
 
+## 4.8 Advertisement for a Function or Action ##
+
+A Function or Action is advertised via a name/value pair. The name MUST be a Metadata URL. The value MUST be an array of JSON objects.
+
+Any number of JSON objects is allowed in this array. Each object in this array MUST have at least two name/value pairs: `title` and `target`. The order of these name/value pairs MUST be considered insignificant.
+
+The `target` name/value pair MUST contain a bound Action Target URL.
+
+The `title` name/value pair MUST contain the Action Title as a string.
+
 # 5 Request Specifics #
 
 This section describes additional payload semantics that only apply to request payloads.
@@ -265,49 +263,13 @@ An empty EntitySet or collection of entities (one that contains no EntityType in
 
 In the ODATA 3.0 protocol, it is possible to advertise Actions that are bound to the definition of a set of Entities.
 
-Actions are advertised in the metadata for a set of Entities. The metadata object MAY contain an `actions` name/value pair . The value is a JSON object that contains one name/value pair for each Action that the server wishes to advertise.
-
-For each name/value pair, the name MUST be an Action Metadata URL. The value MUST be an array of JSON objects. Any number of JSON objects is allowed in this array. Each object in this array MUST have at least two name/value pairs: `title` and `target`. The order of these name/value pairs MUST be considered insignificant.
-
-The `target` name/value pair MUST contain a bound Action Target URL.
-
-The `title` name/value pair MUST contain the Action Title as a string.
-
-Actions advertised in the set of Entities MUST be interpreted as being bound to the definition of the set and not to the items that are contained in it.
-
-Actions that are advertised in the set of Entities MUST be advertised only if the server can fully encode the action, the resource path, and the appropriate system query options that define the set.
-
-<ref>System query options</ref> that change the membership of the set of Entities MUST be considered part of the set definition. In practice, this means that the target URL that is used to invoke the action MUST encode the following system query options if they are used:
-
-* $filter
-* $expand
-* $orderby
-* $skip
-* $top
+Actions are advertised in the metadata for a set of Entities. The metadata object MAY contain an `actions` name/value pair. The value is a JSON object that contains Action advertisement name/value pairs. See [Advertisement for a Function or Action](#advertisementforafunctionoraction) for details.
 
 ## 6.3.2 Representing Functions Bound to Multiple Entities ##
 
 In the ODATA 3.0 protocol, it is possible to advertise Functions that are bound to the definition of a set of Entities.
 
-Functions are advertised in the metadata for a set of Entities. The metadata object MAY contain an `actions` name/value pair . The value is a JSON object that contains one name/value pair for each Function that the server wishes to advertise.
-
-For each name/value pair, the name MUST be a Function Metadata URL. The value MUST be an array of JSON objects. Any number of JSON objects is allowed in this array. Each object in this array MUST have at least two name/value pairs: `title` and `target`. The order of these name/value pairs MUST be considered insignificant.
-
-The `target` name/value pair MUST contain a bound Function Target URL.
-
-The `title` name/value pair MUST contain the Function Title as a string.
-
-Functions advertised in the set of Entities MUST be interpreted as being bound to the definition of the set and not to the items that are contained in it.
-
-Functions that are advertised in the set of Entities MUST be advertised only if the server can fully encode the action, the resource path, and the appropriate system query options that define the set.
-
-<ref>System query options</ref> that change the membership of the set of Entities MUST be considered part of the set definition. In practice, this means that the target URL that is used to invoke the action MUST encode the following system query options if they are used:
-
-* $filter
-* $expand
-* $orderby
-* $skip
-* $top
+Functions are advertised in the metadata for a set of Entities. The metadata object MAY contain a `functions` name/value pair. The value is a JSON object that contains Function advertisement name/value pairs. See [Advertisement for a Function or Action](#advertisementforafunctionoraction) for details.
 
 The function metadata URL MUST identify only functions that are bindable to the current feed definition. If overloads exist that cannot be bound to the current feed definition, 
 

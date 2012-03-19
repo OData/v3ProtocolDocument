@@ -30,3 +30,20 @@ Inlinecount needs to be in core, not in the format-specific doc. In particular, 
 Should the stuff in "3.1 Client/Server Format Compatibility and Versions" related to headers and versioning be in the core doc? It includes a useful set of examples; I'm not sure whether they should be in core or in this format.
 
 
+More stuff from actions & functions to pull to central. All 4 places (actions/functions x entities/sets) stated something about when to advertise, such as:
+
+---quote---
+Functions advertised in the set of Entities MUST be interpreted as being bound to the definition of the set and not to the items that are contained in it.
+
+Functions that are advertised in the set of Entities MUST be advertised only if the server can fully encode the action, the resource path, and the appropriate system query options that define the set.
+
+<ref>System query options</ref> that change the membership of the set of Entities MUST be considered part of the set definition. In practice, this means that the target URL that is used to invoke the action MUST encode the following system query options if they are used:
+
+* $filter
+* $expand
+* $orderby
+* $skip
+* $top
+---end quote---
+
+

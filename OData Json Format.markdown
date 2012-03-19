@@ -121,9 +121,51 @@ The `title` name/value pair MUST contain a simple string. Servers SHOULD specify
 
 A Property is represented as a name/value pair. The name is the Property's name.
 
-The value for a PrimitiveProperty or ComplexTypeProperty is the Property's value. It MUST be formatted appropriately for its type.
+The value for a PrimitiveProperty, a ComplexTypeProperty, or a CollectionProperty is the Property's value. It MUST be formatted appropriately for its type.
+
+-- TODO: verify. Is this correct for collection types? Does a collection value contain the same object & metadata?
+
+## 4.2.1 Representing a NamedResourceStreamProperty ##
+
+-- TODO: write this.
+
+## 4.2.2 Representing a NavigationProperty ##
+
+--TODO:
+
+**This section is still a work in progress. It contains stuff from multiple chunks of the OIPI.**
+
+**From one place (in metadata)**
 
 The value for a NavigationProperty MUST be a string. This string MUST be  the URI that can be used to manage the relationship between the related entities.
+
+**From another**
+
+The default representation of a NavigationProperty is as a JSON name/value pair. The name is equal to "__deferred" and the value is a JSON object that contains a single name/value pair with the name equal to "uri". The value of the "uri" name/value pair MUST be a URI relative to the service root URI, as specified in Service Root (section 2.2.3.2), that identifies the NavigationProperty.
+
+The syntax of a NavigationProperty, represented within a JSON object, is shown using the grammar rule "deferredNavProperty" in the Entity Type JSON Representation listing in Entity Type (as a JSON object) (section 2.2.6.3.3).
+
+Version 3.0 adds another JSON object with the name "properties" to the "__metadata" object that contains an array of objects, each of which SHOULD have the name of a NavigationProperty in the entity. Each object has one name/value pair with the name "associationuri". The value of the "associationuri" name/value pair MUST be a URI that represents the association between the related entities.
+
+The syntax of the version 3.0 properties object is shown by using the grammar rule "propmetadataNVP" in the Entity Type JSON Representation listing in Entity Type (as a JSON object) (section 2.2.6.3.3)).
+
+**And from a third**
+
+2.2.6.3.9   Deferred Content
+
+The serialized representation of an entity and its related entities, identified by NavigationProperties, may be large. To conserve resources (bandwidth, CPU, and so on), it is generally not a good idea for a data service to return the full graph of entities related to the EntityType instance or set identified in a request URI. For example, a data service SHOULD defer sending entities represented by any navigation property in a response unless explicitly asked to send those entities via the $expand system query option, as described in Expand System Query Option ($expand) (section 2.2.3.6.1.3).
+
+In JSON-formatted EntityType instances (see Entity Type (as a JSON object) (section 2.2.6.3.3)), NavigationProperties serialized as name/value pairs in which the value is a JSON object containing a single name/value pair with the name "__deferred" and a value that is a JSON object containing a single name/value pair with the name "uri" and a string value, which is a URL that can be used to retrieve the deferred content, signify deferred NavigationProperty content (for example, the entities represented by the NavigationProperty are not serialized inline). For example, using the two EntityTypes Customer and Order, as described in Appendix A: Sample Entity Data Model and CSDL Document (section 6), the default JSON serialization (with deferred NavigationProperty content) of the Customer instance with EntityKey value of "ALFKI" is shown in Entity Type (as a JSON object) (section 2.2.6.3.3).
+
+In the example, the presence of the "__deferred" name/value pair signifies that the value of the Orders NavigationProperty is not directly represented on the JSON object in this serialization. In order to obtain the deferred value(s), a client would make a separate request directly to the navigation property URI (service.svc/Customers('ALFKI')/Orders) or explicitly ask that the property be serialized inline via the $expand system query option, as described in Expand System Query Option ($expand) (section 2.2.3.6.1.3).
+
+**Continuing to excerpt**
+
+2.2.6.3.9.1   Inline Representation
+
+As described in Expand System Query Option ($expand) (section 2.2.3.6.1.3), a request URI may include the $expand system query option to explicitly request the entity or entities represented by a NavigationProperty be serialized inline, rather than deferred. The example below uses the same data model as the Deferred Content example referenced above; however, this example shows the value of the Orders NavigationProperty serialized inline.
+
+A NavigationProperty which is serialized inline MUST be represented as a name/value pair on the JSON object with the name equal to the NavigationProperty name. If the NavigationProperty identifies a single EntityType instance, the value MUST be a JSON object representation of that EntityType instance, as specified in Entity Type (as a JSON object) (section 2.2.6.3.3). If the NavigationProperty represents an EntitySet, the value MUST be as specified in Entity Set (as a JSON array) (section 2.2.6.3.2).
 
 ## 4.3 Representing a Primitive Value ##
 
@@ -131,7 +173,23 @@ The representation for primitives in Json Verbose is specified in <ref>the ABNF<
 
 ## 4.4 Representing a ComplexType Value ##
 
+-- TODO: write this.
+
+## 4.5 Representing a Collection of ComplexType Values ##
+
+-- TODO: write this.
+
+## 4.6 Representing a Set of Links ##
+
+-- TODO: write this.
+
+## 4.7 Representing Annotations ##
+
+-- TODO: write this.
+
 # 5 Request Specifics #
+
+This section describes additional payload semantics that only apply to request payloads.
 
 ## 5.1 Representing Multiple Entities in a Request ##
 
@@ -141,9 +199,11 @@ An empty EntitySet or collection of entities (one that contains no EntityType in
 
 # 6 Response Specifics #
 
-This section describes additional payloads semantics that only apply to response payloads.
+This section describes additional payload semantics that only apply to response payloads.
 
 ## 6.1 Response body ##
+
+-- TODO: write this. Talk about the d object, etc.
 
 ## 6.2 MIME Type ##
 
@@ -225,8 +285,12 @@ The function metadata URL MUST identify only functions that are bindable to the 
 
 ## 6.4 Errors ##
 
+-- TODO: write this.
+
 ## 6.5 Next Links ##
 
-## Response-Level Properties ##
+-- TODO: write this.
 
-- Others?
+## 6.6 Service Document ##
+
+-- TODO: write this.

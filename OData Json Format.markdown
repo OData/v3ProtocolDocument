@@ -26,6 +26,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 ## 2.1 Normative References ##
 
 - Normative reference to the OData core document
+- Normative reference to the ABNF for OData
 
 ## 2.2 Informational Examples ##
 
@@ -35,7 +36,36 @@ This document contains many example Json payloads or partial Json payloads. Thes
 
 Verbose Json is not the default OData format. To receive responses in Verbose Json, the client MUST explicitly ask for them.
 
-To request this format using <ref>$format</ref>, use the value "jsonverbose". To request this format using the <ref>Accepts header</ref>, use the MIME type "application/json;odata=verbose".
+To request this format using <ref>$format</ref>, use the value `jsonverbose`. To request this format using the <ref>Accept header</ref>, use the MIME type `application/json;odata=verbose`.
+
+## 3.1 Client/Server Format Compatibility and Versions ##
+
+Prior to version 3.0, Verbose Json format was simply the only OData Json format. In version 3.0 and later, <ref>Json Light</ref> is the default Json format.
+
+A request with Accept header `application/json` or with a $format value of `json` MUST be treated as a request for the server's default Json format.
+
+Therefore, such a request on a version 1.0 or 2.0 server, or if specified with a <ref>MaxDataServiceVersion header</ref> of 1.0 or 2.0 will result in Verbose Json. However, a request for default Json on a version 3.0 or higher server with a MaxDataServiceVersion of 3.0 or higher will result in <ref>Json Light</ref>
+
+Clients and servers SHOULD prefer the new <ref>Json Light</ref> format as long as they both support it. To maximize compatibility, clients MAY use one of the following sets of headers.
+
+If the client does not understand OData version 3.0:
+
+-- TODO: fix the formatting on these headers.
+
+`MaxDataServiceVersion: 2.0
+Accept: application/json`
+
+If the client understands OData version 3.0 but does not support Json Light:
+
+`MaxDataServiceVersion: 3.0
+Accept: application/json;odata=verbose`
+
+If the client fully supports OData version 3.0:
+
+`MaxDataServiceVersion: 3.0
+Accept: application/json;odata=light;q=1,application/json;odata=verbose;q=0.5`
+
+Optionally, Atom can be added as a further fallback in case the server supports neither Json format.
 
 # 4 Common Payload Format #
 

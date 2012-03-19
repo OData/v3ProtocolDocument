@@ -15,3 +15,10 @@ Some stuff related to when an action is advertised:
 
   Actions can also be selectively requested or omitted by using different Select System Query Option (section 2.2.3.6.1.11) combinations. If the EntityType JSON Object is retrieved as part of a Feed (see section 2.2.6.3.2) and it is expensive to identify whether an Action that is requested, either implicitly or explicitly, by using Select System Query Options (section 2.2.3.6.1.11) can be bound to a particular entity, a server SHOULD advertise the Action and fail later if the Action is invoked and found to be unavailable.
 
+
+
+Inlinecount needs to be in core, not in the format-specific doc. In particular, the rules about when inlinecount is required and when it is prohibited are format-independent. These paras need a home (and some cleanup):
+
+  A request URI MAY contain an $inlinecount system query option to indicate that the count of the number of entities represented by the query after filters have been applied should be included in the collection of entities returned from a data service. If such a query string object is present, the response MUST include the countNVP name/value pair with the value of the name/value pair equal to the count of the total number of entities addressed by the request URI.
+  The countNVP name/value pair MUST NOT be inside the Inline Representation of a related collection (section 2.2.6.3.9.1).
+

@@ -125,37 +125,56 @@ The value for a PrimitiveProperty or ComplexTypeProperty is the Property's value
 
 The value for a NavigationProperty MUST be a string. This string MUST be  the URI that can be used to manage the relationship between the related entities.
 
-## 4.3 Representing Multiple Entities ##
-
-## 4.4 Representing a Primitive Value ##
+## 4.3 Representing a Primitive Value ##
 
 The representation for primitives in Json Verbose is specified in <ref>the ABNF</ref>.
 
-## 4.5 Representing a ComplexType ##
+## 4.4 Representing a ComplexType Value ##
 
-# Request Specifics #
+# 5 Request Specifics #
 
-- All the stuff that only applies to request payloads.
+## 5.1 Representing Multiple Entities in a Request ##
 
-## HTTP Headers ##
+An EntitySet or collection of entities MUST be represented as a Json array. Each element MUST be a correctly formatted Entity (see [Representing an Entity](#representinganentity)).
 
-- proper accept header to request this format.
-- other stuff?
+An empty EntitySet or collection of entities (one that contains no EntityType instances) MUST be represented as an empty JSON array.
 
-# Response Specifics #
+# 6 Response Specifics #
 
-- All the stuff that only applies to response payloads.
+This section describes additional payloads semantics that only apply to response payloads.
 
-## Errors ##
+## 6.1 Response body ##
 
-## HTTP Headers ##
+## 6.2 MIME Type ##
 
-- proper content type for this format.
-- other stuff?
+Verbose Json is represented with a Content-Type of "application/json;odata=verbose".
 
-## Next Links ##
+In OData 1.0 and 2.0, it was also represented with a Content-Type of "applicaton/json". However, in OData 3.0, "application/json" has been redefined to mean <ref>Json Light</ref>.
+
+## 6.3 Representing Multiple Entities in a Response ##
+
+In OData 1.0, an EntitySet of collection of Entities in a response is formatted just like in a request. See [Representing Multiple Entities in a Request](#representingmultipleentitiesinarequest) for details.
+
+The rest of this section applies to OData 2.0 and 3.0 only.
+
+An EntitySet or collection of Entities MUST be represented as a Json object. This object MUST contain a `results` name/value pair. It MAY contain `__count` or `__next` name/value pairs.
+
+The `results` value MUST be a Json array. Each element MUST be a correctly formatted Entity (see [Representing an Entity](#representinganentity)).
+
+The `__count` name/value pair represents the inlinecount. Its value MUST be an integer. See <ref>inlinecount</ref> for details on when it is required and when it is prohibited.
+
+The `__next` name/value pair MAY be included. If provided, its value MUST be a string containing a URL. If provided, then the response MUST be interpreted as a partial result. The client MAY request this URL if it wishes to receive the next part of the collection or EntitySet.
+
+An empty EntitySet or collection of entities (one that contains no EntityType instances) MUST be represented as a Json object with a `results` name/value pair. The `results` name/value pair MUST be an empty JSON array.
+
+## 6.3.1 Representing Multiple Entities With Actions in a Response ##
+
+## 6.3.2 Representing Multiple Entities With Functions in a Response ##
+
+## 6.4 Errors ##
+
+## 6.5 Next Links ##
 
 ## Response-Level Properties ##
 
-- Inline count
 - Others?

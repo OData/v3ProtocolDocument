@@ -195,6 +195,34 @@ Actions that are advertised in the set of Entities MUST be advertised only if th
 
 ## 6.3.2 Representing Functions Bound to Multiple Entities ##
 
+In the ODATA 3.0 protocol, it is possible to advertise Functions that are bound to the definition of a set of Entities.
+
+Functions are advertised in the metadata for a set of Entities. The metadata object MAY contain an `actions` name/value pair . The value is a JSON object that contains one name/value pair for each Function that the server wishes to advertise.
+
+For each name/value pair, the name MUST be a Function Metadata URL. The value MUST be an array of JSON objects. Any number of JSON objects is allowed in this array. Each object in this array MUST have at least two name/value pairs: `title` and `target`. The order of these name/value pairs MUST be considered insignificant.
+
+The `target` name/value pair MUST contain a bound function invocation URL.
+
+The `title` name/value pair MUST contain a simple string. Servers SHOULD specify a value that would be easily understood by any user. The title is likely to be used by clients to display options to an end user.
+
+Functions advertised in the set of Entities MUST be interpreted as being bound to the definition of the set and not to the items that are contained in it.
+
+Functions that are advertised in the set of Entities MUST be advertised only if the server can fully encode the action, the resource path, and the appropriate system query options that define the set.
+
+<ref>System query options</ref> that change the membership of the set of Entities MUST be considered part of the set definition. In practice, this means that the target URL that is used to invoke the action MUST encode the following system query options if they are used:
+
+* $filter
+* $expand
+* $orderby
+* $skip
+* $top
+
+The function metadata URL MUST identify only functions that are bindable to the current feed definition. If overloads exist that cannot be bound to the current feed definition, 
+
+-- TODO:
+
+**Don't know what to do here. There's a bug in the OIPI. Alex will fix, then I'll incorporate his fix here.**
+
 ## 6.4 Errors ##
 
 ## 6.5 Next Links ##

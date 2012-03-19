@@ -206,12 +206,6 @@ Retrieval of a Metadata Document by a client MUST be done by issuing a HTTP GET 
 
 ## 7.3. Data Modification ##
 
-------
-
-- ASSIGNED TO: Arlo
-
-------
-
 An OData server MAY support Create, Update, and Delete operations for some of all of the Entities that it exposes.
 
 For all operations, the format of request and response bodies is format specific. See the format-specific specifications ([[JSON](JSON)], [[JSON Verbose](JSON_Verbose_format)], [[Atom](Atom_Format)]) for details.
@@ -326,7 +320,13 @@ The representation for the data part is however that data would normally be tran
 
 The metadata is always represented as a standard Entity. All MLE Entities have a certain set of common properties. They may have additional metadata properties. See <ref>MLE Metadata</ref> for details.
 
-Because a MLE has two parts, it has two URIs. The edit URI for the Entity represents the metadata Entity. This metadata entity is manipulated as per a normal Entity.
+Because a MLE has two parts, it has multiple URIs. These URIs are defined as follows:
+
+* **Entity URI**. The edit URI that may be used to modify the metadata part of the MLE.
+* **Edit URI**. The URI which may be used to modify the data part of the MLE. This URI is contained in the MLE metadata, if the data is modifyable.
+* **Source URI**. The URI which may be used to request the data part of the MLE. This URI is contained in the MLE metadata.
+
+The edit URI for the Entity represents the metadata Entity. This metadata entity is manipulated as per a normal Entity.
 
 A MLE MUST NOT exist with only one of data and metadata. Any time the server creates or destroys one part it MUST create or destroy the other part in the same request. This invariant MUST be maintained even when an error occurs while handling such a request.
 

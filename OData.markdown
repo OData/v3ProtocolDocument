@@ -49,19 +49,6 @@ Finally, all instance containers (Entity Sets and Association Sets) are grouped 
 //TODO: put primitive type table here in subsection
 //TODO: what about named streams?  anything else core that I missed?
 
-
-# 3. Terminology #
-
-move to be an appendix -- glossary
-
-------
-
-- ASSIGNED TO: MikeF/All
-
-------
-
-- glossary of terms used throughout the doc 
-
 # 4. Notational Conventions #
 
 ------
@@ -82,7 +69,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 Some sections of this specification are illustrated with non-normative example OData request and response payloads. However, the text of this specification provides the definition of conformance.
 
-OData payloads are representable in multiple formats. Those formats are specified in separate documents. In this document, when an example is necessary, it will be given in the minimal Json format.
+OData payloads are representable in multiple formats. Those formats are specified in separate documents. In this document, when an example is necessary, it will be given in the Json Light format.
 
 ## 4.2. CSDL Schema ##
 
@@ -896,3 +883,20 @@ Instances of EntityTypes live within EntitySets. Instances of Associations live 
 - ASSIGNED TO: Alex
 
 ------
+
+# C: Terminology #
+
+------
+
+- ASSIGNED TO: Everyone
+
+------
+
+*bound Action invocation URL*: the URL that can be used to invoke a particular Action bound to a particular Entity or collection of Entities.
+
+*bound Function invocation URL*: the URL that can be used to invoke a particular Function bound to a particular Entity or collection of Entities.
+
+Action *title*: a descriptive name used for an Action. This is intended to be presented to an end user.
+
+Function *title*: a descriptive name used for a Function. This is intended to be presented to an end user.
+

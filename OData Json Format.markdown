@@ -157,7 +157,7 @@ In OData 1.0, an EntitySet of collection of Entities in a response is formatted 
 
 The rest of this section applies to OData 2.0 and 3.0 only.
 
-An EntitySet or collection of Entities MUST be represented as a Json object. This object MUST contain a `results` name/value pair. It MAY contain `__count` or `__next` name/value pairs.
+An EntitySet or collection of Entities MUST be represented as a Json object. This object MUST contain a `results` name/value pair. It MAY contain `__count`, `__next`, or `__metadata` name/value pairs.
 
 The `results` value MUST be a Json array. Each element MUST be a correctly formatted Entity (see [Representing an Entity](#representinganentity)).
 
@@ -165,11 +165,35 @@ The `__count` name/value pair represents the inlinecount. Its value MUST be an i
 
 The `__next` name/value pair MAY be included. If provided, its value MUST be a string containing a URL. If provided, then the response MUST be interpreted as a partial result. The client MAY request this URL if it wishes to receive the next part of the collection or EntitySet.
 
+The `__metadata` name/value pair MAY be included. If provided, its value MUST be a Json object. This object represents the metadata for the set of Entities.
+
 An empty EntitySet or collection of entities (one that contains no EntityType instances) MUST be represented as a Json object with a `results` name/value pair. The `results` name/value pair MUST be an empty JSON array.
 
-## 6.3.1 Representing Multiple Entities With Actions in a Response ##
+## 6.3.1 Representing Actions Bound to Multiple Entities ##
 
-## 6.3.2 Representing Multiple Entities With Functions in a Response ##
+In the ODATA 3.0 protocol, it is possible to advertise Actions that are bound to the definition of a set of Entities.
+
+Actions are advertised in the metadata for a set of Entities. The metadata object MAY contain an `actions` name/value pair . The value is a JSON object that contains one name/value pair for each Action that the server wishes to advertise.
+
+For each name/value pair, the name MUST be an Action Metadata URL. The value MUST be an array of JSON objects. Any number of JSON objects is allowed in this array. Each object in this array MUST have at least two name/value pairs: `title` and `target`. The order of these name/value pairs MUST be considered insignificant.
+
+The `target` name/value pair MUST contain a bound action invocation URL.
+
+The `title` name/value pair MUST contain a simple string. Servers SHOULD specify a value that would be easily understood by any user. The title is likely to be used by clients to display options to an end user.
+
+Actions advertised in the set of Entities MUST be interpreted as being bound to the definition of the set and not to the items that are contained in it.
+
+Actions that are advertised in the set of Entities MUST be advertised only if the server can fully encode the action, the resource path, and the appropriate system query options that define the set.
+
+<ref>System query options</ref> that change the membership of the set of Entities MUST be considered part of the set definition. In practice, this means that the target URL that is used to invoke the action MUST encode the following system query options if they are used:
+
+* $filter
+* $expand
+* $orderby
+* $skip
+* $top
+
+## 6.3.2 Representing Functions Bound to Multiple Entities ##
 
 ## 6.4 Errors ##
 

@@ -88,6 +88,74 @@ Is described by the Function Import named "ProductColors" in the service metadat
 #### Canonical Functions ####
 
 ### Select System Query Option ###
+The $select system query option allows clients to requests a limited set of information for each Entity or ComplexType identified by the ResourcePath and other System Query Options like $filter, $top, $skip etc. When present $select instructs the server to return only the Properties, Open Properties, Related Properties, Actions and Functions explicitly requested by the client, however servers MAY choose to return more information.
+
+What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that applies to the Select System Query Option: 
+
+	select 						=	"$select=" selectClause
+	selectClause   				= 	selectItem *( COMMA selectItem )
+	selectItem     				= 	star / 
+									[ qualifiedEntityTypeName "/" ] 
+									(
+										propertyName / 
+										qualifiedActionName / 
+										qualifiedFunctionName / 
+										allOperationsInContainer /
+										( navigationProperty [ "/" selectItem ] )
+									)
+
+
+The selectClause MUST be interpretted relative to the EntityType or ComplexType of the resources identified by the resource path section of the URI, for example:
+
+	http://services.odata.org/OData/OData.svc/Products?$select=Rating,ReleaseDate
+
+In this URI the "Rating,ReleaseDate" selectClause MUST be interpreted relative to the Product EntityType which is the EntityType of the resources identified by this http://services.odata.org/OData/OData.svc/Products URI.
+
+Each selectItem in the selectClause, indicates that the response SHOULD include the Properties, Open Properties, Related Properties, Actions and Functions identified by that selectClause. 
+
+The simpliest selectItem requests a single Property defined on the EntityType of the resources identified by the resource path section of the URI, for example this URI asks the server to return just the Rating and ReleaseDate for the matching Products: 
+
+	http://services.odata.org/OData/OData.svc/Products?$select=Rating,ReleaseDate
+
+It is also possible to request all properties, using a star request:
+
+	http://services.odata.org/OData/OData.svc/Products?$select=*
+
+If a selectClause consists of a single selectItem that is a star (i.e. *), then all properties and navigation properties on the matching resources MUST be returned.
+
+If a navigation property appears as the last segment of a selectItem and does not appear in an $expand query option, the entity or collection of entities identified by the navigation property MUST be represented as deferred content.
+
+Each selectItem is a path, while often simply a propertyName or star, the path MAY include a cast to a derived type using a qualifiedEntityTypeName segment or a navigation to a related entity via navigationProperty segment followed by a nested selectItem. For example the following URI requests, the Spokesperson property of any Products that are of the derived type idenfitied by the qualifiedEntityType 'Namespace.BestSellingProduct', and the AccountRepresentative property of any related Supplier that is of a the derived type 'Namespace.PreferredSupplier':
+	
+	http://service.odata.org/OData/OData.svc/Products?$select=Namespace.BestSellingProduct/Spokesperson,Supplier/Namespace.PreferredSupplier/AccountRepresentative
+
+If a navigation property appears as the last segment of a selectItem and the same navigation property is specified as a segment of a path in an $expand query option, then all the properties of the expanded entity identified by the selectItem MUST be in the response. In addition, all the properties of the entities identified by segments in the $expand path after the segment that matched the selectedItem MUST also be included in the response.
+
+In order to select any nested properties of NavigationProperties the client MUST also include an expandClause for that NavigationProperty. For example the following URI expands the Category NavigationProperty so the Name of the Category can be selected.
+
+	http://services.odata.org/OData/OData.svc/Products?$select=Category/Name&$expand=Category
+
+If a property, open property, navigation property or operation is not requested as a selectItem (explicitly or via a star), it SHOULD NOT be included in the response.
+
+A star SHOULD NOT reintroduce actions or functions. Thus if any selectClause is specified, actions and functions SHOULD be omitted unless explicitly requested using a qualifiedActionName, a qualifiedFunctionName or the allOperationsInContainer clause.
+
+Actions and Functions information can be explicitly requested with a selectItem containing either a qualifiedActionName or a qualifiedFunctionName or can be implicitly requested using a selectItem contain the allOperationsInContainer clause. 
+
+For example this URI requests the ID property, the 'ActionName' action defined in 'Container' and all actions and functions defined in the 'Container2' for each product, if those actions and functions can be bound to that product:
+
+	http://service.odata.org/OData/OData.svc/Products?$select=Container.ActionName,Container2.*
+
+If an action is requested as a selectedItem, either explicitly by using an qualifiedActionName clause or implicitly by using an allOperationsInContainer clause, the server MUST include in the response information about how to invoke that action for each of the entities identified by the last path segment in the request URI, if the action can be bound to those entities.
+
+If a function is requested as a selectedItem, either explicitly by using an qualifiedFunctionName clause or implicitly by using an allOperationsInContainer clause, the server MUST include in the response information about how to invoke that function for each of the entities that are identified by the last path segment in the request URI, if and only if the function can be bound to those entities.
+
+If an action or function is requested in a selectItem using a qualifiedActionName or a qualifiedFunctionName clause and that action or function cannot be bound to the entities requested, the server MUST ignore the selectItem clause.
+
+When multiple selectItems exist in a selectClause, then the total set of property, open property, navigation property, actions and functions to be returned is equal to the union of the set of those identified by each selectItem.
+
+Redundant selectClause rules on the same URI MAY be considered valid, but MUST NOT alter the meaning of the URI.
+
+For AtomPub formatted responses: The value of a selectClause applies only to the properties returned within the m:properties element. For example, if a property of an entity type is mapped with the Customizable Feeds attribute KeepInContent=false, then that property MUST always be included in the response according to its customizable feed mapping.
 
 ### OrderBy System Query Option ###
 
@@ -103,7 +171,9 @@ Is described by the Function Import named "ProductColors" in the service metadat
 
 ## Uri Equivalence ##
 
-# Appendix A: ABNF for OData URIs #
+# Appendix A: ABNF for OData URI Conventions #
+TODO: Add open properties to the ABNF
+
 The following Augmented Backus–Naur Form (ABNF) details the construction rules for OData Uris that target OData services that follow the Uri Conventions specified in this document.
 
 	
@@ -188,6 +258,8 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
 	value-separator				= 	COMMA
 
 	name-separator				=	":"
+
+	star           				= 	"*"
 
 	odataIdentifier				= 	1*479pchar
 
@@ -601,15 +673,13 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
 	selectClause   				= 	selectItem *( COMMA selectItem )
 
 	selectItem     				= 	star / 
-									[ qualifiedEntityType "/" ] (
+									[ qualifiedEntityTypeName "/" ] (
 										propertyName / 
 										qualifiedActionName / 
 										qualifiedFunctionName / 
 										allOperationsInContainer /
 										( navigationProperty [ "/" selectItem ] )
 									)
-
-	star           				= 	"*"
 
 	skiptoken					=  	"$skiptoken=" 1*pchar
 

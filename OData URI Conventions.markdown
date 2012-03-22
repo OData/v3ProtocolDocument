@@ -77,6 +77,7 @@ Is described by the Function Import named "ProductColors" in the service metadat
 #### Addressing Actions ####
 
 ## Query String Options ##
+The Query Options section of an OData URI specifies three types of information: System Query Options, Custom Query Options, and Operation (Function and ServiceOperation) Parameters. All OData services MUST follow the query string parsing and construction rules defined in this section and its subsections.
 
 ### System Query Options ###
 System Query Options are query string parameters a client may specify to control the amount and order of the data that an OData service returns for the resource identified by the URI. The names of all System Query Options are prefixed with a "$" character.

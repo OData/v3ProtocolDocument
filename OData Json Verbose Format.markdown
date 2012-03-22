@@ -232,19 +232,93 @@ The representation for primitives in Json Verbose is specified in <ref>the ABNF<
 
 ## 4.5 Representing a ComplexType Value ##
 
--- TODO: write this.
+In the following example, Address is a Property with a ComplexType value.
+
+	{
+		"CustomerID": "ALFKI",
+		"Address": { "Street": "57 Contoso St", "City": "Seattle" }
+	}
+
+A ComplexType value MUST be represented as a single Json object. It MUST have one name/value pair for each Property that makes up the complex type. Each Property MUST be formatted as appropriate for the property. See [Representing a Property](representingaproperty) for details.
+
+The object representing a ComplexType value SHOULD NOT contain any other name/value pairs.
 
 ## 4.6 Representing a Collection of ComplexType Values ##
 
--- TODO: write this.
+A Collection of ComplexType values MUST be represented as a Json array. Each element in the array MUST be the representation for a ComplexType value. See [Representing a ComplexType Value](#representingacomplextypevalue) for details.
 
 ## 4.7 Representing a Set of Links ##
 
--- TODO: write this.
+A set of links expresses a relation from one Entity to zero or more related Entities.
+
+The following example shows a set of links represented as appropriate for a request.
+
+	[
+		{"uri": "http://host/service.svc/Orders(1)"},
+		{"uri": "http://host/service.svc/Orders(2)"}
+	]
+
+A set of links MUST be represented as a single Json array. This array MUST contain one item per link.
+
+Each link item MUST be represented as a single Json object. This object MUST contain a single name/value pair. The name MUST be `uri`. The value MUST be a URI for the related Entity.
+
+There are additional considerations for representing a set of links in a response. See [Representing a Set of Links in a Response](#representingasetoflinksinaresponse) for details.
 
 ## 4.8 Representing Annotations ##
 
--- TODO: write this.
+Annotations MAY be applied to any name/value pair in a Json payload that represents a value of any type from the EDM.
+
+The following example shows annotations applied to many different constructs.
+
+	{
+		"@results": {
+			"com.constoso.customer.setkind" : "VIPs"
+		},
+		"results" : [
+			{
+				"__metadata": { ... },
+				"com.constoso.customer.kind" : "VIP",
+				"com.constoso.display.order" : 1,
+				"CustomerID": "ALFKI",
+				"@CompanyName" : { 
+					"com.contoso.display" : { "title" : true, "order" : 1 }
+				}
+				"CompanyName": "Alfreds Futterkiste",
+				"Orders": { 
+					"com.contoso.purchaseorder.priority" : 1,
+					"__deferred": { "uri": "Customers('ALFKI')/Orders" }   
+				}
+			}
+		]
+	}
+
+In general, it is possible to express an annotation internally or externally to a value. However, an annotation is always a name/value pair. Therefore, it can only be expressed within a Json object. Some EDM constructs are not represented with Json objects. Therefore some types may only be annotated externally.
+
+See the specific subsections of this section for normative rules abuot how to represent annotations on various types.
+
+### 4.8.1 Annotate a Value Represented as a Json Object ###
+
+This section applies when annotating a name/value pair for which the value is represented as a Json object.
+
+Each annotation MUST be applied internally. Each annotation MUST be represented as a single name/value pair.
+
+The name MUST be the fully-scoped name of the annotation. This name MUST include namespace and name, separated by a period (`.`).
+
+The value MUST be the appropriate value for the annotation.
+
+### 4.8.2 Annotate a Value Represented as a Json Array or Primitive ###
+
+This section applies when annotating a name/value pair for which the value is not represented as a Json object.
+
+The set of all annotations that apply to this name/value pair MUST be applied externally. This set of annotations is represented as a single name/value pair.
+
+The name MUST be the same as the name of the name/value pair being annotated, prefixed with the at sign (`@`).
+
+The value MUST be a Json object. Each annotation in the set MUST be represented as a single name/value pair within this object.
+
+The name MUST be the fully-scoped name of the annotation. This name MUST include namespace and name, separated by a period (`.`).
+
+The value MUST be the appropriate value for the annotation.
 
 ## 4.9 Advertisement for a Function or Action ##
 
@@ -272,7 +346,16 @@ This section describes additional payload semantics that only apply to response 
 
 ## 6.1 Response body ##
 
+
+
+
+
 -- TODO: write this. Talk about the d object, etc.
+
+
+
+
+
 
 ## 6.2 MIME Type ##
 
@@ -316,14 +399,35 @@ The function metadata URL MUST identify only functions that are bindable to the 
 
 **Don't know what to do here. There's a bug in the OIPI. Alex will fix, then I'll incorporate his fix here.**
 
-## 6.4 Errors ##
+## 6.4 Representing a Set of Links in a Response ##
+
+In OData 1.0 responses, a set of Links is represented exactly as described in [Representing a Set of Links](#representingasetoflinks).
+
+In OData 2.0 and 3.0 responses, a set of Links is represented as shown in the following example.
+
+	{
+		`results`: [
+			{"uri": "http://host/service.svc/Orders(1)"},
+			{"uri": "http://host/service.svc/Orders(2)"}
+		]
+	}
+
+A set of Links MUST be formatted as a single Json object. This object MUST contain a name/value pair. The name MUST be `results`. The value MUST be the Json array used to represent that set of Links in a request. See [Representing a Set of Links](#representingasetoflinks) for details.
+
+The outer Json object MAY contain additional name/value pairs. One such example is the [Inline Count](#inlinecount).
+
+## 6.5 Errors ##
 
 -- TODO: write this.
 
-## 6.5 Next Links ##
+## 6.6 Next Links ##
 
 -- TODO: write this.
 
-## 6.6 Service Document ##
+## 6.7 Inline Count ##
+
+-- TODO: write this.
+
+## 6.8 Service Document ##
 
 -- TODO: write this.

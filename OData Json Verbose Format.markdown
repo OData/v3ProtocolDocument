@@ -232,11 +232,20 @@ The representation for primitives in Json Verbose is specified in <ref>the ABNF<
 
 ## 4.5 Representing a ComplexType Value ##
 
--- TODO: write this.
+In the following example, Address is a Property with a ComplexType value.
+
+	{
+		"CustomerID": "ALFKI",
+		"Address": { "Street": "57 Contoso St", "City": "Seattle" }
+	}
+
+A ComplexType value MUST be represented as a single Json object. It MUST have one name/value pair for each Property that makes up the complex type. Each Property MUST be formatted as appropriate for the property. See [Representing a Property](representingaproperty) for details.
+
+The object representing a ComplexType value SHOULD NOT contain any other name/value pairs.
 
 ## 4.6 Representing a Collection of ComplexType Values ##
 
--- TODO: write this.
+A Collection of ComplexType values MUST be represented as a Json array. Each element in the array MUST be the representation for a ComplexType value. See [Representing a ComplexType Value](#representingacomplextypevalue) for details.
 
 ## 4.7 Representing a Set of Links ##
 

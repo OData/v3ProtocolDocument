@@ -249,7 +249,20 @@ A Collection of ComplexType values MUST be represented as a Json array. Each ele
 
 ## 4.7 Representing a Set of Links ##
 
--- TODO: write this.
+A set of links expresses a relation from one Entity to zero or more related Entities.
+
+The following example shows a set of links represented as appropriate for a request.
+
+	[
+		{"uri": "http://host/service.svc/Orders(1)"},
+		{"uri": "http://host/service.svc/Orders(2)"}
+	]
+
+A set of links MUST be represented as a single Json array. This array MUST contain one item per link.
+
+Each link item MUST be represented as a single Json object. This object MUST contain a single name/value pair. The name MUST be `uri`. The value MUST be a URI for the related Entity.
+
+There are additional considerations for representing a set of links in a response. See [Representing a Set of Links in a Response](#representingasetoflinksinaresponse) for details.
 
 ## 4.8 Representing Annotations ##
 
@@ -325,14 +338,35 @@ The function metadata URL MUST identify only functions that are bindable to the 
 
 **Don't know what to do here. There's a bug in the OIPI. Alex will fix, then I'll incorporate his fix here.**
 
-## 6.4 Errors ##
+## 6.4 Representing a Set of Links in a Response ##
+
+In OData 1.0 responses, a set of Links is represented exactly as described in [Representing a Set of Links](#representingasetoflinks).
+
+In OData 2.0 and 3.0 responses, a set of Links is represented as shown in the following example.
+
+	{
+		`results`: [
+			{"uri": "http://host/service.svc/Orders(1)"},
+			{"uri": "http://host/service.svc/Orders(2)"}
+		]
+	}
+
+A set of Links MUST be formatted as a single Json object. This object MUST contain a name/value pair. The name MUST be `results`. The value MUST be the Json array used to represent that set of Links in a request. See [Representing a Set of Links](#representingasetoflinks) for details.
+
+The outer Json object MAY contain additional name/value pairs. One such example is the [Inline Count](#inlinecount).
+
+## 6.5 Errors ##
 
 -- TODO: write this.
 
-## 6.5 Next Links ##
+## 6.6 Next Links ##
 
 -- TODO: write this.
 
-## 6.6 Service Document ##
+## 6.7 Inline Count ##
+
+-- TODO: write this.
+
+## 6.8 Service Document ##
 
 -- TODO: write this.

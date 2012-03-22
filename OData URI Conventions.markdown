@@ -76,8 +76,12 @@ Is described by the Function Import named "ProductColors" in the service metadat
 ## Query String Options ##
 
 ### System Query Options ###
+System Query Options are query string parameters a client may specify to control the amount and order of the data that an OData service returns for the resource identified by the URI. The names of all System Query Options are prefixed with a "$" character.
+
+An OData service may support some or all of the System Query Options defined. If a data service does not support a System Query Option, it must reject any requests which contain the unsupported option.
 
 ### Filter System Query Option ###
+TODO: MikeP
 
 #### Logical Operators ####
 
@@ -197,18 +201,49 @@ Redundant selectClause rules on the same URI MAY be considered valid, but MUST N
 For AtomPub formatted responses: The value of a selectClause applies only to the properties returned within the m:properties element. For example, if a property of an entity type is mapped with the Customizable Feeds attribute KeepInContent=false, then that property MUST always be included in the response according to its customizable feed mapping.
 
 ### OrderBy System Query Option ###
-
-
+TODO: Mike P
 
 ### Top and Skip System Query Options ###
+TODO: Mike P
 
 ### Inlinecount System Query Option ####
+TODO: Mike P
 
 ### Format System Query Option ###
+A data service URI with a $format system query option specifies that a response to the request SHOULD use the media type specified by the query option.
+
+The syntax of the format system query option is defined in 'format' rule defined in Appendix A. 
+The rules for interpretting the format rule are:
+
+- If the $format query option is present in a request URI, it SHOULD take precedence over the value(s) specified in the Accept request header.
+- If the value of the query option is "atom", then the media type used in the response MUST be "application/atom+xml".
+- If the value of the query option is "json", then the media type used in the response MUST be "application/json".
+- If the value of the query option is "xml", then the media type used in the response MUST be "application/xml".
+
+
+
+#### Examples ####
+This request URI:
+
+	http://host/service.svc/Orders?$format=json
+
+Is equivalent to a request with the "accept" header set to "application/json", so it requests the set of Order entities represented using the JSON media type, as specified in [RFC4627].
+
+The $format query option MAY be used in conjunction with RAW format (section 2.2.6.4) to specify which RAW format is returned.
+
+	http://host/service.svc/Orders(1)/ShipCountry/$value/?$format=json
+The raw value of the ShipCountry using the JSON media type.
 
 ## Custom Query Options ##
+Custom query options provide an extensible mechanism for data service-specific information to be placed in a data service URI query string. A custom query option is any query option of the form shown by the rule "customQueryOption" in Appendix A: ABNF for OData URI Conventions. 
+
+Custom query options MUST NOT begin with a "$" character because the character is reserved for system query options. A custom query option MAY begin with the "@" character, however this doing  can result in custom query options that collide with Function Parameters values specified using Parameter Aliases.
+
+For example this URI addresses provide a 'securitytoken' via a custom query option:
+	http://service.odata.org/OData/OData.svc/Products?$orderby=Name&securitytoken=0412312321
 
 ## Uri Equivalence ##
+When determining if two URIs are equivalent, each URI SHOULD be normalized using the rules specified in [RFC3987](http://www.ietf.org/rfc/rfc3987.txt) and [RFC3986](http:// "http://www.ietf.org/rfc/rfc3986.txt") and then compared for equality using the equivalence rules specified in [HTTP/1.1](http://www.ietf.org/rfc/rfc2616.txt), Section 3.2.3.
 
 # Appendix A: ABNF for OData URI Conventions #
 TODO: Add open properties to the ABNF
@@ -681,10 +716,12 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
                 					select /
                  					skiptoken
 
-	expand						= 	"$expand=" expandClause *("," expandClause)
+	expand						= 	"$expand=" expandClause 
 
-	expandClause  				= 	[ qualifiedEntityTypeName "/" ] navigationPropertyName 
-									*([ "/" qualifiedEntityTypeName ] "/" navigationPropertyName)  
+	expandClause				=  	expandItem *("," expandItem)
+
+	expandItemPath  			= 	[ qualifiedEntityTypeName "/" ] navigationPropertyName 
+									*([ "/" qualifiedEntityTypeName ] "/" navigationPropertyName) 
 
 	count						= 	"/$count" 
 

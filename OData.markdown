@@ -49,6 +49,22 @@ Finally, all instance containers (Entity Sets and Association Sets) are grouped 
 //TODO: put primitive type table here in subsection
 //TODO: what about named streams?  anything else core that I missed?
 
+//TODO: Do we really need association sets? Can we describe the core data model in terms of entities and navigations instead?  --Arlo
+
+//TODO: I think we need subsections here. This does a reasonable job of giving an overview. However, we need somewhere where we go into more details on each of the concepts. Unless we put it here, this stuff will end up in the format-specific documents. I've put some examples here as subsections, but don't think this is complete, nor do I think that everything here necessarily should be here.
+
+## 2.1 Entities ##
+
+## 2.2 NavigationProperties ##
+
+Entities are related to each other via NavigationProperties. A NavigationProperty is a one-way relationship with cardinality 1:many, 1:1, or 1:[0,1]. The property's name defines the relationship. Its value is a reference to the related Entity or collection of Entities.
+
+A NavigationProperty can be seen as a Property on its source Entity. It can also be seen as a relationship. The NavigationLink is the URI that addresses the relationship itself.
+
+## 2.3 EntitySets and collections of Entities ##
+
+## 2.4 Annotations ##
+
 # 4. Notational Conventions #
 
 ------

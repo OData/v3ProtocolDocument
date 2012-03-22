@@ -77,7 +77,7 @@ An instance of an EntityType MUST be serialized as a JSON object.
 
 Each Property to be transmitted MUST be represented as a name/value pair within the object. See [Representing a Property](#representingaproperty) for details. The order Properties appear withing the object MUST be considered insignificant. Name/value pairs not representing a property defined on the EntityType SHOULD NOT be included.
 
-An Entity in a payload MAY be a complete Entity, a projected Entity (see <ref>`$select`</ref>), or a partial Entity update (see <ref>Patch</ref>). A complete Entity MUST transmit every property. A projected Entity MUST transmit the requested properties and MAY transmit other properties. A partial Entity MUST transmit the properties that it intends to change; it MUST NOT transmit any other properties.
+An Entity in a payload MAY be a complete Entity, a projected Entity (see <ref>`$select`</ref>), or a partial Entity update (see <ref>Patch</ref>). A complete Entity MUST transmit every property, including NavigationProperties. A projected Entity MUST transmit the requested properties and MAY transmit other properties. A partial Entity MUST transmit the properties that it intends to change; it MUST NOT transmit any other properties.
 
 The name in a property's name/value MUST NOT be `__metadata`. There is no Json Verbose representation for a property named `__metadata`.
 
@@ -99,7 +99,7 @@ The `etag` name/value pair MAY be included. When included, it MUST represent the
 
 The `id` name/value pair MAY be included if the server is using OData 2.0 and MUST be included if the server is using OData 3.0.
 
-The value of the `properties` name/value pair MUST be an array. It MAY contain a JSON object for each NavigationProperty. See [Representing a NavigationProperty](#representinganavigationproperty) for details.
+The value of the `properties` name/value pair MUST be a Json object. It SHOULD contain a name/value pair for each NavigationProperty. See [Representing NavigationProperty Metadata](#representingnavigationpropertymetadata) for details.
 
 The `actions` name/value pair MAY be included in a response if the server is advertising actions. See [Entity Metadata for Actions](#entitymetadataforactions) for details.
 
@@ -143,11 +143,14 @@ The value for a PrimitiveProperty, a ComplexTypeProperty, or a CollectionPropert
 
 -- TODO: verify. Is this correct for collection types? Does a collection value contain the same object & metadata?
 
-## 4.2.1 Representing a NamedResourceStreamProperty ##
+### 4.2.1 Representing a NamedResourceStreamProperty ###
 
 -- TODO: write this.
 
-## 4.2.2 Representing a NavigationProperty ##
+### 4.2.2 Representing a NavigationProperty ###
+
+
+
 
 --TODO:
 
@@ -187,27 +190,35 @@ A NavigationProperty which is serialized inline MUST be represented as a name/va
 
 **Now back to the parts that are fully written, not just excerpts.**
 
-## 4.3 Representing a Primitive Value ##
+## 4.3 Representing NavigationProperty Metadata ##
+
+Metadata for a NavigationProperty is represented as a name/value pair.
+
+The name MUST be the Property's name.
+
+The value MUST be a Json object containing a single name/value pair. The name must be `associationuri`. The value must be a string containing the NavigationLink URI for that property.
+
+## 4.4 Representing a Primitive Value ##
 
 The representation for primitives in Json Verbose is specified in <ref>the ABNF</ref>.
 
-## 4.4 Representing a ComplexType Value ##
+## 4.5 Representing a ComplexType Value ##
 
 -- TODO: write this.
 
-## 4.5 Representing a Collection of ComplexType Values ##
+## 4.6 Representing a Collection of ComplexType Values ##
 
 -- TODO: write this.
 
-## 4.6 Representing a Set of Links ##
+## 4.7 Representing a Set of Links ##
 
 -- TODO: write this.
 
-## 4.7 Representing Annotations ##
+## 4.8 Representing Annotations ##
 
 -- TODO: write this.
 
-## 4.8 Advertisement for a Function or Action ##
+## 4.9 Advertisement for a Function or Action ##
 
 A Function or Action is advertised via a name/value pair. The name MUST be a Metadata URL. The value MUST be an array of JSON objects.
 

@@ -28,6 +28,9 @@ The following are two example URIs broken down into their component parts:
 The service root URI identifies the root of an OData service. The resource identified by this URI MUST be an AtomPub Service Document (as specified in [RFC5023]) and follow the OData conventions for AtomPub Service Documents (or an alternate representation of an Atom Service Document if a different format is requested). OData: JSON Format specifies such an alternate JSON-based representation of a service document. The service document is required to be returned from the root of an OData service to provide clients with a simple mechanism to enumerate all of the collections of resources available for the data service.
 
 ## Resource Path ##
+The resource path construction rules defined in this section are optional. OData servers are encouraged to follow the URI path construction rules (in addition to the required query string rules) as such consistency promotes a rich ecosystem of reusable client components and libraries.
+
+The resource path section of a URI identifies the resource to be interacted with (such as Customers, a single Customer, Orders related to Customers in London, and so forth). The resource path enables any aspect of the data model (Collections of Entries, a single Entry, Properties, Links, Service Operations, and so on) exposed by an OData service to be addressed.
 
 ### Addressing Entities ###
 
@@ -84,12 +87,100 @@ An OData service may support some or all of the System Query Options defined. If
 TODO: MikeP
 
 #### Logical Operators ####
+OData defines a set of logical operators that evaluate to true or false (i.e. a boolCommonExpr as defined in Appendix A).
+Logical Operators are typically used in the Filter System Query Option to filter the set of resources.
+However Servers MAY allow for the use of Logical Operators with the OrderBy System Query Option.
+ 
+The syntax rules for the Logical Operators are defined in Appendix A.
+
+##### Equals Operator #####
+The Equals operator (or 'eq') evaluates to true if the left operand is equal to the right operand, otherwise if evaluates to false.
+
+##### Not Equals Operator #####
+The Not Equals operator (or 'ne') evaluates to true if the left operand is not equal to the right operand, otherwise if evaluates to false. 	
+ 
+##### Greater Than Operator #####
+The Greater Than operator (or 'gt') evaluates to true if the left operand is greater than the right operand, otherwise if evaluates to false. 	
+
+##### Greater Than or Equal Operator #####
+The Greater Than or Equal operator (or 'ge') evaluates to true if the left operand is greater than or equal to the right operand, otherwise if evaluates to false. 
+
+##### Less Than Operator #####
+The Less Than operator (or 'lt') evaluates to true if the left operand is less than the right operand, otherwise if evaluates to false.
+
+##### Less Than or Equal Operator #####
+The Less Than operator (or 'le') evaluates to true if the left operand is less than or equal to the right operand, otherwise if evaluates to false.
+
+##### Logical And Operator #####
+The Logical And operator (or 'and') evaluates to true if both the left and right operands both evaluate to true, otherwise if evaluates to false.
+
+##### Logical Or Operator #####
+The Logical Or operator (or 'or') evaluates to false if both the left and right operands both evaluate to false, otherwise if evaluates to true.
+
+##### Logical Negation Operator #####
+The Logical Negation Operator (or 'not') evaluates to true if the operand evaluates to false, otherwise it evalutes to false.
+
+##### Examples #####
+The following examples illustrate the use and semantics of each of the logical operators:	
+
+	http://services.odata.org/OData/OData.svc/Products?$filter=Name eq 'Milk' (Requests all products with a Name equal to 'Milk').
+
+	http://services.odata.org/OData/OData.svc/Products?$filter=Name ne 'Milk' (Requests all products with a Name not equal to 'Milk').
+
+	http://services.odata.org/OData/OData.svc/Products?$filter=Name gt 'Milk' (Requests all products with a Name greater than 'Milk'). 
+
+	http://services.odata.org/OData/OData.svc/Products?$filter=Name ge 'Milk' (Requests all products with a Name greater than or equal to 'Milk').
+
+	http://services.odata.org/OData/OData.svc/Products?$filter=Name lt 'Milk' (Requests all products with a Name less than 'Milk').
+
+	http://services.odata.org/OData/OData.svc/Products?$filter=Name le 'Milk' (Requests all products with a Name less than or equal to 'Milk').
+
+	http://services.odata.org/OData/OData.svc/Products?$filter=Name eq 'Milk' and Price lt '2.55M' (Requests all products with the Name 'Milk' that also have a Price less than 2.55).
+
+	http://services.odata.org/OData/OData.svc/Products?$filter=Name eq 'Milk' or Price lt '2.55M' (Requests all products that either have the Name 'Milk' or have a Price less than 2.55).
+
+	http://services.odata.org/OData/OData.svc/Products?$filter=not endswith(Name, 'ilk') (Requests all products that do not have a Name that ends with 'ilk'). 
 
 #### Arithmetic Operators ####
+OData defines a set of arithmetic operators that require operands that evaluate to numeric types.
+Arithmetic Operators are typically used in the Filter System Query Option to filter the set of resources.
+However Servers MAY allow for the use of Arithmetic Operators with the OrderBy System Query Option.
+
+The syntax rules for the Arithmetic Operators are defined in Appendix A.
+
+##### Addition Operator #####
+The Addition Operator (or 'add') adds the left and right numeric operands together.
+
+##### Subtraction Operator #####
+The Subtraction Operator (or 'sub') subtracts the right numeric operand from the left numeric operand.
+
+##### Multiplication Operator #####
+The Multiplication Operator (or 'mul') multiples the left and right numeric operands together.
+
+##### Division Operator #####
+The Division Operator (or 'div') divides the left numeric operand by the right numeric operand.
+
+##### Modulo Operator #####
+The Modulo Operator (or 'mod') evaluates to the remainder when the left integral operand is divided by the right integral operand.
+
+##### Examples ######
+The following examples illustrate the use and semantics of each of the Arithmetic operators:
+
+	http://services.odata.org/OData/OData.svc/Products?$filter=Price add 2.45M eq '5.00M' (Requests all products with a Price of 2.55M).
+
+	http://services.odata.org/OData/OData.svc/Products?$filter=Price sub 0.55M eq '2.00M' (Requests all products with a Price of 2.55M).
+
+	http://services.odata.org/OData/OData.svc/Products?$filter=Price mul 2.0M eq '5.10M' (Requests all products with a Price of 2.55M).
+
+	http://services.odata.org/OData/OData.svc/Products?$filter=Price div 2.55M eq '1M' (Requests all products with a Price of 2.55M).
+
+	http://services.odata.org/OData/OData.svc/Products?$filter=Rating mod 5 eq 0 (Requests all products with a Rating exactly divisable by 5).
 
 #### Grouping Operators ####
 
 #### Canonical Functions ####
+
+#### Operator Precedence ####
 
 ### Expand System Query Option ###
 The presence of the $expand system query option indicates that entities associated with the EntityType instance or EntitySet, identified by the resource path section of the URI, MUST be represented inline instead of as Deferred Content.
@@ -220,8 +311,6 @@ The rules for interpretting the format rule are:
 - If the value of the query option is "json", then the media type used in the response MUST be "application/json".
 - If the value of the query option is "xml", then the media type used in the response MUST be "application/xml".
 
-
-
 #### Examples ####
 This request URI:
 
@@ -232,7 +321,7 @@ Is equivalent to a request with the "accept" header set to "application/json", s
 The $format query option MAY be used in conjunction with RAW format (section 2.2.6.4) to specify which RAW format is returned.
 
 	http://host/service.svc/Orders(1)/ShipCountry/$value/?$format=json
-The raw value of the ShipCountry using the JSON media type.
+The raw value of the ShipCountry property of the matching Order using the JSON media type.
 
 ## Custom Query Options ##
 Custom query options provide an extensible mechanism for data service-specific information to be placed in a data service URI query string. A custom query option is any query option of the form shown by the rule "customQueryOption" in Appendix A: ABNF for OData URI Conventions. 

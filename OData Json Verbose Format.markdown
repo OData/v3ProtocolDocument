@@ -77,7 +77,7 @@ An instance of an EntityType MUST be serialized as a JSON object.
 
 Each Property to be transmitted MUST be represented as a name/value pair within the object. See [Representing a Property](#representingaproperty) for details. The order Properties appear withing the object MUST be considered insignificant. Name/value pairs not representing a property defined on the EntityType SHOULD NOT be included.
 
-An Entity in a payload MAY be a complete Entity, a projected Entity (see <ref>`$select`</ref>), or a partial Entity update (see <ref>Patch</ref>). A complete Entity MUST transmit every property. A projected Entity MUST transmit the requested properties and MAY transmit other properties. A partial Entity MUST transmit the properties that it intends to change; it MUST NOT transmit any other properties.
+An Entity in a payload MAY be a complete Entity, a projected Entity (see <ref>`$select`</ref>), or a partial Entity update (see <ref>Patch</ref>). A complete Entity MUST transmit every property, including NavigationProperties. A projected Entity MUST transmit the requested properties and MAY transmit other properties. A partial Entity MUST transmit the properties that it intends to change; it MUST NOT transmit any other properties.
 
 The name in a property's name/value MUST NOT be `__metadata`. There is no Json Verbose representation for a property named `__metadata`.
 
@@ -99,7 +99,7 @@ The `etag` name/value pair MAY be included. When included, it MUST represent the
 
 The `id` name/value pair MAY be included if the server is using OData 2.0 and MUST be included if the server is using OData 3.0.
 
-The value of the `properties` name/value pair MUST be an array. It MAY contain a JSON object for each NavigationProperty. See [Representing a NavigationProperty](#representinganavigationproperty) for details.
+The value of the `properties` name/value pair MUST be a Json object. It SHOULD contain a name/value pair for each NavigationProperty. See [Representing NavigationProperty Metadata](#representingnavigationpropertymetadata) for details.
 
 The `actions` name/value pair MAY be included in a response if the server is advertising actions. See [Entity Metadata for Actions](#entitymetadataforactions) for details.
 
@@ -143,71 +143,184 @@ The value for a PrimitiveProperty, a ComplexTypeProperty, or a CollectionPropert
 
 -- TODO: verify. Is this correct for collection types? Does a collection value contain the same object & metadata?
 
-## 4.2.1 Representing a NamedResourceStreamProperty ##
+### 4.2.1 Representing a NamedResourceStreamProperty ###
 
 -- TODO: write this.
 
-## 4.2.2 Representing a NavigationProperty ##
+### 4.2.2 Representing a NavigationProperty ###
 
---TODO:
+A NavigationProperty represents a reference from a source Entity to zero or more other Entities.
 
-**This section is still a work in progress. It contains stuff from multiple chunks of the OIPI.**
+There are two representations for a NavigationProperty: deferred and expanded. The deferred representation represents each related entity with a URI. The expanded representation represents each related entity with its expanded contents.
 
-**From one place (in metadata)**
+By default, a server SHOULD represent each NavigationProperty in the deferred format. This conserves resources.
 
-The value for a NavigationProperty MUST be a string. This string MUST be  the URI that can be used to manage the relationship between the related entities.
+A client MAY request that a NavigationProperty be expanded, using a combination of $expand and $select. The server MUST represent each NavigationProperty so requested in the expanded format.
 
-**From another**
+#### 4.2.2.1 Example Deferred NavigationProperty ####
 
-The default representation of a NavigationProperty is as a JSON name/value pair. The name is equal to "__deferred" and the value is a JSON object that contains a single name/value pair with the name equal to "uri". The value of the "uri" name/value pair MUST be a URI relative to the service root URI, as specified in Service Root (section 2.2.3.2), that identifies the NavigationProperty.
+	{
+		"CustomerID": "ALFKI",
+		"Orders":  {
+			"__deferred": {
+				"uri": "Customers(\'ALFKI\')/Orders" 
+			}
+		},
+		"__metadata": {
+			"properties" : {
+				"Orders" : {
+					"associationuri" : "Customers(\'ALFKI\')/$links/Orders"
+				}
+			}
+		}
+	}
 
-The syntax of a NavigationProperty, represented within a JSON object, is shown using the grammar rule "deferredNavProperty" in the Entity Type JSON Representation listing in Entity Type (as a JSON object) (section 2.2.6.3.3).
+#### 4.2.2.2 Example Expanded NavigationProperty ####
 
-Version 3.0 adds another JSON object with the name "properties" to the "__metadata" object that contains an array of objects, each of which SHOULD have the name of a NavigationProperty in the entity. Each object has one name/value pair with the name "associationuri". The value of the "associationuri" name/value pair MUST be a URI that represents the association between the related entities.
+	{
+		"CustomerID": "ALFKI",
+		"Orders": {
+			Results: [
+				{
+					"__metadata": { ... },
+					"OrderID": 1,
+					...
+				},
+				{ ... }
+			],
+		},
+		"__metadata": {
+			"properties" : {
+				"Orders" : {
+					"associationuri" : "Customers(\'ALFKI\')/$links/Orders"
+				}
+			}
+		}
+	}
 
-The syntax of the version 3.0 properties object is shown by using the grammar rule "propmetadataNVP" in the Entity Type JSON Representation listing in Entity Type (as a JSON object) (section 2.2.6.3.3)).
+#### 4.2.2.3 Representing a Deferred NavigationProperty ####
 
-**And from a third**
+A deferred NavigationProperty is represented as a name/value pair. The name MUST be the name of the property. The value must be a Json object.
 
-2.2.6.3.9   Deferred Content
+The value must contain a single name/value pair. This name MUST be `__deferred`. The inner value MUST be another Json object.
 
-The serialized representation of an entity and its related entities, identified by NavigationProperties, may be large. To conserve resources (bandwidth, CPU, and so on), it is generally not a good idea for a data service to return the full graph of entities related to the EntityType instance or set identified in a request URI. For example, a data service SHOULD defer sending entities represented by any navigation property in a response unless explicitly asked to send those entities via the $expand system query option, as described in Expand System Query Option ($expand) (section 2.2.3.6.1.3).
+The inner Json Object must contain a single name/value pair. The name must be `uri`. The value must be the URI for the NavigationProperty (this is not the NavigationLink URI).
 
-In JSON-formatted EntityType instances (see Entity Type (as a JSON object) (section 2.2.6.3.3)), NavigationProperties serialized as name/value pairs in which the value is a JSON object containing a single name/value pair with the name "__deferred" and a value that is a JSON object containing a single name/value pair with the name "uri" and a string value, which is a URL that can be used to retrieve the deferred content, signify deferred NavigationProperty content (for example, the entities represented by the NavigationProperty are not serialized inline). For example, using the two EntityTypes Customer and Order, as described in Appendix A: Sample Entity Data Model and CSDL Document (section 6), the default JSON serialization (with deferred NavigationProperty content) of the Customer instance with EntityKey value of "ALFKI" is shown in Entity Type (as a JSON object) (section 2.2.6.3.3).
+See [Example Deferred NavigationProperty](#exampledeferrednavigationproperty) for an example.
 
-In the example, the presence of the "__deferred" name/value pair signifies that the value of the Orders NavigationProperty is not directly represented on the JSON object in this serialization. In order to obtain the deferred value(s), a client would make a separate request directly to the navigation property URI (service.svc/Customers('ALFKI')/Orders) or explicitly ask that the property be serialized inline via the $expand system query option, as described in Expand System Query Option ($expand) (section 2.2.3.6.1.3).
+#### 4.2.2.4 Representing an Expanded NavigationProperty ####
 
-**Continuing to excerpt**
+An expanded NavigationProperty is represented as a name/value pair. The name MUST be the name of the property.
 
-2.2.6.3.9.1   Inline Representation
+The value MUST be the correct representation of the related Entity or EntitySet. See [Representing an Entity](#representinganentity), [Representing Multiple Entities in a Response](#representingmultipleentitiesinaresponse), or  [Representing Multiple Entities in a Request](#representingmultipleentitiesinarequest) for details.
 
-As described in Expand System Query Option ($expand) (section 2.2.3.6.1.3), a request URI may include the $expand system query option to explicitly request the entity or entities represented by a NavigationProperty be serialized inline, rather than deferred. The example below uses the same data model as the Deferred Content example referenced above; however, this example shows the value of the Orders NavigationProperty serialized inline.
+See [Example Expanded NavigationProperty](#exampleexpandednavigationproperty) for an example.
 
-A NavigationProperty which is serialized inline MUST be represented as a name/value pair on the JSON object with the name equal to the NavigationProperty name. If the NavigationProperty identifies a single EntityType instance, the value MUST be a JSON object representation of that EntityType instance, as specified in Entity Type (as a JSON object) (section 2.2.6.3.3). If the NavigationProperty represents an EntitySet, the value MUST be as specified in Entity Set (as a JSON array) (section 2.2.6.3.2).
+## 4.3 Representing NavigationProperty Metadata ##
 
-**Now back to the parts that are fully written, not just excerpts.**
+Metadata for a NavigationProperty is represented as a name/value pair.
 
-## 4.3 Representing a Primitive Value ##
+The name MUST be the Property's name.
+
+The value MUST be a Json object containing a single name/value pair. The name must be `associationuri`. The value must be a string containing the NavigationLink URI for that property.
+
+See [Example Deferred NavigationProperty](#exampledeferrednavigationproperty) for an example.
+
+## 4.4 Representing a Primitive Value ##
 
 The representation for primitives in Json Verbose is specified in <ref>the ABNF</ref>.
 
-## 4.4 Representing a ComplexType Value ##
+## 4.5 Representing a ComplexType Value ##
 
--- TODO: write this.
+In the following example, Address is a Property with a ComplexType value.
 
-## 4.5 Representing a Collection of ComplexType Values ##
+	{
+		"CustomerID": "ALFKI",
+		"Address": { "Street": "57 Contoso St", "City": "Seattle" }
+	}
 
--- TODO: write this.
+A ComplexType value MUST be represented as a single Json object. It MUST have one name/value pair for each Property that makes up the complex type. Each Property MUST be formatted as appropriate for the property. See [Representing a Property](representingaproperty) for details.
 
-## 4.6 Representing a Set of Links ##
+The object representing a ComplexType value SHOULD NOT contain any other name/value pairs.
 
--- TODO: write this.
+## 4.6 Representing a Collection of ComplexType Values ##
 
-## 4.7 Representing Annotations ##
+A Collection of ComplexType values MUST be represented as a Json array. Each element in the array MUST be the representation for a ComplexType value. See [Representing a ComplexType Value](#representingacomplextypevalue) for details.
 
--- TODO: write this.
+## 4.7 Representing a Set of Links ##
 
-## 4.8 Advertisement for a Function or Action ##
+A set of links expresses a relation from one Entity to zero or more related Entities.
+
+The following example shows a set of links represented as appropriate for a request.
+
+	[
+		{"uri": "http://host/service.svc/Orders(1)"},
+		{"uri": "http://host/service.svc/Orders(2)"}
+	]
+
+A set of links MUST be represented as a single Json array. This array MUST contain one item per link.
+
+Each link item MUST be represented as a single Json object. This object MUST contain a single name/value pair. The name MUST be `uri`. The value MUST be a URI for the related Entity.
+
+There are additional considerations for representing a set of links in a response. See [Representing a Set of Links in a Response](#representingasetoflinksinaresponse) for details.
+
+## 4.8 Representing Annotations ##
+
+Annotations MAY be applied to any name/value pair in a Json payload that represents a value of any type from the EDM.
+
+The following example shows annotations applied to many different constructs.
+
+	{
+		"@results": {
+			"com.constoso.customer.setkind" : "VIPs"
+		},
+		"results" : [
+			{
+				"__metadata": { ... },
+				"com.constoso.customer.kind" : "VIP",
+				"com.constoso.display.order" : 1,
+				"CustomerID": "ALFKI",
+				"@CompanyName" : { 
+					"com.contoso.display" : { "title" : true, "order" : 1 }
+				}
+				"CompanyName": "Alfreds Futterkiste",
+				"Orders": { 
+					"com.contoso.purchaseorder.priority" : 1,
+					"__deferred": { "uri": "Customers('ALFKI')/Orders" }   
+				}
+			}
+		]
+	}
+
+In general, it is possible to express an annotation internally or externally to a value. However, an annotation is always a name/value pair. Therefore, it can only be expressed within a Json object. Some EDM constructs are not represented with Json objects. Therefore some types may only be annotated externally.
+
+See the specific subsections of this section for normative rules abuot how to represent annotations on various types.
+
+### 4.8.1 Annotate a Value Represented as a Json Object ###
+
+This section applies when annotating a name/value pair for which the value is represented as a Json object.
+
+Each annotation MUST be applied internally. Each annotation MUST be represented as a single name/value pair.
+
+The name MUST be the fully-scoped name of the annotation. This name MUST include namespace and name, separated by a period (`.`).
+
+The value MUST be the appropriate value for the annotation.
+
+### 4.8.2 Annotate a Value Represented as a Json Array or Primitive ###
+
+This section applies when annotating a name/value pair for which the value is not represented as a Json object.
+
+The set of all annotations that apply to this name/value pair MUST be applied externally. This set of annotations is represented as a single name/value pair.
+
+The name MUST be the same as the name of the name/value pair being annotated, prefixed with the at sign (`@`).
+
+The value MUST be a Json object. Each annotation in the set MUST be represented as a single name/value pair within this object.
+
+The name MUST be the fully-scoped name of the annotation. This name MUST include namespace and name, separated by a period (`.`).
+
+The value MUST be the appropriate value for the annotation.
+
+## 4.9 Advertisement for a Function or Action ##
 
 A Function or Action is advertised via a name/value pair. The name MUST be a Metadata URL. The value MUST be an array of JSON objects.
 
@@ -233,7 +346,16 @@ This section describes additional payload semantics that only apply to response 
 
 ## 6.1 Response body ##
 
+
+
+
+
 -- TODO: write this. Talk about the d object, etc.
+
+
+
+
+
 
 ## 6.2 MIME Type ##
 
@@ -277,14 +399,35 @@ The function metadata URL MUST identify only functions that are bindable to the 
 
 **Don't know what to do here. There's a bug in the OIPI. Alex will fix, then I'll incorporate his fix here.**
 
-## 6.4 Errors ##
+## 6.4 Representing a Set of Links in a Response ##
+
+In OData 1.0 responses, a set of Links is represented exactly as described in [Representing a Set of Links](#representingasetoflinks).
+
+In OData 2.0 and 3.0 responses, a set of Links is represented as shown in the following example.
+
+	{
+		`results`: [
+			{"uri": "http://host/service.svc/Orders(1)"},
+			{"uri": "http://host/service.svc/Orders(2)"}
+		]
+	}
+
+A set of Links MUST be formatted as a single Json object. This object MUST contain a name/value pair. The name MUST be `results`. The value MUST be the Json array used to represent that set of Links in a request. See [Representing a Set of Links](#representingasetoflinks) for details.
+
+The outer Json object MAY contain additional name/value pairs. One such example is the [Inline Count](#inlinecount).
+
+## 6.5 Errors ##
 
 -- TODO: write this.
 
-## 6.5 Next Links ##
+## 6.6 Next Links ##
 
 -- TODO: write this.
 
-## 6.6 Service Document ##
+## 6.7 Inline Count ##
+
+-- TODO: write this.
+
+## 6.8 Service Document ##
 
 -- TODO: write this.

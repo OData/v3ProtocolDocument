@@ -87,11 +87,118 @@ Is described by the Function Import named "ProductColors" in the service metadat
 
 #### Canonical Functions ####
 
+### Expand System Query Option ###
+The presence of the $expand system query option indicates that entities associated with the EntityType instance or EntitySet, identified by the resource path section of the URI, MUST be represented inline instead of as Deferred Content.
+
+What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that applies to the Expand System Query Option: 
+
+	expand						= 	"$expand=" expandClause 
+
+	expandClause				=  	expandItem *("," expandItem)
+
+	expandItemPath  			= 	[ qualifiedEntityTypeName "/" ] navigationPropertyName 
+									*([ "/" qualifiedEntityTypeName ] "/" navigationPropertyName)  
+
+Each expandItem MUST be evaluated relative to the EntityType of request, which is EntityType of the resource(s) identified by the ResourcePath part of the URI.
+
+To expand a NavigationProperty defined on a derived type first a cast MUST be introduced using the qualifiedEntityTypeName of the required derived type. The left most navigationPropertyName segment MUST identify a Navigation Property defined on the EntityType of the request or an EntityType derived from the EntityType of the request. Subsequent navigationPropertyName segments MUST identify Navigation Properties defined on the EntityType returned by the previous NavigationProperty or the EntityType introduced in the previous cast.
+
+Examples
+
+	http://host/service.svc/Customers?$expand=Orders
+
+For each customer entity within the Customers EntitySet, the value of all associated Orders should be represented inline.
+
+	http://host/service.svc/Orders?$expand=OrderLines/Product,Customer
+
+For each Order within the Orders EntitySet, the following should be represented inline:
+
+- The Order lines associated to the Orders identified by the resource path section of the URI and the products associated to each Order line.
+- The customer associated with each Order returned.
+
+The OData 3.0 protocol supports specifying the namespace-qualified EntityType on which the NavigationProperty is defined as part of the expand statement.
+
+	http://host/service.svc/Customers?$expand=SampleModel.VipCustomer/InHouseStaff
+
+For each Customer entity in the Customers EntitySet, the value of all associated InHouseStaff MUST be represented inline if the entity is of type VipCustomer or a subtype of that. For entity instances that are not of type VipCustomer, or any of its subtypes, that entity instance MUST be returned with no inline representation for the expanded NavigationProperty.
+
+The server MUST include any actions or functions that are bound to the associated entities that are introduced via an expandClause, unless a select system query option is also included in the request and that $select requests that the actions/functions be omitted.
+
+Redundant expandClause rules on the same data service URI MAY be considered valid, but MUST NOT alter the meaning of the URI.
+
 ### Select System Query Option ###
+The $select system query option allows clients to requests a limited set of information for each Entity or ComplexType identified by the ResourcePath and other System Query Options like $filter, $top, $skip etc. When present $select instructs the server to return only the Properties, Open Properties, Related Properties, Actions and Functions explicitly requested by the client, however servers MAY choose to return more information.
+
+What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that applies to the Select System Query Option: 
+
+	select 						=	"$select=" selectClause
+	selectClause   				= 	selectItem *( COMMA selectItem )
+	selectItem     				= 	star / 
+									[ qualifiedEntityTypeName "/" ] 
+									(
+										propertyName / 
+										qualifiedActionName / 
+										qualifiedFunctionName / 
+										allOperationsInContainer /
+										( navigationProperty [ "/" selectItem ] )
+									)
+
+
+The selectClause MUST be interpretted relative to the EntityType or ComplexType of the resources identified by the resource path section of the URI, for example:
+
+	http://services.odata.org/OData/OData.svc/Products?$select=Rating,ReleaseDate
+
+In this URI the "Rating,ReleaseDate" selectClause MUST be interpreted relative to the Product EntityType which is the EntityType of the resources identified by this http://services.odata.org/OData/OData.svc/Products URI.
+
+Each selectItem in the selectClause, indicates that the response SHOULD include the Properties, Open Properties, Related Properties, Actions and Functions identified by that selectClause. 
+
+The simpliest selectItem requests a single Property defined on the EntityType of the resources identified by the resource path section of the URI, for example this URI asks the server to return just the Rating and ReleaseDate for the matching Products: 
+
+	http://services.odata.org/OData/OData.svc/Products?$select=Rating,ReleaseDate
+
+It is also possible to request all properties, using a star request:
+
+	http://services.odata.org/OData/OData.svc/Products?$select=*
+
+If a selectClause consists of a single selectItem that is a star (i.e. *), then all properties and navigation properties on the matching resources MUST be returned.
+
+If a navigation property appears as the last segment of a selectItem and does not appear in an $expand query option, the entity or collection of entities identified by the navigation property MUST be represented as deferred content.
+
+Each selectItem is a path, while often simply a propertyName or star, the path MAY include a cast to a derived type using a qualifiedEntityTypeName segment or a navigation to a related entity via navigationProperty segment followed by a nested selectItem. For example the following URI requests, the Spokesperson property of any Products that are of the derived type idenfitied by the qualifiedEntityType 'Namespace.BestSellingProduct', and the AccountRepresentative property of any related Supplier that is of a the derived type 'Namespace.PreferredSupplier':
+	
+	http://service.odata.org/OData/OData.svc/Products?$select=Namespace.BestSellingProduct/Spokesperson,Supplier/Namespace.PreferredSupplier/AccountRepresentative
+
+If a navigation property appears as the last segment of a selectItem and the same navigation property is specified as a segment of a path in an $expand query option, then all the properties of the expanded entity identified by the selectItem MUST be in the response. In addition, all the properties of the entities identified by segments in the $expand path after the segment that matched the selectedItem MUST also be included in the response.
+
+In order to select any nested properties of NavigationProperties the client MUST also include an expandClause for that NavigationProperty. For example the following URI expands the Category NavigationProperty so the Name of the Category can be selected.
+
+	http://services.odata.org/OData/OData.svc/Products?$select=Category/Name&$expand=Category
+
+If a property, open property, navigation property or operation is not requested as a selectItem (explicitly or via a star), it SHOULD NOT be included in the response.
+
+A star SHOULD NOT reintroduce actions or functions. Thus if any selectClause is specified, actions and functions SHOULD be omitted unless explicitly requested using a qualifiedActionName, a qualifiedFunctionName or the allOperationsInContainer clause.
+
+Actions and Functions information can be explicitly requested with a selectItem containing either a qualifiedActionName or a qualifiedFunctionName or can be implicitly requested using a selectItem contain the allOperationsInContainer clause. 
+
+For example this URI requests the ID property, the 'ActionName' action defined in 'Container' and all actions and functions defined in the 'Container2' for each product, if those actions and functions can be bound to that product:
+
+	http://service.odata.org/OData/OData.svc/Products?$select=Container.ActionName,Container2.*
+
+If an action is requested as a selectedItem, either explicitly by using an qualifiedActionName clause or implicitly by using an allOperationsInContainer clause, the server MUST include in the response information about how to invoke that action for each of the entities identified by the last path segment in the request URI, if the action can be bound to those entities.
+
+If a function is requested as a selectedItem, either explicitly by using an qualifiedFunctionName clause or implicitly by using an allOperationsInContainer clause, the server MUST include in the response information about how to invoke that function for each of the entities that are identified by the last path segment in the request URI, if and only if the function can be bound to those entities.
+
+If an action or function is requested in a selectItem using a qualifiedActionName or a qualifiedFunctionName clause and that action or function cannot be bound to the entities requested, the server MUST ignore the selectItem clause.
+
+When multiple selectItems exist in a selectClause, then the total set of property, open property, navigation property, actions and functions to be returned is equal to the union of the set of those identified by each selectItem.
+
+Redundant selectClause rules on the same URI MAY be considered valid, but MUST NOT alter the meaning of the URI.
+
+For AtomPub formatted responses: The value of a selectClause applies only to the properties returned within the m:properties element. For example, if a property of an entity type is mapped with the Customizable Feeds attribute KeepInContent=false, then that property MUST always be included in the response according to its customizable feed mapping.
 
 ### OrderBy System Query Option ###
 
-### Expand System Query Option ###
+
 
 ### Top and Skip System Query Options ###
 
@@ -103,46 +210,27 @@ Is described by the Function Import named "ProductColors" in the service metadat
 
 ## Uri Equivalence ##
 
-# Appendix A: ABNF for OData URIs #
+# Appendix A: ABNF for OData URI Conventions #
+TODO: Add open properties to the ABNF
 
-TODO:
+The following Augmented Backus–Naur Form (ABNF) details the construction rules for OData Uris that target OData services that follow the Uri Conventions specified in this document.
 
-	DONE $metadata
-	$metadata # links
-	DONE primitive literals
-	TODO: arlo - spatial literals
-	DONE servicedoc
-	DONE entitysets
-	DONE keys
-	DONE navigationPath
-	DONE $links
-	DONE $count
-	DONE $select 
-	DONE $expand 
-	DONE $top
-	DONE $skip 
-	DONE $skiptoken
-	$orderby 
-	$filter 
-	DONE $format 
-	DONE $inlinecount
-	DONE serviceOperations
-	functions
-	DONE actions
-	DONE $value
-
-
-----------
-	;
-	;	CORE
-	;
-    pchar 						= 	; section 3.3 of [RFC3986]   
-
+	
 	WSP							= 	; core to ABNF, see [RFC5234]
 
 	DIGIT						= 	; core to ABNF, see [RFC5234]
                    
 	HEXDIG						= 	; core to ABNF, see [RFC5234]
+
+	ALPHA						= 	; core to ABNF, see [RFC5234]
+
+    pchar 						= 	unreserved / pct-encoded / sub-delims / ":" / "@" 				; see [RFC3986]  
+	
+	unreserved  				= 	ALPHA / DIGIT / "-" / "." / "_" / "~" 							; see [RFC3986]  
+	
+	pct-encoded 				= 	"%" HEXDIG HEXDIG												; see [RFC3986] 
+	
+	sub-delims  					= 	"!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="	; see [RFC3986]  
 
 	SQUOTE            			= 	%x27              ; ' (single quote)
 	
@@ -202,10 +290,15 @@ TODO:
 
 	sign						= 	"+" / "-"
 
-----------
-	;
-	;	EDM
-	;
+	begin-object				= 	"{"
+
+	end-object					=	"}"
+
+	value-separator				= 	COMMA
+
+	name-separator				=	":"
+
+	star           				= 	"*"
 
 	odataIdentifier				= 	1*479pchar
 
@@ -234,7 +327,6 @@ TODO:
 										qualifiedComplexTypeName / 
 										primitiveTypeName 
 									) ")"
-									; TODO verify here.
 
 	qualifiedEntityTypeName 	= 	namespace "." entityTypeName
 
@@ -332,10 +424,6 @@ TODO:
 
 	navigationProperty	 		= 	entityNavigationProperty / entityColNavigationProperty  
 
-	;
-	;	 FUNCTIONS
-	;
-
 	entityFunction				= 	odataIdentifier
 									; identifies by name a Function that returns an Entity
 
@@ -385,9 +473,6 @@ TODO:
 									fullComplexColFunction /
 									fullPrimitiveFunction /
 									fullPrimitiveColFunction            
-	;
-	; 	ACTIONS
-	;
 
 	entityAction				=	odataIdentifier
 									; identifies by name an Action that returns an Entity
@@ -435,11 +520,6 @@ TODO:
                       				; in the order they are declared in the FunctionImport
 
 	parameterTypeName     		= 	qualifiedTypeName 
-
-----------
-	;
-	;	LITERALS
-	;
 
     primitiveLiteral 			=	null /
 									binary / 
@@ -568,14 +648,6 @@ TODO:
 									; the above is an approximation of the rules for an xml duration.
 									; see the lexical representation for duration in http://www.w3.org/TR/xmlschema-2 for more information
 
-
-
-
-	;
-	;	URLS
-	;
-
-
 	odataUri      				= 	scheme           ; see section 3.1 of [RFC3986]
                       			  	host             ; section 3.2.2 of [RFC3986]
                                   	[ ":" port ]     ; section 3.2.3 of [RFC3986]                         
@@ -616,9 +688,10 @@ TODO:
 
 	count						= 	"/$count" 
 
-	filter						= 	"$filter="
+	filter						= 	"$filter" [ WSP ] "=" [ WSP] boolCommonExpr
 	
-	orderby						=	"$orderby="
+	orderby						=	"$orderby" [ WSP ] "=" [ WSP] 
+									commonExpr [WSP] [ "asc" / "desc" ] *( COMMA [ WSP ]  commonExpr [ WSP ] [ "asc" / "desc" ])
 
 	skip						=   "$skip=" 1*DIGIT
 
@@ -636,10 +709,10 @@ TODO:
 
 	select 						=	"$select=" selectClause
 
-	selectClause   				= 	selectItem *("," selectItem)
+	selectClause   				= 	selectItem *( COMMA selectItem )
 
 	selectItem     				= 	star / 
-									[ qualifiedEntityType "/" ] (
+									[ qualifiedEntityTypeName "/" ] (
 										propertyName / 
 										qualifiedActionName / 
 										qualifiedFunctionName / 
@@ -647,11 +720,15 @@ TODO:
 										( navigationProperty [ "/" selectItem ] )
 									)
 
-	star           				= 	"*"
-
 	skiptoken					=  	"$skiptoken=" 1*pchar
 
-	customQueryOption   		= 	;TODO: look for something in RFC3986
+	customQueryOption   		= 	customName [ WSP ] [ "=" [ WSP ] customValue ]
+
+	customName 					=	( unreserved / pct-encoded / ":" / "@" / "!" / "'" / "(" / ")" / "*" / "+" / "," / ";" ) 
+									*( unreserved / pct-encoded / ":" / "@" / "!" / "$" / "'" / "(" / ")" / "*" / "+" / "," / ";" )			
+									; MUST not start with '$'
+
+	customValue					= 	*( unreserved / pct-encoded / ":" / "@" / "!" / "$" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "=" )
 
 	resourcePath				= 	"/"	
 									[ entityContainerName "." ] entitySetName [collectionNavigation] /
@@ -719,10 +796,6 @@ TODO:
 
     value                   	= 	"/$value"
 
-	;
-	; 	KEYS
-	;
-
 	key 						= 	simpleKey / compoundKey
 
 	simpleKey 					= 	"(" primitiveLiteral ")"
@@ -732,18 +805,13 @@ TODO:
     keyValuePair 				= 	primitiveKeyProperty "=" keyPropertyValue
 
 	keyPropertyValue			= 	primitiveLiteral
-	
-	;
-	;	ACTION CALL
-	;
+
 	actionCall					= 	[ operationQualifier ] action [ "()" ]
 
 	boundActionCall				= 	[ operationQualifier ] action [ "()" ]
 									; with the added restriction that the binding parameter MUST be either an Entity or Collection of Entities
                                     ; and is specified by reference using the Uri immediately preceding (to the left) of the boundActionCall
-	;
-	;	FUNCTION CALL
-	;
+
 	entityFunctionCall			= 	fullEntityFunctionCall functionParameters
 
 	entityColFunctionCall		=	fullEntityColFunctionCall functionParameters
@@ -812,20 +880,66 @@ TODO:
 
 	parameterAndValue			= 	functionParameterName "=" parameterValue
 
-	parameterValue				= 	primitiveLiteral / 
-									complexTypeInJson / 
-									colPrimitiveInJson /
-									colComplexTypeInJson
+	primitivePropInJSONLight	=	TODO: arlo JSON Light format
+									; unreferenced until complexInJSONLight is defined.
 
-	complexTypeInJson			= 	TODO
+	primitivePropertyInVJSON	=	quotation-mark ( primitiveKeyProperty / primitiveNonKeyProperty ) quotation-mark name-separator primitiveLiteralInVJSON
 
-	colPrimitiveInJson			= 	TODO
+	complexPropertyInJSON		= 	complexPropertyInVJSON / complexPropertyInJSONLight
 
-	colComplexTypeInJson		= 	TODO
+	complexPropertyInVJSON		= 	quotation-mark complexProperty quotation-mark name-separator complexInVJSON
 
-	;
-	;	SERVICE OPERATION CALL
-	;
+	complexPropertyInJSONLight	= 	TODO: arlo JSON Light format.
+
+	collectionPropertyInJSON	= 	colPropertyInJSONLight / collectionPropertyInVJSON
+
+	collectionPropertyInVJSON	= 	( quotation-mark primitiveColProperty quotation-mark name-separator "[" [ primitiveVJSONLiteral *( COMMA primitiveLiteralInVJSON ) ] "]" /
+									( quotation-mark complexColProperty quotation-mark name-separator "[" [ complexInVJSON *( COMMA complexInVJSON ) ] "]" /
+		
+	colPropertyInJSONLight 		= 	TODO: alro JSON Light format
+
+	primitiveLiteralInVJSON		= 	TODO: arlo VJSON format.
+
+	primitiveLiteralInJSONLight	= 	TODO: arlo JSON Light format.
+							
+	complexTypeMetadataInVJSON 	= 	quotation-mark "__metadata" quotation-mark
+                   					name-separator
+                   					begin-object
+                   					[typeNVPInVJSON]
+                   					end-object
+
+	typeNVPInVJSON				= 	quotation-mark "type" quotation-mark
+                    				name-separator
+                    				quotation-mark qualifiedTypeName quotation-mark
+
+	parameterValue				= 	primitiveLiteral / 						; note this is a Uri literal not a JSON literal
+									complexTypeInJSON / 
+									primitiveColInJSON /
+									complexColInJSON
+
+	complexInJSON				=	complexInVJSON / complexInJSONLight
+
+	complexInJSONLight			= 	TODO: arlo JSON light format
+
+	complexInVJSON 				= 	begin-object
+                  					[
+                    					(
+					                      	complexTypeMetadataInVJSON / 
+											primitivePropertyInVJSON /
+											complexPropertyInVJSON /
+											collectionPropertyInVJSON  
+					                    )
+					                    *( 
+					                      	value-separator 
+											( 
+												primitivePropertyInVJSON /
+												complexPropertyInVJSON /
+												collectionPropertyInVJSON  
+											) 
+					                    )
+					                ]  
+									end-object
+
 
 	entityServiceOpCall			= 	[ operationQualifier ] entityServiceOp [ "()" ]
 	
@@ -851,10 +965,6 @@ TODO:
 	
 	sopParameterNameAndValue	= 	serviceOperationParameterName "=" primitiveParameterValue
 									; when a serviceOperation Parameter is omitted the parameter value MUST be assumed to be null		
-
-	;
-	; 	EXPRESSIONS
-	;
     
 	commonExpr		 			= 	[ WSP ] (
 										boolCommonExpr / 
@@ -892,6 +1002,10 @@ TODO:
 										boolParenExpr /
               							boolFunctionCallExpr
 									) [ WSP ]
+
+	boolLiteralExpr				=   boolean
+
+	literalExpr					=	primitiveLiteral
 
 	parenExpr		 			= 	"(" [ WSP ] commonExpr [ WSP ] ")"
 
@@ -934,17 +1048,16 @@ TODO:
 	boolCastExpr       			= 	"cast" [ WSP ] "(" [ [ WSP ] commonExpr [ WSP ] "," ] [ WSP ] "Edm.Boolean" [ WSP ] ")"
 
 	firstMemberExpr       		= 	[ WSP ] [ qualifiedEntityTypeName "/"]
-                        			[ lambdaPredicatePrefixExpression ]
-                        			; A lambdaPredicatePrefixExpression is only defined inside a 
-                        			; lambdaPredicateExpression. A lambdaPredicateExpression is required   
-                        			; inside a lambdaPredicateExpression.
+                        			[ lambdaPredicatePrefixExpr ]
+                        			; A lambdaPredicatePrefixExpr is only defined inside a 
+                        			; lambdaPredicateExpr. A lambdaPredicateExpr is required   
+                        			; inside a lambdaPredicateExpr.
                         			entityColNavigationProperty [ collectionNavigationExpr ] ) /
                                     entityNavigationProperty [ singleNavigationExpr ] ) /
 									primitivePropertyPath / 
                                     complexPropertyPath /
-									collectionPropertyPath [ anyExpression / allExpression ]
+									collectionPropertyPath [ anyExpr / allExpr ]
 
-	; TODO: what is this for?
 	firstBoolPrimitiveMemExpr 	= 	[ qualifiedEntityTypeName "/"] entityProperty
 
 	boolPrimitiveMemberExpr	 	= 	commonExpr [ WSP ]  "/" [WSP]
@@ -955,13 +1068,13 @@ TODO:
                                     entityNavigationProperty [ singleNavigationExpr ] ) /
 									primitivePropertyPath / 
                                     complexPropertyPath /
-									collectionPropertyPath [ anyExpression / allExpression ]
+									collectionPropertyPath [ anyExpr / allExpr ]
 
 	collectionNavigationExpr	= 	[ "/" qualifiedEntityTypeName ] "/" 
 									(
                                   		boundFunctionExpr /
-										anyExpression / 
-										allExpression
+										anyExpr / 
+										allExpr
 									)
 
 	singleNavigationExpr		= 	[ "/" qualifiedEntityTypeName ] "/"
@@ -970,46 +1083,61 @@ TODO:
                                         ( entityNavigationProperty [ singleNavigationExpr ] ) /
 										primitivePropertyPath / 
                                         complexPropertyPath /
-										collectionPropertyPath [ anyExpression / allExpression ] / 
+										collectionPropertyPath [ anyExpr / allExpr ] / 
                                         streamPropertyPath / 
                                         boundFunctionExpr 
                                		)
+	
+	functionExpr				= 	(
+										entityColFuncCall [ singleNavigationExpr ] /
+										entityFuncCall [ collectionNavigationExpr ] /
+										primitiveFuncCall [ boundOperationExpr ] /
+										primitiveColFuncCall [ boundOperationExpr ] /
+										complexFuncCall [ complexPropertyPath / boundOperationExpr ] /
+										bomplexColFuncCall [ boundOperationExpr ]
+									)
 
+	boolFunctionExpr 			= 	functionExpr
+                       				; with the added restriction that the boolFunctionExpr MUST return a boolean value
+	
 	boundFunctionExpr			= 	[ "/" qualifiedEntityTypeName ] 
 									"/" 
 									(
 										boundEntityColFuncCall [ singleNavigationExpr ] /
 										boundEntityFuncCall [ collectionNavigationExpr ] /
-										boundPrimitiveFuncCall [ boundOperationExpr ] /
-										boundPrimitiveColFuncCall [ boundOperationExpr ] /
-										boundComplexFuncCall [ complexPropertyPath / boundOperationExpr ] /
-										boundComplexColFuncCall [ boundOperationExpr ]
+										boundPrimitiveFuncCall [ boundFunctionExpr ] /
+										boundPrimitiveColFuncCall [ boundFunctionExpr ] /
+										boundComplexFuncCall [ complexPropertyPath / boundFunctionExpr ] /
+										boundComplexColFuncCall [ boundFunctionExpr ]
 									)
                                     ; boundOperation segments can only be composed if the type of the previous segment matches 
                                     ; the type of the first parameter of the action or function being called.
 									; NOTE: the qualifiedEntityTypeName is only permitted if the previous segment is an Entity or Collection of Entities.
 
-	anyExpr      				=	"any(" [ lambdaVariableExpression ":" lambdaPredicateExpression ] ")"
+	boolBoundFunctionExpr		= 	boundFunctionExpr
+									; with the added restriction that the boolBoundFunctionExpr MUST return a boolean value
 
-	allExpr      				=   "all(" lambdaVariableExpression ":" lambdaPredicateExpression ")"
+	anyExpr      				=	"any(" [ lambdaVariableExpr ":" lambdaPredicateExpr ] ")"
+
+	allExpr      				=   "all(" lambdaVariableExpr ":" lambdaPredicateExpr ")"
 
   	implicitVariableExpr       	= 	"$it"
         							; references the unnamed outer variable of the query
 
   	lambdaVariableExpr         	= 	odataIdentifier
 
-  	inscopeVariableExpr        	=  	implicitVariableExpression | lambdaVariableExpression
-    								; the lambdaVariableExpression must be the name of a variable introduced by either the 
-    								; current lambdaMethodCallExpression’s lambdaVariableExpression or via a wrapping    
-    								; lambdaMethodCallExpression’s lambdaVariableExpression.
+  	inscopeVariableExpr        	=  	implicitVariableExpr | lambdaVariableExpr
+    								; the lambdaVariableExpr must be the name of a variable introduced by either the 
+    								; current lambdaMethodCallExpr’s lambdaVariableExpr or via a wrapping    
+    								; lambdaMethodCallExpr’s lambdaVariableExpr.
 
 
-  	lambdaPredicateExpr       	= 	boolCommonExpression
-    								; this is a boolCommonExpression with the added restriction that any 
-    								; firstMemberExpressions inside the methodPredicateExpression MUST have a prefix of
-    								; lambdaPredicatePrefixExpression
+  	lambdaPredicateExpr       	= 	boolCommonExpr
+    								; this is a boolCommonExpr with the added restriction that any 
+    								; firstMemberExprs inside the methodPredicateExpr MUST have a prefix of
+    								; lambdaPredicatePrefixExpr
    
-	methodCallExpr       		= 	boolMethodExpression /
+	methodCallExpr       		= 	boolMethodExpr /
                        				indexOfMethodCallExpr /
                        				replaceMethodCallExpr / 
                        				toLowerMethodCallExpr /
@@ -1031,12 +1159,12 @@ TODO:
                       				geoLengthMethodCallExpr /
 									getTotalOffsetMinutesExpr
 
-	boolMethodExpr       		= 	endsWithMethodCallExpression /
-                       				startsWithMethodCallExpression /
-                      				substringOfMethodCallExpression /                                         
-                       				intersectsMethodCallExpression /
-                       				anyMethodCallExpression /
-                       				allMethodCallExpression
+	boolMethodExpr       		= 	endsWithMethodCallExpr /
+                       				startsWithMethodCallExpr /
+                      				substringOfMethodCallExpr /                                         
+                       				intersectsMethodCallExpr /
+                       				anyMethodCallExpr /
+                       				allMethodCallExpr
 
 	endsWithMethodCallExpr 		= 	"endswith" [WSP]
                                		"(" [WSP] commonExpr [WSP]
@@ -1120,3 +1248,12 @@ TODO:
 	intersectsMethodCallExpr  	= 	"geo.intersects" [WSP]
                                		"(" [WSP] commonExpr [WSP]
                                		"," [WSP] commonExpr  [WSP] ")"
+
+
+
+
+  
+
+
+
+

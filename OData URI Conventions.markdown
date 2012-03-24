@@ -178,8 +178,351 @@ The following examples illustrate the use and semantics of each of the Arithmeti
 	http://services.odata.org/OData/OData.svc/Products?$filter=Rating mod 5 eq 0 (Requests all products with a Rating exactly divisable by 5).
 
 #### Grouping Operators ####
+The Parenthesis Operator (or '( )') overrides the group an expression, so that Parenthesis Operator evaluates to the expression grouped inside the parenthesis. For example:
+
+	http://services.odata.org/OData/OData.svc/Products?$filter=( 4 add 5 ) mod ( 4 sub 1 ) eq 0
+
+Requests all products. 
 
 #### Canonical Functions ####
+In addition to operators, a set of functions are also defined for use with the filter query string operator. The following table lists the available functions. Note: ISNULL or COALESCE operators are not defined. Instead, there is a null literal which can be used in comparisons.
+
+The syntax rules for all canonical functions are defined in Appendix A.
+
+##### substringof #####
+The substringof canonical function has this signature:
+
+	Edm.Boolean substringof(Edm.String, Edm.String)
+
+If implemented the substringof canonical function MUST return true if, and only if, the second parameter string value contains the first parameter string value.
+The substringOfMethodCallExpr syntax rule defines how the substringof function is invoked.
+
+For example:
+	
+	http://services.odata.org/Northwind/Northwind.svc/Customers?$filter=substringof('Alfreds', CompanyName) eq true
+
+Returns all Customers with a CompanyName that contains 'Alfreds'.
+
+##### endswith #####
+The endswith canonical function has this signature:
+
+	Edm.Boolean endswith(Edm.String, Edm.String)
+
+If implemented the endswith canonical function MUST returns true if, and only if, the first parameter string value ends with the second parameter string value.
+The endsWithMethodCallExpr syntax rule defines how the endswith function is invoked.
+
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Customers?$filter=endswith(CompanyName, 'Futterkiste')
+
+Returns all Customers with a CompanyName that end with 'Futterkiste'.
+
+##### startswith #####
+The startswith canonical function has this signature:
+
+	Edm.Boolean startswith(Edm.String, Edm.String)
+
+If implemented the startswith canonical function MUST return true if, and only if, the first parameter string value starts with the second parameter string value.
+The startsWithMethodCallExpr syntax rule defines how the startswith function is invoked.
+
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Customers?$filter=startswith(CompanyName, 'Alfr')
+ 
+Returns all Customers with a CompanyName that starts with 'Alfr'
+
+##### length #####
+The length canonical function has this signature:
+
+	Edm.Int32 length(Edm.String)
+
+If implemented the length canonical function MUST return the number of characters in the parameter value.
+The lengthMethodCallExpr syntax rule defines how the startswith function is invoked.
+
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Customers?$filter=length(CompanyName) eq 19
+ 
+Returns all Customers with a CompanyName that is 19 characters long.
+
+##### indexof #####
+The length canonical function has this signature:
+
+	Edm.Int32 indexof(Edm.String, Edm.String)
+
+If implemented the indexof canonical function MUST return the zero based character position of the first occurance of the second parameter value in the first parameter value.
+The indexOfMethodCallExpr syntax rule defines how the startswith function is invoked.
+
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Customers?$filter=indexof(CompanyName, 'lfreds') eq 1
+ 
+Returns all Customers with a CompanyName containing 'lfreds' starting at the second character. 
+ 
+##### replace #####
+The replace canonical function has this signature:
+
+	Edm.String replace(Edm.String, Edm.String, Edm.String)
+
+If implemented the replace canonical function MUST return the first parameter value, with all occurances of the second parameter value replaced by the third parameter value.
+The replaceMethodCallExpr syntax rule defines how the replace function is invoked.
+
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Customers?$filter=replace(CompanyName, ' ', '') eq 'AlfredsFutterkiste'
+ 
+Returns all Customers with a CompanyName that equals 'AlfredsFutterkiste' once ' ' has been replaced by ''. 
+
+##### substring ######
+The substring canonical function has consists of two overloads, with the following signatures:
+	 
+	Edm.String substring(Edm.String, Edm.Int32)
+	Edm.String replace(Edm.String, Edm.Int32, Edm.Int32)
+
+If implemented the two argument substring canonical function MUST return a substring of the first parameter string value, starting at the Nth character and finishing at the last character (where N is the second parameter integer value).
+If implemented the three argument substring canonical function MUST return a substring of the first parameter string value identified by selecting M characters starting at the Nth character (where N is the second parameter integer value and M is the third parameter integer value).
+
+The substringMethodCallExpr syntax rule defines how the substring canonical functions are invoked.
+
+For example:
+ 
+	http://services.odata.org/Northwind/Northwind.svc/Customers?$filter=substring(CompanyName, 1) eq 'lfreds Futterkiste'
+ 
+Returns all customers with a CompanyName of 'lfreds Futterkiste' once the first character has been removed.
+
+	http://services.odata.org/Northwind/Northwind.svc/Customers?$filter=substring(CompanyName, 1, 2) eq 'lf'
+ 
+Returns all customers with a CompanyName that has 'lf' as the second and third characters respectively. 
+
+##### tolower #####
+The tolower canonical function has this signature:
+
+	Edm.String tolower(Edm.String)
+
+If implemented the tolower canonical function MUST return the input parameter string value with all uppercase characters converted to lowercase.
+The toLowerMethodCallExpr syntax rule defines how the tolower function is invoked.
+
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Customers?$filter=tolower(CompanyName) eq 'alfreds futterkiste'
+ 
+Returns all Customers with a CompanyName that equals 'alfreds futterkiste' once any uppercase characters have been converted to lowercase.
+
+##### toupper ######
+The toupper canonical function has this signature:
+
+	Edm.String toupper(Edm.String)
+
+If implemented the toupper canonical function MUST return the input parameter string value with all lowercase characters converted to uppercase.
+The toUpperMethodCallExpr syntax rule defines how the tolower function is invoked.
+
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Customers?$filter=toupper(CompanyName) eq 'ALFREDS FUTTERKISTE'
+ 
+Returns all Customers with a CompanyName that equals 'ALFREDS FUTTERKISTE' once any lowercase characters have been converted to uppercase.
+ 
+##### trim #####
+The trim canonical function has this signature:
+
+	Edm.String trim(Edm.String)
+
+If implemented the trim canonical function MUST return the input parameter string value with all leading and trailing whitespace characters removed.
+The trimMethodCallExpr syntax rule defines how the trim function is invoked.
+
+For example:
+	
+	http://services.odata.org/Northwind/Northwind.svc/Customers?$filter=length(trim(CompanyName)) eq length(CompanyName)
+
+Returns all customers with a CompanyName without leading or trailing whitespace characters.
+
+##### concat #####
+The concat canonical function has this signature:
+
+	Edm.String concat(Edm.String, Edm.String)
+
+If implemented the concat canonical function MUST return a string that concatinates both input parameter string values together.
+The concatMethodCallExpr syntax rule defines how the concat function is invoked.
+
+For example:
+	
+	http://services.odata.org/Northwind/Northwind.svc/Customers?$filter=concat(concat(City, ', '), Country) eq 'Berlin, Germany'
+
+Returns all customers with from the City of Berlin and the Country called Germany.
+
+##### year #####
+The year canonical function has the following signatures:
+
+	Edm.Int32 year(Edm.DateTime)
+	Edm.Int32 year(Edm.DateTimeOffset)
+	
+If implemented the year canonical function MUST return the year component of the DateTime or DateTimeOffset parameter value.
+The yearMethodCallExpr syntax rule defines how the year function is invoked. 
+
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Employees?$filter=year(BirthDate) eq 1971
+ 
+Returns all Employees who were born in 1971.
+
+##### years #####
+TODO: for Edm.Time
+
+##### month #####
+The month canonical function has the following signatures:
+
+	Edm.Int32 month(Edm.DateTime)
+	Edm.Int32 month(Edm.DateTimeOffset)
+	
+If implemented the month canonical function MUST return the month component of the DateTime or DateTimeOffset parameter value.
+The monthMethodCallExpr syntax rule defines how the month function is invoked. 
+
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Employees?$filter=month(BirthDate) eq 5
+ 
+Returns all Employees who were born in May.
+
+##### day #####
+The day canonical function has the following signatures:
+
+	Edm.Int32 day(Edm.DateTime)
+	Edm.Int32 day(Edm.DateTimeOffset)
+	
+If implemented the day canonical function MUST return the day component DateTime or DateTimeOffset parameter value.
+The dayMethodCallExpr syntax rule defines how the day function is invoked. 
+
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Employees?$filter=day(BirthDate) eq 8
+ 
+Returns all Employees who were born on the 8th day of a month.
+
+##### days #####
+TODO: for Edm.Time
+
+##### hour #####
+The day canonical function has the following signatures:
+
+	Edm.Int32 hour(Edm.DateTime)
+	Edm.Int32 hour(Edm.DateTimeOffset)
+	
+If implemented the hour canonical function MUST return the hour component of the DateTime or DateTimeOffset parameter value.
+The hourMethodCallExpr syntax rule defines how the hour function is invoked. 
+
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Employees?$filter=hour(BirthDate) eq 4
+ 
+Returns all Employees who were born in the 4th hour of a day.
+
+##### hours #####
+TODO: for Edm.Time
+
+##### minute #####
+The minute canonical function has the following signatures:
+
+	Edm.Int32 minute(Edm.DateTime)
+	Edm.Int32 minute(Edm.DateTimeOffset)
+	
+If implemented the minute canonical function MUST return the minute component of the DateTime or DateTimeOffset parameter value.
+The minuteMethodCallExpr syntax rule defines how the minute function is invoked. 
+
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Employees?$filter=minute(BirthDate) eq 40
+ 
+Returns all Employees who were born in the 40th minute of any hour on any day.
+
+##### minutes ######
+TODO: for Edm.Time
+
+##### second #####
+The second canonical function has the following signatures:
+
+	Edm.Int32 second(Edm.DateTime)
+	Edm.Int32 second(Edm.DateTimeOffset)
+	
+If implemented the second canonical function MUST return the second component of the DateTime or DateTimeOffset parameter value.
+The secondMethodCallExpr syntax rule defines how the second function is invoked. 
+
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Employees?$filter=second(BirthDate) eq 40
+ 
+Returns all Employees who were born in the 40th second of any minute of any hour on any day.
+
+##### seconds #####
+TODO: for Edm.Time
+ 
+##### round #####
+The round canonical function has the following signatures
+	
+	Edm.Double round(Edm.Double)
+	Edm.Decimal round(Edm.Decimal)
+
+If implemented the round canonical function MUST return round the input numeric parameter value to the nearest numeric value with no decimal component.
+The roundMethodCallExpr syntax rule defines how the round function is invoked.
+ 
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Orders?$filter=round(Freight) eq 32
+ 
+Returns all Orders that have a Freight cost that rounds to 32.
+
+##### floor #####
+The floor canonical function has the following signatures
+ 
+	Edm.Double floor(Edm.Double)
+	Edm.Decimal floor(Edm.Decimal)
+
+If implemented the floor canonical function MUST return round the input numeric parameter down value to the nearest numeric value with no decimal component.
+The floorMethodCallExpr syntax rule defines how the floor function is invoked.
+ 
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Orders?$filter=floor(Freight) eq 32
+ 
+Returns all Orders that have a Freight cost that rounds down to 32.
+
+##### ceiling #####
+The ceiling canonical function has the following signatures
+ 
+	Edm.Double ceiling(Edm.Double)
+	Edm.Decimal ceiling(Edm.Decimal)
+
+If implemented the ceiling canonical function MUST return round the input numeric parameter up value to the nearest numeric value with no decimal component.
+The ceilingMethodCallExpr syntax rule defines how the ceiling function is invoked.
+ 
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Orders?$filter=ceiling(Freight) eq 32
+ 
+Returns all Orders that have a Freight cost that rounds up to 32.
+ 
+##### isof #####
+The isof canonical function has the following signatures
+
+	Edm.Boolean isof(type)
+	Edm.Boolean isof(expression, type)
+
+If implemented the single parameter isof canonical function MUST return true if, and only if, the current instance is assignable to the type specified.
+If implemented the two parameter isof canonical function MUST return true if, and only if, the object referred to by the expression is assignable to the type specified.
+
+The isofMethodCallExpr syntax rule defines how the isof function is invoked.
+
+For example:
+
+	http://services.odata.org/Northwind/Northwind.svc/Orders?$filter=isof('NorthwindModel.BigOrder')
+
+Returns only orders that are also BigOrders.
+
+ 	http://services.odata.org/Northwind/Northwind.svc/Orders?$filter=isof(Customer, 'NorthwindModel.MVPCustomer')
+
+Returns only orders that have a customer that is a MVPCustomer.
+
+##### cast #####
+TODO: figure out how to actually do a cast!
 
 #### Operator Precedence ####
 
@@ -1168,9 +1511,9 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
 
 	notExpr       				= 	"not" WSP commonExpr
 
-	isofExpr       				= 	"isof" [ WSP ] "(" [ [ WSP ] commonExpr [ WSP ] "," ] [ WSP ] string [ WSP ] ")"
+	isofExpr       				= 	"isof" [ WSP ] "(" [ [ WSP ] commonExpr [ WSP ] "," ] [ WSP ] qualifiedTypeName [ WSP ] ")"
 
-	castExpr       				= 	"cast" [ WSP ] "(" [ [ WSP ] commonExpr [ WSP ] "," ] [ WSP ] string [ WSP ] ")"
+	castExpr       				= 	"cast" [ WSP ] "(" [ [ WSP ] commonExpr [ WSP ] "," ] [ WSP ] qualifiedTypeName [ WSP ] ")"
 
 	boolCastExpr       			= 	"cast" [ WSP ] "(" [ [ WSP ] commonExpr [ WSP ] "," ] [ WSP ] "Edm.Boolean" [ WSP ] ")"
 

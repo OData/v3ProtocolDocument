@@ -33,10 +33,104 @@ The resource path construction rules defined in this section are optional. OData
 The resource path section of a URI identifies the resource to be interacted with (such as Customers, a single Customer, Orders related to Customers in London, and so forth). The resource path enables any aspect of the data model (Collections of Entries, a single Entry, Properties, Links, Service Operations, and so on) exposed by an OData service to be addressed.
 
 ### Addressing Entities ###
+The basic rules for addressing a Collection (of Entities), a single Entity within a Collection, as well as a property of an Entity are covered in the 'resourcePath' syntax rule in Appendix A. 
+
+Below is a snippet from Appendix A:
+
+	resourcePath				= 	[ entityContainerName "." ] entitySetName [collectionNavigation] /
+									( entityColServiceOpCall / entityColFunctionCall ) [ collectionNavigation ] /
+									( entityServiceOpCall	/ entityFunctionCall ) [ singleNavigation ] /
+									( complexColServiceOpCall / complexColFunctionCall ) [ boundOperation ] /
+									( complexServiceOpCall / complexFunctionCall ) [ boundOperation / complexPropertyPath ] /
+									( primitiveColServiceOpCall / primitiveColFunctionCall ) [ boundOperation ] /
+									( primitiveServiceOpCall / primitiveFunctionCall ) [ boundOperation / value ] /
+									actionCall 
+
+Since OData has a uniform composable URI syntax and associated rules there are many ways to address a collection of entities, including, but not limited to:
+
+- Via an EntitySet (see rule:  entitySetName)
+
+		For Example: http://services.odata.org/OData/OData.svc/Products
+
+- By invoking a Function that returns a collection of Entities (see rule: entityColFunctionCall)
+
+		For Example: http://services.odata.org/OData/OData.svc/GetProductsByCategoryId(categoryId=2)
+
+- By invoking an Action that returns a collection of Entities (see rule: actionCall)
+- By invoking a ServiceOperation that returns a collection of Entities (see rule: entityColServiceOpCall)
+
+		For Example: http://services.odata.org/OData/OData.svc/ProductsByColor?color='red'
+
+Likewise there are many ways to address a single Entity.
+
+Sometimes a single Entity can be accessed directly, for example by:
+
+- Invoking a Function that returns a single Entity (see rule: entityFunctionCall)
+- Invoking an Action that returns a single Entity (see rule: actionCall)
+- Invoking a ServiceOperation that returns a single Entity (see rule: entityServiceOpCall)
+ 
+Often however a single Entity is accessed by composing more path segments to a resourcePath that identifies a Collection of Entities, for example by:
+
+- Using a entityKey to select a single Entity (see rules: collectionNavigation and keyPredicate)
+
+		For Example: http://services.odata.org/OData/OData.svc/Categories(1)
+
+- Invoking an Action bound to a collection of Entities that returns a singleEntity (see rule: boundOperation)
+- Invoking an Function bound to a collection of Entities that returns a singleEntity (see rule: boundOperation)
+
+		For Example: http://services.odata.org/OData/OData.svc/Products/MostExpensive
+
+These rules are recursive, so it is possible to address a single Entity via another single Entity, a collection via a single Entity and even a collection via a collection, examples include, but are not limited to:
+
+- By following a Navigation from a single Entity to another related Entity (see rule: entityNavigationProperty)
+
+		For Example: http://services.odata.org/OData/OData.svc/Products(1)/Supplier
+
+- By invoking a Function bound to a single Entity that returns a single Entity (see rule: boundOperation)
+
+		For Example: http://services.odata.org/OData/OData.svc/Products(1)/MostRecentOrder
+
+- By invoking an Action bound to a single Entity that returns a single Entity (see rule: boundOperation)
+- By following a Navigation from a single Entity to a related collection of Entities (see rule: entityColNavigationProperty)
+
+		For Example: http://services.odata.org/OData/OData.svc/Categories(1)/Products
+
+- By invoking a Function bound to a single Entity that returns a collection of Entities (see rule: boundOperation)
+
+		For Example: http://services.odata.org/OData/OData.svc/Categories(1)/TopTenProducts
+
+- By invoking an Action bound to a single Entity that returns a collection of Entities (see rule: boundOperation)
+- By invoking a Function bound to a collection of Entities that returns a collection of Entities (see rule: boundOperation)
+
+		For Example: http://services.odata.org/OData/OData.svc/Categories(1)/Products/AllOrders
+
+- By invoking an Action bound to a collection of Entities that returns a collection of Entities (see rule: boundOperation)
+
+Finally it is possible to compose path segments onto a resourcePath that identifies a Primivite, Complex instance, Collection of Primitives or Collection of Complex instances and bind an Action or Function that returns a Entity or Collections of Entities.
+
+#### Canonical Uri ####
+For OData services conformant with the addressing conventions in this section, the canonical form of an absolute URI identifying a non contained Entity is formed by adding a single path segment to the service root URI. The path segment is made up of the name of the EntitySet associated with the Entity followed by the key predicate identifying the Entry within the Collection. 
+
+For example the URIs [http://services.odata.org/OData/OData.svc/Categories(1)/Products(1)](http://services.odata.org/OData/OData.svc/Categories(1)/Products(1)) and [http://services.odata.org/OData/OData.svc/Products(1)](http://services.odata.org/OData/OData.svc/Products(1)) represent the same Entry, but the canonical URI for the Entry is [http://services.odata.org/OData/OData.svc/Products(1)](http://services.odata.org/OData/OData.svc/Products(1)).
+
+For contained Entities the canonical Uri begins with canonical Uri of the parent, with further path segments that:
+
+- Name and navigation throught the Containing NavigationProperty 
+- and, if the NavigationProperty returns a Collection, an EntityKey (see rule: entityKey) that uniquely identifies the entity in that collection.
 
 ### Addressing Links between Entities ###
+Much like the use of links on Web pages, the data model used by OData services supports relationships as a first class construct. For example, an OData service could expose a Collection of Products Entries each of which are related to a Category Entry.
+
+Links between Entries are addressable in OData just like Entries themselves are (as described above). The basic rules for addressing relationships are shown in the following figure. By the following rule:
+
+	entityUri 		= 	; any uri that identifies a single entity
+						; examples include: an entitySet followed by a key or a function/serviceOperation that returns a single entity.
+	links 			= 	entityUri "$links" / navigationPropertyName   
+
+For example: [http://services.odata.org/OData/OData.svc/Category(1)/$links/Products](http://services.odata.org/OData/OData.svc/Category(1)/$links/Products) addresses the links between Category(1) and Products.
 
 ### Addressing Operations ###
+
 
 #### Addressing Service Operations ####
 OData services can expose Service Operations which, like Entries, are identified using a URI. Service Operations are simple functions exposed by an OData service whose semantics are defined by the author of the function. A Service Operation can accept primitive type input parameters and can be defined to return a single primitive, single complex type, collection of primitives, collection of complex types, a single Entry, a Collection of Entries, or void. The basic rules for constructing URIs to address Service Operations and to pass parameters to them are illustrated in the following figure.

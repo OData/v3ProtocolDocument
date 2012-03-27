@@ -24,7 +24,7 @@ The OData Protocol is different from other REST-based web service approaches in 
 Towards that end, the OData Protocol follows these design principles:
 
 - Prefer mechanisms that work on a variety of data stores. In particular, do not assume a relational data model.
-- Backwards compatability is paramount. Clients and servers which speak different versions of the OData Protocol should interoperate, supporting everything allowed in the lower of the two versions.
+- Backwards compatability is paramount. Clients and servers which speak different versions of the OData Protocol should interoperate, supporting everything allowed in lower versions.
 - Follow REST principles unless there is a good and specific reason not to.
 - OData should degrade gracefully. It should be easy to make a very basic but compliant OData endpoint, with additional work necessary only to support additional capabilities.
 
@@ -32,22 +32,22 @@ Towards that end, the OData Protocol follows these design principles:
 
 This section provides a high-level description of the Entity Data Model (EDM); the abstract data model that MUST be used to describe the data exposed by an OData service. <ref>Section XXXX</ref> defines an OData Metadata Document which is a representation of a service's data model exposed for client consumption.  
 
-The central concepts in the EDM are **entities** and **associations**. Entities are instances of **Entity Types** (e.g. Customer, Employee, etc) which are nominal structured records with a key that consist of named primitive or complex properties. 
+The central concepts in the EDM are **entities** and **associations**. Entities are instances of **Entity Types** (e.g. Customer, Employee, etc) which are nominal structured records with a key. Entity Types contain named primitive- or complex- valued properties. 
 
 **Complex Types** are nominal structured types also consisting of a list of properties but with no key, thus can only exist as a property of a containing Entity Type or as a temporary value. 
 
 The **Entity Key** of an Entity Type is formed from a subset of primitive properties of the Entity Type. The Entity Key (e.g. CustomerId, OrderId, etc) is a fundamental concept to uniquely identify instances of Entity Types (entities) and allows entities to participate in relationships. 
 
-Properties statically declared as part of the Entity Type's structural definition are called **declared properties** and those which are not are **dynamic properties**. Entity Types which allow dynamic properties are called Open Entity Types. If an instance of an Open Entity Type does not include a value for a dynamic property, the instance must be treated as if it included the property with a value of null. A dynamic property MAY NOT have the same name as a declared property.
+Properties statically declared as part of the Entity Type's structural definition are called **declared properties** and those which are not are **dynamic properties**. Entity Types which allow dynamic properties are called Open Entity Types. If an instance of an Open Entity Type does not include a value for a dynamic property, the instance must be treated as if it included the property with a value of null. A dynamic property MUST NOT have the same name as a declared property.
 
 Entities are grouped in named collections called **Entity Sets** (e.g. Customers is a set of Customer Entity Type instances).
 
-**Association Types** define the relationship between two or more Entity Types (e.g. Employee WorksFor Department). Instances of Association Types are grouped in **Association Sets**. **Navigation Properties** are special properties on Entity Types which are bound to a specific association and are used to refer to specific associations of an entity. 
+**Association Types** define the relationship between two or more Entity Types (e.g. Employee WorksFor Department). Instances of Association Types are grouped in **Association Sets**. **Navigation Properties** are special properties on Entity Types which are bound to a specific association and are used to refer to specific associations of an entity. Navigation Properties, like scalar properties, may be declared as part of the Entity Type's structural definition or may be dynamic properties of an Open Entity Type. 
  
 Finally, all instance containers (Entity Sets and Association Sets) are grouped in an **Entity Container**.
 
 //TODO: put primitive type table here in subsection
-//TODO: what about named streams?  anything else core that I missed?
+//TODO: named streams
 
 //TODO: Do we really need association sets? Can we describe the core data model in terms of entities and navigations instead?  --Arlo
 
@@ -209,7 +209,7 @@ Retrieval of a Metadata Document by a client MUST be done by issuing a HTTP GET 
 
 ## 7.3. Data Modification ##
 
-An OData server MAY support Create, Update, and Delete operations for some of all of the Entities that it exposes.
+An OData server MAY support Create, Update, and Delete operations for some or all of the Entities that it exposes.
 
 For all operations, the format of request and response bodies is format specific. See the format-specific specifications ([[JSON](JSON)], [[JSON Verbose](JSON_Verbose_format)], [[Atom](Atom_Format)]) for details.
 
@@ -257,9 +257,9 @@ On failure, the server MUST NOT create the new Entity. In particular, it MUST NO
 
 A server that supports creating Entities SHOULD support creating related Entities as part of the same request.
 
-A request to create an Entity the MAY specify related Entites that should also be created. The related entities MUST be represented using the <ref>inline representation of the NavigationProperty</ref>.
+A request to create an Entity MAY specify related Entites that should also be created. The related entities MUST be represented using the <ref>inline representation of the NavigationProperty</ref>.
 
-On success, the server MUST create eaqch Entity requested and associate them via the NavigationProperty.
+On success, the server MUST create each Entity requested and associate them via the NavigationProperty.
 
 On failure, the server MUST NOT create any of the Entities requested.
 
@@ -281,7 +281,7 @@ On success, the response must be a valid [update response](#responsesforupdates)
 
 To delete an existing entity, send a DELETE request to that entity's edit URI. The request body SHOULD be empty.
 
-On success, the response SHOULD be 200 OK.
+On success, the response MUST be 204 (No Content).
 
 ### Modifying Relationships Between Entities ###
 
@@ -309,7 +309,7 @@ Alternatively, a relationship MAY be updated as part of an update to the source 
 
 ### Managing Resources ###
 
-Binary resources are one of the primitive types that can be used in the difinition of a Property. However, they are complex enough that there are special rules for manipulating them.
+Binary resources are one of the primitive types that can be used in the definition of a Property. However, they are complex enough that there are special rules for manipulating them.
 
 There are two ways to associate a Property with a particular value Resoruce: Media Link Entries (MLEs) or Named Streams.
 
@@ -355,19 +355,19 @@ TBD.
 
 Values and Properties can be explicitly addressed with URIs. This allows them to be individually modified. See <ref>Uri conventions</ref> for details on addressing.
 
-#### Update a Value ####
+#### Update a PrimitiveProperty ####
 
-To update a value, the client MAY send a PUT, MERGE, or PATCH request to an edit URI for the value. The message body MUST contain the desired new value, formatted as a <ref>SimpleTypeProperty</ref>.
+To update a value, the client MAY send a PUT, MERGE, or PATCH request to an edit URI for a SimpleProperty. The message body MUST contain the desired new value, formatted as a <ref>SimpleTypeProperty</ref>.
 
 Regardless of which verb is used, the server MUST replace the entire value with the value supplied in the request body.
 
-The same rules apply whether this is the value of a regular property or the value of a dynamic property.
+The same rules apply whether this is a regular property or a dynamic property.
 
 On success, the response must be a valid [update response](#responsesforupdates).
 
 #### Null a Value ####
 
-There are two ways to set a value to NULL. The client may <ref>Update a Value</ref> to NULL. Alternatively the client MAY send a DELETE request with an empty message body to an edit URI for that value.
+There are two ways to set a primitive value to NULL. The client may [Update a PrimitiveProperty](#), specifying a NULL value. Alternatively, the client MAY send a DELETE request with an empty message body to an edit URI for that value.
 
 The server SHOULD consider a DELETE request to a non-nullable value to be malformed.
 
@@ -382,16 +382,6 @@ To update an complex type, send a PUT, PATCH, or MERGE request to that value's e
 If the request is a PUT request, the server MUST replace all property values with those specified in the request body. Missing properties MUST be set to their default values.
 
 If the request is a PATCH or MERGE request, the server MUST replace exactly those property values that are specified in the request body. Missing properties MUST NOT be altered. Exact semantics are defined in <ref>PATCH and MERGE</ref>.
-
-On success, the response must be a valid [update response](#responsesforupdates).
-
-#### Update a PrimitiveProperty ####
-
-To update a value, the client MAY send a PUT, MERGE, or PATCH request to an edit URI for a SimpleProperty. The message body MUST contain the desired new value, formatted as a <ref>SimpleTypeProperty</ref>.
-
-Regardless of which verb is used, the server MUST replace the entire value with the value supplied in the request body.
-
-The same rules apply whether this is a regular property or a dynamic property.
 
 On success, the response must be a valid [update response](#responsesforupdates).
 
@@ -412,8 +402,8 @@ The following rules apply to all FunctionImport elements:
 - MUST have a 'Name' attribute set to a valid EDM identifier.
 - MUST either omit a ReturnType (in the case of void operations) or specify a ReturnType either by including a 'ReturnType' attribute set to a valid TypeReference or by including a child 'ReturnType' element. 
 - MAY have child Parameter elements.
-- MAY have an 'IsSideEffecting' attribute set to either 'true' or 'false'. When omitted 'IsSideEffecting' MUST be interpretted as 'true'. 
-- MAY have a 'm:HttpMethod' attribute set to value of either 'POST' or 'GET'. When omitted 'm:HttpMethod' MUST be interpretted as not specified.
+- MAY have an 'IsSideEffecting' attribute set to either 'true' or 'false'. When omitted 'IsSideEffecting' MUST be interpreted as 'true'. 
+- MAY have a 'm:HttpMethod' attribute set to value of either 'POST' or 'GET'. When omitted 'm:HttpMethod' MUST be interpreted as not specified.
 - MAY have an 'IsBindable' attribute set to either 'true' or 'false'. When 'IsBindable' is set to 'true' the FunctionImport MUST have at least one child Parameter element, and the first child Parameter element MUST have a type that is either an EntityType or a collection of EntityTypes. When omitted 'IsBindable' MUST be assumed to have a value of 'false'.
 - MAY have an 'm:IsAlwaysBindable' attribute set to either 'true' of 'false'. When omitted 'm:IsAlwaysBindable' MUST be assumed to have a value of 'false'. When 'IsAlwaysBindable' is 'true', 'IsBindable' MUST also be set to 'true'.
 - MUST have an 'EntitySet' attribute set to either the name of an EntitySet or to an EntitySetPath expression if the 'ReturnType' of the FunctionImport is either an EntityType or a Collection of an EntityType.
@@ -498,7 +488,7 @@ Example: Given this client request:
 	DataServiceVersion: 1.0
 	MaxDataServiceVersion: 3.0
 
-The server might respond with a Customer entity that advertizes a binding of the `SampleEntities.CreateOrder` Action to itself:
+The server might respond with a Customer entity that advertises a binding of the `SampleEntities.CreateOrder` Action to itself:
 
 	HTTP/1.1 200 OK
 	Date: Fri, 12 Dec 2008 17:17:11 GMT
@@ -532,9 +522,9 @@ The server might respond with a Customer entity that advertizes a binding of the
 	 }
 	}
 
-When the resource retrieved represents a collection, the 'Target Url' of any Actions advertized MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
+When the resource retrieved represents a collection, the 'Target Url' of any Actions advertised MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
 
-An efficient format that assumes client knowledge of metadata SHOULD NOT advertize Actions whose availability ('IsAlwaysBindable' is set to 'true') and target url can be established via metadata. 
+An efficient format that assumes client knowledge of metadata SHOULD NOT advertise Actions whose availability ('IsAlwaysBindable' is set to 'true') and target url can be established via metadata. 
 
 #### Invoking an Action ####
 
@@ -593,11 +583,11 @@ This is an example of an Function called MostRecent that returns the 'MostRecent
 		<Parameter Name="orders" Type="Collection(SampleModel.Order)" Mode="In">
 	</FunctionImport>
 
-#### Advertizing currently available Functions ####
+#### Advertising currently available Functions ####
 
 Servers are allowed to choose whether to advertize Functions that can be bound to the current entity or current collection of entities inside representations of the entity or collection entities returned from the Server. 
 
-If the server chooses to advertize a Function the following information MUST be included: 
+If the server chooses to advertise a Function the following information MUST be included: 
 
 - A 'Target Url' that MUST identify the resource that accepts requests to invoke the Function.
 - A 'Metadata Url' that MUST identify the FunctionImport (and potentially overload) that declares the Function. This Url can be either relative or absolute, but when relative it MUST be assumed to be relative to the $metadata Url of the current server.
@@ -611,7 +601,7 @@ Example: Given this client request:
 	DataServiceVersion: 1.0
 	MaxDataServiceVersion: 3.0
 
-The server might respond with a collection of Orders that advertizing the `SampleEntities.MostRecent` Function bound to itself:
+The server might respond with a collection of Orders that advertising the `SampleEntities.MostRecent` Function bound to itself:
 
 	HTTP/1.1 200 OK
 	Date: Fri, 12 Dec 2008 17:17:11 GMT
@@ -696,7 +686,7 @@ Invokes a `NS.Foo` function which takes two parameters (`p1` of type Edm.Int32 a
 
 And this request:
 
-	GET http://server/service.svc/Customer?$filter=NS.GetSalesRegion(p1=$it/City) eq "Western" HTTP/1.1
+	GET http://server/service.svc/Customers?$filter=NS.GetSalesRegion(p1=$it/City) eq "Western" HTTP/1.1
 
 Filters `Customers` to those in the `Western` sales region, calculated for each Customer in the Collection by passing the Customer's City as the `p1` parameter value to the `NS.GetSalesRegion` function. 
 

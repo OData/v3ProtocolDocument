@@ -1198,4 +1198,81 @@ Action *title*: a descriptive name used for an Action. This is intended to be pr
 
 Function *title*: a descriptive name used for a Function. This is intended to be presented to an end user.
 
->>>>>>> 847c543a84f5d90f0d5768dceca1cc4595103cf1
+**ADO.NET Entity Framework:** A set of technologies that enables developers to create data access applications by programming against the conceptual application model instead of programming directly against a relational storage schema.
+
+**alias:** A simple identifier that is typically used as a short name for a **namespace**.
+
+**alias qualified name:** A qualified name that is used to refer to a **StructuralType**, except that the 
+**namespace** is replaced by the alias for the **namespace**. For example, if an **EntityType** called "Person" is defined in the "Model.Business" **namespace**, and that **namespace** has been given the **alias** "Self", the alias qualified name for the person **EntityType** is "Self.Person".
+
+**annotation:** Any custom, application-specific extension that is applied to an instance of **CSDL** through the use of custom attributes and elements that are not a part of this **CSDL** specification.
+
+**association:** A named independent relationship between two **EntityType** definitions. Associations in the 
+**Entity Data Model (EDM)** are first-class concepts and are always bidirectional. Indeed, the first-class nature of associations helps distinguish the **EDM** from the relational model. Every association includes exactly two association ends.
+
+**association end:** A term that specifies the **EntityType** elements that are related, the roles of each of those 
+**EntityType** elements in the **association**, and the **cardinality** rules for each end of the **association**.
+
+**cardinality:** The measure of the number of elements in a set.
+
+**collection:** A grouping of one or more **EDM types** that are type compatible. A collection can be used as the return type for a **FunctionImport**.
+
+**conceptual schema definition language (CSDL):** A language that is based on XML and that can be used to define conceptual models that are based on the **EDM**.
+
+**conceptual schema definition language (CSDL) document:** A document that contains a conceptual model that is described by using the **CSDL** code.
+
+**CSDL 1.0:** A version of **CSDL** that has a slightly reduced set of capabilities, which are called out in this document. CSDL 1.0 documents reference this XML namespace: http://schemas.microsoft.com/ado/2006/04/edm.
+
+**CSDL 1.1:** The version of **CSDL** that is defined immediately prior to **CSDL 1.2**. **CSDL 1.1** documents reference this XML namespace: http://schemas.microsoft.com/ado/2007/05/edm.
+
+**CSDL 1.2:** The version of **CSDL** that is defined immediately prior to **CSDL 2.0**. **CSDL 1.2** documents reference this XML namespace: http://schemas.microsoft.com/ado/2008/01/edm. The **ADO.NET Entity Framework** does not support CSDL 1.2.
+
+**CSDL 2.0:** The version of **CSDL** that is defined immediately prior to **CSDL 3.0**. **CSDL 2.0** documents reference this XML namespace: http://schemas.microsoft.com/ado/2008/09/edm.
+
+**CSDL 3.0:** The version of **CSDL** that is the focus of this document. **CSDL 3.0** documents reference this XML namespace: http://schemas.microsoft.com/ado/2009.11/edm.
+
+**declared property:** A property that is statically declared by a **Property** element as part of the definition of a **StructuralType**. For example, in the context of an **EntityType**, a declared property includes all properties of an **EntityType** that are represented by the **Property** child elements of the **EntityType** element that defines the **EntityType**.
+
+**derived type:** A type that is derived from the **BaseType**. Only WRONG:**ComplexType** and **EntityType** can define a **BaseType**.
+
+**dynamic property:** A designation for an instance of an **OpenEntityType** that includes additional nullable properties (of a **scalar type** or **ComplexType**) beyond its **declared properties**. The set of additional properties, and the type of each, may vary between instances of the same **OpenEntityType**. Such additional properties are referred to as dynamic properties and do not have a representation in a **CSDL document**.
+
+**EDM type:** A categorization that includes all the following types: **EDMSimpleType**, **ComplexType**, **EntityType**, **enumeration**, and **association**.
+
+**entity:** An instance of an **EntityType** element that has a unique identity and an independent existence. An entity is an operational unit of consistency.
+
+**Entity Data Model (EDM):** A set of concepts that describes the structure of data, regardless of its stored form, as described in the Introduction (section 1).
+
+**enumeration type:** A type that represents a custom enumeration that is declared by using the **EnumType** element.
+
+**facet:** An element that provides information that specializes the usage of a type. For example, the precision (that is, accuracy) facet can be used to define the precision of a **DateTime property**.
+
+**identifier:** A string value that is used to uniquely identify a component of the **CSDL** and is of type **SimpleIdentifier**.
+
+**in scope:** A designation that is applied to an XML construct that is visible or can be referenced, assuming that all other applicable rules are satisfied. Types that are in scope include all **scalar types** and **StructuralType** types that are defined in **namespaces** that are in scope. **Namespaces** that are in scope include the **namespace** of the current **schema** and other **namespaces** that are referenced in the current **schema** by using the **Using** element.
+
+**namespace:** A name that is defined on the **schema** and that is subsequently used to prefix **identifiers** to form the **namespace qualified name** of a **StructuralType**. **CSDL** enforces a maximum length of 512 characters for namespace values.
+
+**namespace qualified name:** A qualified name that refers to a **StructuralType** by using the name of the **namespace**, followed by a period, followed by the name of the **StructuralType**.
+
+**nominal type:** A designation that applies to the types that can be referenced. Nominal types include all primitive types and named **EDM types**. Nominal types are frequently used inline with collection in the following format: collection(nominal_type).
+
+**property:** An **EntityType** can have one or more properties of the specified **scalar type** or **ComplexType**. A property can be a **declared property** or a **dynamic property**. (In **CSDL 1.2**, **dynamic properties** are defined only for use with **OpenEntityType** instances.)
+
+**referential constraint:** A constraint on the keys contained in the **associatio**n type. The ReferentialConstraint **CSDL** construct is used for defining referential constraints.
+
+**scalar type:** A designation that applies to all **EDMSimpleType** and **enumeration types**. Scalar types do not include **StructuralTypes**.
+
+**schema:** A container that defines a **namespace** that describes the scope of **EDM types**. All **EDM types** are contained within some **namespace**.
+
+**schema level named element:** An element that is a child element of the **schema** and contains a **Name** attribute that must have a unique value.
+
+**StructuralType:** A type that has members that define its structure. **ComplexType**, **EntityType**, and **Association** are all StructuralTypes.
+
+**type annotation:** An **annotation** of a model element that allows a term and provision of zero or more values for the properties of the term.
+
+**value annotation:** An **annotation** that attaches a named value to a model element.
+
+**value term:** A term with a single property in EDM.
+
+**vocabulary:** A schema that contains definitions of value terms and/or entity type terms.

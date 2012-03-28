@@ -1,16 +1,6 @@
 # OData #
 
-We have a few statuses:
-
-Assigned to Someone, Review, Reviewing(name), Edit
-
 # 1. Overview #
-
-------
-
-- ASSIGNED TO: Review
-
-------
 
 The OData Protocol is an application-level protocol for interacting with data via RESTful web services. The protocol supports the description of data models and editing and querying of data according to those models. It provides facilities for:
 
@@ -30,7 +20,7 @@ Towards that end, the OData Protocol follows these design principles:
 
 # 2. Data Model #
 
-This section provides a high-level description of the Entity Data Model (EDM); the abstract data model that MUST be used to describe the data exposed by an OData service. <ref>Section XXXX</ref> defines an OData Metadata Document which is a representation of a service's data model exposed for client consumption.  
+This section provides a high-level description of the Entity Data Model (EDM); the abstract data model that MUST be used to describe the data exposed by an OData service. An [OData Metadata Document](*MetadataDocument) is a representation of a service's data model exposed for client consumption.  
 
 The central concepts in the EDM are **entities** and **associations**. Entities are instances of **Entity Types** (e.g. Customer, Employee, etc) which are nominal structured records with a key. Entity Types contain named primitive- or complex- valued properties. 
 
@@ -67,21 +57,9 @@ A NavigationProperty can be seen as a Property on its source Entity. It can also
 
 # 4. Notational Conventions #
 
-------
-
-- ASSIGNED TO: Edit
-
-------
-
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[RFC2119](http://tools.ietf.org/html/rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")].
 
 ## 4.1. Json Example Payloads ##
-
-------
-
-- ASSIGNED TO: Review
-
-------
 
 Some sections of this specification are illustrated with non-normative example OData request and response payloads. However, the text of this specification provides the definition of conformance.
 
@@ -89,21 +67,9 @@ OData payloads are representable in multiple formats. Those formats are specifie
 
 ## 4.2. CSDL Schema ##
 
-------
-
-- ASSIGNED TO: Review
-
-------
-
 Some sections of this specification are illustrated with fragments of a non-normative RELAX NG Compact schema [[RNC](http://tools.ietf.org/html/rfc5023#ref-RNC "RELAX NG Compact Syntax")]. However, the text of this specification provides the definition of conformance. Complete schemas appear in Appendix B.
 
 # 5. Versioning#
-
-------
-
-- ASSIGNED TO: Review
-
-------
 
 This document defines version 3.0 of the OData Specification.
 
@@ -196,16 +162,380 @@ As of OData v3, OData services MUST expose a Metadata Document which defines all
 
 Retrieval of a Metadata Document by a client MUST be done by issuing a HTTP GET request to document's URI.  If the request doesn't specify a format preference (via Accept header or <ref>$format query string option</ref>) then the XML representation MUST be returned.
 
-## 7.2. Querying Data ##
+## 7.2. Requesting Data ##
+OData services support requesting data through the use of HTTP GET requests.
 
-------
+The path of the URL specifies the target of the request (for example; the EntitySet, Entity Instance, Navigation Property, Scalar Property, or Operation). Additional query operators, such as filter, sort, page, and projection operations are specified through query string parameters.
 
-- ASSIGNED TO: Mike(*)
+The format of the returned data is dependent upon the request and the format specified by the client, either in the accept header or using the [$format](#FormatSystemQueryOption) query string option.
 
-------
+This section describes the types of data requests defined by OData. For complete details on the syntax for building requests, see [[OData URI Conventions](ODataURIConventions)].
 
-- description of how data is queried in OData (i.e. GET requests).  Might need some additional structure, but figured that can be flushed out as we progress
-- this would include description of everything after the ? ($filter, select, top, skip, etc)
+### 7.2.1. Requesting Individual Entities ###
+Clients may invoke an HTTP GET request in order to retrieve an individual entity.
+
+The URL for retrieving a particular entity instance may be returned in a response payload containing that instance (for example, as a self-link in an [Atom Payload](ODataAtomPayload)).
+
+Conventions for constructing a URL to an individual entity using the entity's Key Value(s) are described in [OData URI Conventions](ODataURIConventions).
+
+### 7.2.2. Requesting Individual Properties ###
+An individual property value may be requested by appending the property name to the URL path for a particular resource. The format of the returned property value is dependent upon the requested format.
+
+#### 7.2.2.1. Returning a Property's Raw Value using `$value` ####
+The raw value of a primitive typed property may be retrieved without any property wrapping or additional metadata by appending "/$value" to the URL path specifying the individual property.
+
+By default, the raw value of any Simple Type property (except those of type Edm.Binary) SHOULD be represented using the text/plain media type and MUST be serialized as specified in <ref todo...>. 
+
+The raw value of an Edm.Binary property MUST be serialized as an unencoded byte stream.
+
+A $value request for a property that is NULL SHOULD result in a "404 Not Found" response. 
+
+### 7.2.4. Querying Collections ###
+OData services support querying sets of entities, such as the EntitySets enumerated in the Service Document and navigation links exposed by the service. 
+
+The target collection is specified through a URI, and query operations such as filter, sort, paging, and projection are specified as System Query Options provided as query string parameters. The names of all System Query Options are prefixed with a "$" character.
+
+An OData service may support some or all of the System Query Options defined. If a data service does not support a System Query Option, it must reject any requests which contain the unsupported option.
+
+#### 7.2.4.1. `$filter` System Query Option ####
+The set of entities returned may be restricted through the use of the $filter System Query Option. 
+
+##### 7.2.4.1.1. Built-in Filter Operations #####
+OData supports a set of built-in filter operations, as described in this section. For a full description of the syntax use when building requests, see [[OData URI Conventions](OData_URI_Conventions)].
+
+  <table border="1">
+      <tr>
+        <th>Operator</th>
+        <th>Description</th>
+        <th>Example</th>
+      </tr>
+      <tr>
+        <td colspan="3"><strong>Logical Operators</strong></th>
+      </tr>
+      <tr>
+        <td>eq</td>
+        <td>Equal</td>
+        <td>/Suppliers?$filter=Address/City eq 'Redmond'</td>
+      </tr>
+      <tr>
+        <td>ne</td>
+        <td>Not equal</td>
+        <td>/Suppliers?$filter=Address/City ne 'London'</td>
+      </tr>
+      <tr>
+        <td>gt</td>
+        <td>Greater than</td>
+        <td>/Products?$filter=Price gt 20</td>
+      </tr>
+      <tr>
+        <td>ge</td>
+        <td>Greater than or equal</td>
+        <td>/Products?$filter=Price ge 10</td>
+      </tr>
+      <tr>
+        <td>lt</td>l
+        <td>Less than</td>
+        <td>/Products?$filter=Price lt 20</td>
+      </tr>
+      <tr>
+        <td>le</td>
+        <td>Less than or equal</td>
+        <td>/Products?$filter=Price le 100</td>
+      </tr>
+      <tr>
+        <td>and</td>
+        <td>Logical and</td>
+        <td>/Products?$filter=Price le 200 and Price gt 3.5</td>
+      </tr>
+      <tr>
+        <td>or</td>
+        <td>Logical or</td>
+        <td>/Products?$filter=Price le 3.5 or Price gt 200</td>
+      </tr>
+      <tr>
+        <td>not</td>
+        <td>Logical negation</td>
+        <td>/Products?$filter=not endswith(Description,'milk')</td>
+      </tr>
+      <tr>
+        <td colspan="3"><strong>Arithmetic Operators</strong></td>
+      </tr>
+      <tr>
+        <td>add</td>
+        <td>Addition</td>
+        <td>/Products?$filter=Price add 5 gt 10</td>
+      </tr>
+      <tr>
+        <td>sub</td>
+        <td>Subtraction</td>
+        <td>/Products?$filter=Price sub 5 gt 10</td>
+      </tr>
+      <tr>
+        <td>mul</td>
+        <td>Multiplication</td>
+        <td>/Products?$filter=Price mul 2 gt 2000</td>
+      </tr>
+      <tr>
+        <td>div</td>
+        <td>Division</td>
+        <td>/Products?$filter=Price div 2 gt 4</td>
+      </tr>
+      <tr>
+        <td>mod</td>
+        <td>Modulo</td>
+        <td>/Products?$filter=Price mod 2 eq 0</td>
+      </tr>
+      <tr>
+        <td colspan="3"><strong>Grouping Operators</strong></td>
+      </tr>
+      <tr>
+        <td>( )</td>
+        <td>Precedence grouping</td>
+        <td>/Products?$filter=(Price sub 5) gt 10</td>
+      </tr>
+  </table>
+
+
+##### 7.2.4.1.2. Built-in Query Functions #####
+OData supports a set of built-in functions that can be used within filter operations. The following table lists the available functions. For a full description of the syntax use when building requests, see[[OData URI Conventions](OData_URI_Conventions)].
+
+Note: No ISNULL or COALESCE operators are not defined. Instead, there is a null literal which can be used in comparisons.
+ 
+<table border="1">
+  <tr>
+    <th>Function</th>
+    <th>Example</th>
+  </tr>
+  <tr>
+    <td colspan="3"><strong>String Functions</strong></td>
+  </tr>
+  <tr>
+    <td>bool substringof(string searchString, string searchInString)</td>
+    <td>substringof('Alfreds',CompanyName)</td>
+  </tr>
+  <tr>
+    <td>bool endswith(string string, string suffixString)</td>
+    <td>endswith(CompanyName,'Futterkiste')</tr>
+  <tr>
+    <td>bool startswith(string string, string prefixString)</td>
+    <td>startswith(CompanyName,'Alfr')</td>
+  </tr>
+  <tr>
+    <td>int length(string string)</td>
+    <td>length(CompanyName) eq 19</td>
+  </tr>
+  <tr>
+    <td>int indexof(string searchInString, string searchString)</td>
+    <td>indexof(CompanyName,'lfreds') eq 1</td>
+  </tr>
+  <tr>
+    <td>string replace(string searchInString, string searchString, string replaceString)</td>
+    <td>replace(CompanyName,' ', '') eq 'AlfredsFutterkiste'</td>
+  </tr>
+  <tr>
+    <td>string substring(string string, int pos)</td>
+    <td>substring(CompanyName,1) eq 'lfreds Futterkiste'</td>
+  </tr>
+  <tr>
+    <td>string substring(string string, int pos, int length)</td>
+    <td>substring(CompanyName,1, 2) eq 'lf'</td>
+  </tr>
+  <tr>
+    <td>string tolower(string string)</td>
+    <td>tolower(CompanyName) eq 'alfreds futterkiste'</td>
+  </tr>
+  <tr>
+    <td>string toupper(string string)</td>
+    <td>toupper(CompanyName) eq 'ALFREDS FUTTERKISTE'</td>
+  </tr>
+  <tr>
+    <td>string trim(string string)</td>
+    <td>trim(CompanyName) eq 'Alfreds Futterkiste'</td>
+  </tr>
+  <tr>
+    <td>string concat(string string1, string string2)</td>
+    <td>concat(concat(City,', '), Country) eq 'Berlin, Germany'</td>
+  </tr>
+  <tr>
+    <td colspan="3">
+      <strong>Date Functions</strong>
+    </td>
+  </tr>
+  <tr>
+    <td>int day(DateTime datetimeValue)</td>
+    <td>day(BirthDate) eq 8</a></td>
+  </tr>
+  <tr>
+    <td>int hour(DateTime datetimeValue)</td>
+    <td>hour(BirthDate) eq 1 </td>
+  </tr>
+  <tr>
+    <td>int minute(DateTime datetimeValue)</td>
+    <td>minute(BirthDate) eq 0</td>
+  </tr>
+  <tr>
+    <td>int month(DateTime datetimeValue)</td>
+    <td>month(BirthDate) eq 12</td>
+  </tr>
+  <tr>
+    <td>int second(DateTime datetimeValue)</td>
+    <td>second(BirthDate) eq 0</td>
+  </tr>
+  <tr>
+    <td>int year(DateTime datetimeValue)</td>
+    <td>year(BirthDate) eq 1948</td>
+  </tr>
+  <tr>
+    <td colspan="3"><strong>Math Functions</strong></td>
+  </tr>
+  <tr>
+    <td>double round(double doubleValue)</td>
+    <td>round(Freight) eq 32</td>
+  </tr>
+  <tr>
+    <td>decimal round(decimal decimalValue)</td>
+    <td>round(Freight) eq 32</td>
+  </tr>
+  <tr>
+    <td>double floor(double doubleValue)</td>
+    <td>floor(Freight) eq 32</td>
+  </tr>
+  <tr>
+    <td>decimal floor(decimal datetimeValue)</td>
+    <td>floor(Freight) eq 32</td>
+  </tr>
+  <tr>
+    <td>double ceiling(double doubleValue)</td>
+    <td>ceiling(Freight) eq 33</td>
+  </tr>
+  <tr>
+    <td>decimal ceiling(decimal datetimeValue)</td>
+    <td>ceiling(Freight) eq 33</a></td>
+  </tr>
+  <tr>
+    <td colspan="3"><strong>Type Functions</strong></td>
+  </tr>
+  <tr>
+    <td>bool IsOf(type value)</td>
+    <td>isof('NorthwindModel.Order')</td>
+  </tr>
+  <tr>
+    <td>bool IsOf(expression value, type targetType)</td>
+    <td>isof(ShipCountry,'Edm.String')</td>
+  </tr>
+</table>
+
+### 7.2.4.2 `$select` System Query Option ###
+The $select system query option allows clients to requests a limited set of information for each Entity or ComplexType identified by the ResourcePath and other System Query Options like $filter, $top, $skip etc. When present $select instructs the server to return only the Properties, Open Properties, Related Properties, Actions and Functions explicitly requested by the client, however servers MAY choose to return more information.
+
+What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that applies to the Select System Query Option: 
+
+	select 						=	"$select=" selectClause
+	selectClause   				= 	selectItem *( COMMA selectItem )
+	selectItem     				= 	star / 
+									[ qualifiedEntityTypeName "/" ] 
+									(
+										propertyName / 
+										qualifiedActionName / 
+										qualifiedFunctionName / 
+										allOperationsInContainer /
+										( navigationProperty [ "/" selectItem ] )
+									)
+
+
+The selectClause MUST be interpretted relative to the EntityType or ComplexType of the resources identified by the resource path section of the URI, for example:
+
+	http://services.odata.org/OData/OData.svc/Products?$select=Rating,ReleaseDate
+
+In this URI the "Rating,ReleaseDate" selectClause MUST be interpreted relative to the Product EntityType which is the EntityType of the resources identified by this http://services.odata.org/OData/OData.svc/Products URI.
+
+Each selectItem in the selectClause, indicates that the response SHOULD include the Properties, Open Properties, Related Properties, Actions and Functions identified by that selectClause. 
+
+The simpliest selectItem requests a single Property defined on the EntityType of the resources identified by the resource path section of the URI, for example this URI asks the server to return just the Rating and ReleaseDate for the matching Products: 
+
+	http://services.odata.org/OData/OData.svc/Products?$select=Rating,ReleaseDate
+
+It is also possible to request all properties, using a star request:
+
+	http://services.odata.org/OData/OData.svc/Products?$select=*
+
+If a selectClause consists of a single selectItem that is a star (i.e. *), then all properties and navigation properties on the matching resources MUST be returned.
+
+If a navigation property appears as the last segment of a selectItem and does not appear in an $expand query option, the entity or collection of entities identified by the navigation property MUST be represented as deferred content.
+
+Each selectItem is a path, while often simply a propertyName or star, the path MAY include a cast to a derived type using a qualifiedEntityTypeName segment or a navigation to a related entity via navigationProperty segment followed by a nested selectItem. For example the following URI requests, the Spokesperson property of any Products that are of the derived type idenfitied by the qualifiedEntityType 'Namespace.BestSellingProduct', and the AccountRepresentative property of any related Supplier that is of a the derived type 'Namespace.PreferredSupplier':
+	
+	http://service.odata.org/OData/OData.svc/Products?$select=Namespace.BestSellingProduct/Spokesperson,Supplier/Namespace.PreferredSupplier/AccountRepresentative
+
+If a navigation property appears as the last segment of a selectItem and the same navigation property is specified as a segment of a path in an $expand query option, then all the properties of the expanded entity identified by the selectItem MUST be in the response. In addition, all the properties of the entities identified by segments in the $expand path after the segment that matched the selectedItem MUST also be included in the response.
+
+In order to select any nested properties of NavigationProperties the client MUST also include an expandClause for that NavigationProperty. For example the following URI expands the Category NavigationProperty so the Name of the Category can be selected.
+
+	http://services.odata.org/OData/OData.svc/Products?$select=Category/Name&$expand=Category
+
+If a property, open property, navigation property or operation is not requested as a selectItem (explicitly or via a star), it SHOULD NOT be included in the response.
+
+A star SHOULD NOT reintroduce actions or functions. Thus if any selectClause is specified, actions and functions SHOULD be omitted unless explicitly requested using a qualifiedActionName, a qualifiedFunctionName or the allOperationsInContainer clause.
+
+Actions and Functions information can be explicitly requested with a selectItem containing either a qualifiedActionName or a qualifiedFunctionName or can be implicitly requested using a selectItem contain the allOperationsInContainer clause. 
+
+For example this URI requests the ID property, the 'ActionName' action defined in 'Container' and all actions and functions defined in the 'Container2' for each product, if those actions and functions can be bound to that product:
+
+	http://service.odata.org/OData/OData.svc/Products?$select=Container.ActionName,Container2.*
+
+If an action is requested as a selectedItem, either explicitly by using an qualifiedActionName clause or implicitly by using an allOperationsInContainer clause, the server MUST include in the response information about how to invoke that action for each of the entities identified by the last path segment in the request URI, if the action can be bound to those entities.
+
+If a function is requested as a selectedItem, either explicitly by using an qualifiedFunctionName clause or implicitly by using an allOperationsInContainer clause, the server MUST include in the response information about how to invoke that function for each of the entities that are identified by the last path segment in the request URI, if and only if the function can be bound to those entities.
+
+If an action or function is requested in a selectItem using a qualifiedActionName or a qualifiedFunctionName clause and that action or function cannot be bound to the entities requested, the server MUST ignore the selectItem clause.
+
+When multiple selectItems exist in a selectClause, then the total set of property, open property, navigation property, actions and functions to be returned is equal to the union of the set of those identified by each selectItem.
+
+Redundant selectClause rules on the same URI MAY be considered valid, but MUST NOT alter the meaning of the URI.
+
+For AtomPub formatted responses: The value of a selectClause applies only to the properties returned within the m:properties element. For example, if a property of an entity type is mapped with the Customizable Feeds attribute KeepInContent=false, then that property MUST always be included in the response according to its customizable feed mapping.
+
+### 5.1.4 OrderBy System Query Option ###
+TODO: Mike P
+
+### 5.1.5 Top and Skip System Query Options ###
+TODO: Mike P
+
+### 5.1.6 Inlinecount System Query Option ####
+TODO: Mike P
+
+### 5.1.7 Format System Query Option ###
+A data service URI with a $format system query option specifies that a response to the request SHOULD use the media type specified by the query option.
+
+The syntax of the format system query option is defined in 'format' rule defined in Appendix A. 
+The rules for interpretting the format rule are:
+
+- If the $format query option is present in a request URI, it SHOULD take precedence over the value(s) specified in the Accept request header.
+- If the value of the query option is "atom", then the media type used in the response MUST be "application/atom+xml".
+- If the value of the query option is "json", then the media type used in the response MUST be "application/json".
+- If the value of the query option is "xml", then the media type used in the response MUST be "application/xml".
+
+#### 5.1.7.1 Examples ####
+This request URI:
+
+	http://host/service.svc/Orders?$format=json
+
+Is equivalent to a request with the "accept" header set to "application/json", so it requests the set of Order entities represented using the JSON media type, as specified in [RFC4627].
+
+The $format query option MAY be used in conjunction with RAW format (section 2.2.6.4) to specify which RAW format is returned.
+
+	http://host/service.svc/Orders(1)/ShipCountry/$value/?$format=json
+The raw value of the ShipCountry property of the matching Order using the JSON media type.
+
+## 5.2 Custom Query Options ##
+Custom query options provide an extensible mechanism for data service-specific information to be placed in a data service URI query string. A custom query option is any query option of the form shown by the rule "customQueryOption" in Appendix A: ABNF for OData URI Conventions. 
+
+Custom query options MUST NOT begin with a "$" character because the character is reserved for system query options. A custom query option MAY begin with the "@" character, however this doing  can result in custom query options that collide with Function Parameters values specified using Parameter Aliases.
+
+For example this URI addresses provide a 'securitytoken' via a custom query option:
+	http://service.odata.org/OData/OData.svc/Products?$orderby=Name&securitytoken=0412312321
+
+=========//End Query Section
 
 ## 7.3. Data Modification ##
 
@@ -805,110 +1135,10 @@ This request:
 
 Invokes the `GetOrdersByDate` ServiceOperation with the `OrderDate` parameter value of `datetime'2012-07-07T01:03:00` and then further filters the results so only the Orders for `ACME` on that date are returned.
 
-### Batch Processing ###
 
 ------
 
-- ASSIGNED TO: MikeF
-
-------
-<<<<<<< HEAD
-=======
-
-# Appendices #
-
-#Appendix A: Formal Common Schema Definition Langauge (CSDL)#
-
-------
-
-- ASSIGNED TO: MikeP
-
-------
-
-OData services are described by an Entity Data Model (EDM). The Common Schema Definition Language (CSDL) defines an XML-based description of the Entity Model exposed by an OData service.
-
-## 1. Common Schema Defintion Language (CSDL) Namespaces ##
-
-In addition to the (default) XML namespace, attributes and elements used to describe the entity model of an OData service are defined in one of the following namespaces.
-
-### 1.1.	Entity Data Model For Data Services Packaging (EDMX) Namespace ###
-
-Elements and attributes associated with the top-level wrapper that contains the CSDL used to define the entity model for an OData Service are qualified with the Entity Data Model For Data Services Packaging Namespace:  "http://schemas.microsoft.com/ado/2007/06/edmx".
-
-In this specification the namespace prefix "edmx" is used to represent the Entity Data Model for Data Services Packaging Namespace, however the prefix name is not prescriptive.
-
-### 1.2.	Entity Data Model (EDM) Namespace ###
-
-Elements and attributes that define the entity model exposed by the OData Service are qualified with the Entity Data Model Namespace:  "http://schemas.microsoft.com/ado/2007/06/edm".
-
-In this specification the namespace prefix "edm" is used to represent the Data Service Metadata Namespace, however the prefix name is not prescriptive.
-
-### 1.3.	Data Service Metadata Namespace ###
-
-Elements and attributes specific to how the entity model is exposed as an OData Service are qualified with the Data Service Metadata Namespace:  "http://schemas.microsoft.com/ado/2007/08/DataServices/Metadata".
-
-In this specification the namespace prefix "metadata" is used to represent the Data Service Metadata Namespace, however the prefix name is not prescriptive.
-
-## 2 Entity Model Wrapper Constructs ##
-The Entity Model Wrapper wraps the Schemas that describe the entity model exposed by the the OData Service. 
-
-### 2.1. The "edmx:EDMX" Element ###
-The CSDL returned by an OData Service MUST contain a single root `edmx:EDMX` Element, containing a single child `edmx:DataServices` element describing the entity model(s) exposed by the OData service.
-
-#### 2.1.1. The "Version" Attribute ####
-The `Version` attribute, as described in **todo:ref xmlschema**, MUST be present on the `edmx:EDMX` element. 
-
-The Version attribute is a string value that specifies the version of the EDMX wrapper, and must be of the form
-`majorversion + "." + minorversion`. This version of the specification defines version `"1.0"` of the EDMX Wrapper.
-
-### 2.2 The "edmx:DataServices" Element ###
-The `edmx:EDMX` element MUST contain exactly one `edmx:DataService` element. The `edmx:DataService` element contains zero or more `Schema` elements, defining the schema(s) exposed by the OData service.
-
-#### 2.2.1. The "metadata:DataServiceVersion" Attribute ####
-
-
-## 3. Schema Constructs ##
-Each Entity Model exposed by the OData service is described by a Schema.
-
-### 2.3 The "Schema" Element ###
-#### 2.3.1. The "Namespace" Attribute ####
-
-## 3. Entity Type Constructs ##
-Entity Types are nominal structured records with a key that consist of named primitive or complex properties.
-
-### 3.1. The "edm:EntityType" Element ###
-### 3.2 The "edm:Key" Element ###
-### 3.3. The "edm:PropertyRef" Element ###
-### 3.4. The "edm:Property" Element ###
-### 3.5. The "edm:NavigationProperty" Element ###
-
-## 4. Complex Type Elements ##
-Complex Types are nominal structured types also consisting of a list of properties but with no key, thus can only exist as a property of a containing Entity Type or as a temporary value. 
-
-### 4.1. The "edm:ComplexType" Element ###
-
-## 5. Association Constructs ##
-Associations define the relationship between two or more Entity Types 
-
-### 5.1. The "edm:Association" Element ###
-
-## 6. Entity Containers
-Instances of EntityTypes live within EntitySets. Instances of Associations live within AssociationSets. All Entity Sets and Association Sets are grouped in an Entity Container.
-
-### 6.1. The "edm:EntityContainer" Element ###
-### 6.2. The "edm:EntitySet" Element ###
-### 6.3. The "edm:AssociationSet" Element ###
-
-
-## B: XSD for CSDL ##
-
-------
-
-- ASSIGNED TO: Alex
-
-------
-
-# C: Terminology #
+# Appendix A: Terminology #
 
 ------
 

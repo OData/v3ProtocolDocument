@@ -30,278 +30,187 @@ An OData payload may represent:
 
 For a description of batch requests and responses please see <todo: insert reference here…>
 
-
 # 2. Notational Conventions #
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[RFC2119](http://tools.ietf.org/html/rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")].
 
 # 4. Primitive Types in Atom #
 
-OData Atom and XML payloads serialize primitive types according to the table below, which uses the following ABNF grammar rules:
+OData Atom and XML payloads serialize primitive types as shown in the table below. For full synax rules, see <ref:grammar>:
 
-	SQUOTE            =  %x27              ; ' (single quote)
-	EQ                =  %x3D              ; = (equal sign)
-	SEMI              =  %x3B              ; ; (semicolon)
-	SP                =  %x20              ;   (single-width horizontal space character)
-	COMMA             =  %x2C              ; , (comma)
-	nonZeroDigit      =  %x31-30           ; all digits except zero
-	doubleZeroToSixty =  "0" DIGIT
-	                     / "1" DIGIT
-	                     / "2" DIGIT
-	                     / "3" DIGIT
-	                     / "4" DIGIT
-	                     / "5" DIGIT
-	nan               =  "NaN"
-	negativeInfinity  =  "-INF"
-	positiveInfinity   =  "INF"
-	nanInfinity       =  nan / negativeInfinity / positiveInfinity
-	sign              =  "-" / ""
-	DIGIT             =  ; see [RFC5234] Appendix B.1 Core Rules
-	UTF8-char         =  ; see [RFC3629]
-	
-
-<table>
-	<tr>
-		<td>
-			EDM Primitive Type
-		</td>
-		<td>
-			Serialization Format
-		</td>
-	</tr>
-	<tr/>
-	<tr>
-    	<td>
-			Null literal 
-		</td>
-		<td>
-			"null"
-		</td>
-    </tr>
-	<tr>
-    	<td>
-			Edm.Binary 
-		</td>
-		<td>
-			"'" ("X" | "binary" | "Binary") (2*HEXDIG)* "'"
-		</td>
+<table border="1" cellspacing="0" cellpadding="0">
+    <tr>
+      <th>Primitive Type</th>
+      <th>Literal Form</th>
+      <th>Example</th>
     </tr>
     <tr>
-        <td>
-			Edm.Boolean  
-		</td>
-		<td>
-			True = "true" | "1" <br>
-			False = "false" | "0"
-		</td>
+      <td>
+        <strong>Null</strong><br/>Represents the absence of a value</td>
+      <td>null</td>
+      <td>null</td>
     </tr>
     <tr>
-        <td>
-			Edm.Byte  
-		</td>
-		<td>
-		</td>
+      <td><strong>Edm.Binary</strong><br/>Represent fixed- or variable- length binary data</td>
+      <td>[A-Fa-f0-9][A-Fa-f0-9]* <br/> Odd pairs of hex digits
+        are not allowed.
+      </td>
+      <td>23ABFF</td>
     </tr>
     <tr>
-        <td>
-			Edm.DateTime  
-		</td>
-		<td>
-		</td>
+      <td><strong>Edm.Boolean</strong><br />Represents the mathematical concept of binary-valued logic</td>
+      <td>true | 1 or false | 0 </td>
+      <td>true <br/>false</td>
     </tr>
     <tr>
-        <td>
-			Edm.Decimal  
-		</td>
-		<td>
-		</td>
+      <td><strong>Edm.Byte</strong><br />Unsigned 8-bit integer value</td>
+      <td>[A-Fa-f0-9]</td>
+      <td>FF</td>
     </tr>
     <tr>
-        <td>
-			Edm.Double  
-		</td>
-		<td>
-		</td>
+      <td><strong>Edm.DateTime</strong><br/>Represents date and time with values ranging from 12:00:00 midnight, January 1, 1753 A.D. through 11:59:59 P.M, December 9999 A.D.</td>
+      <td>yyyy-mm-ddThh:mm[:ss[.fffffff]]</td>
+      <td>2000-12-12T12:00</td>
     </tr>
     <tr>
-        <td>
-			Edm.Single  
-		</td>
-		<td>
-		</td>
+      <td><strong>Edm.Decimal</strong><br/>Represents numeric values with fixed precision and scale. This type can describe a numeric value ranging from negative 10^255 + 1 to positive 10^255 -1</td>
+      <td>[0-9]+.[0-9]</td>
+      <td>2.345</td>
     </tr>
     <tr>
-        <td>
-			Edm.Guid  
-		</td>
-		<td>
-		</td>
+      <td><strong>Edm.Double</strong><br/>Represents a floating point number with 15 digits precision that can represent values with approximate range of Â± 2.23e -308 through Â± 1.79e +308</td>
+      <td>[0-9]+ ((.[0-9]+) | [E[+ | -][0-9]+])</td>
+      <td>2.345</td>
     </tr>
     <tr>
-        <td>
-			Edm.Int16  
+      <td><strong>Edm.Single</strong><br/>Represents a floating point number with 7 digits precision that can represent values with approximate range of Â± 1.18e -38 through Â± 3.40e +38</td>
+      <td>[0-9]+.[0-9]</td>
+      <td>2.5</td>
+    </tr>
+    <tr>
+      <td><strong>Edm.Guid</strong><br/>Represents a 16-byte (128-bit) unique identifier value</td>
+      <td>dddddddd-dddd-dddd-dddd-dddddddddddd where each d represents [A-Fa-f0-9]
+      </td>
+      <td>12345678-aaaa-bbbb-cccc-ddddeeeeffff</td>
+    </tr>
+    <tr>
+      <td><strong>Edm.Int16</strong><br/>Represents a signed 16-bit integer value</td>
+      <td>[-][0-9]+</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <td><strong>Edm.Int32</strong><br/>Represents a signed 32-bit integer value</td>
+      <td>[-] [0-9]+</td>
+      <td>32</td>
+    </tr>
+    <tr>
+      <td><strong>Edm.Int64</strong><br/>Represents a signed 64-bit integer value</td>
+      <td>[-] [0-9]+</td>
+      <td>64</td>
+    </tr>
+    <tr>
+      <td><strong>Edm.SByte</strong><br/>Represents a signed 8-bit integer value</td>
+      <td>[-] [0-9]+</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td><strong>Edm.String</strong><br/>Represents fixed- or variable-length character data</td>
+      <td>any UTF-8 character <br/> Note: See definition of UTF8-char in <a href="http://tools.ietf.org/html/rfc3629">[RFC3629]</a>
+      </td>
+      <td>Hello OData</td>
+    </tr>
+    <tr>
+      <td><strong>Edm.Time</strong><br/>Represents the time of day with values ranging from 0:00:00.x to 23:59:59.y, where x and y depend upon the precision</td>
+      <td>&lt;timeLiteral&gt; timeLiteral = Defined by the lexical representation for
+        time at <a href="http://www.w3.org/TR/xmlschema-2">http://www.w3.org/TR/xmlschema-2</a></td>
+      <td>13:20:00</td>
+    </tr>
+    <tr>
+      <td><strong>Edm.DateTimeOffset</strong><br/>Represents date and time as an Offset in minutes from GMT, with values ranging from 12:00:00 midnight, January 1, 1753 A.D. through 11:59:59 P.M, December 9999 A.D</td>
+      <td>&lt;dateTimeOffsetLiteral&gt; dateTimeOffsetLiteral = Defined by
+        the lexical representation for datetime (including timezone offset) at <a href="http://www.w3.org/TR/xmlschema-2">
+          http://www.w3.org/TR/xmlschema-2</a></td>
+      <td>2002-10-10T17:00:00Z</td>
+    </tr>
+    <tr>
+        <td><strong>Edm.Geography</strong> 
 		</td>
 		<td>
 		</td>
     </tr>
     <tr>
-        <td>
-			Edm.Int32  
+        <td><strong>Edm.GeographyPoint</strong> 
 		</td>
 		<td>
 		</td>
     </tr>
     <tr>
-        <td>
-			Edm.Int64  
-		</td>
+        <td><strong>Edm.GeographyLineString</strong></td>
 		<td>
 		</td>
     </tr>
     <tr>
-        <td>
-			Edm.SByte
-		</td>
+        <td><strong>Edm.GeographyPolygon</strong></td>
 		<td>
 		</td>
     </tr>
     <tr>
-        <td>
-			Edm.Stream   
-		</td>
+        <td><strong>Edm.GeographyCollection</strong></td>
 		<td>
 		</td>
     </tr>
     <tr>
-        <td>
-			Edm.String  
-		</td>
+        <td><strong>Edm.GeographyMultiPoint</strong></td>
 		<td>
 		</td>
     </tr>
     <tr>
-        <td>
-			Edm.Time  
-		</td>
+        <td><strong>Edm.GeographyMultiLineString</strong></td>
 		<td>
 		</td>
     </tr>
     <tr>
-        <td>
-			Edm.DateTimeOffset  
-		</td>
+        <td><strong>Edm.GeographyMultiPolygon</strong></td>
 		<td>
 		</td>
     </tr>
     <tr>
-        <td>
-			Edm.Geography 
-		</td>
+        <td><strong>Edm.Geometry</strong></td>
 		<td>
 		</td>
     </tr>
     <tr>
-        <td>
-			Edm.GeographyPoint 
-		</td>
+        <td><strong>Edm.GeometryPoint</strong></td>
 		<td>
 		</td>
     </tr>
     <tr>
-        <td>
-			Edm.GeographyLineString 
-		</td>
+        <td><strong>Edm.GeometryLineString</strong></td>
 		<td>
 		</td>
     </tr>
     <tr>
-        <td>
-			Edm.GeographyPolygon 
-		</td>
+        <td><strong>Edm.GeometryPolygon</strong></td>
 		<td>
 		</td>
     </tr>
     <tr>
-        <td>
-			Edm.GeographyCollection 
-		</td>
+        <td><strong>Edm.GeometryCollection</strong></td>
 		<td>
 		</td>
     </tr>
     <tr>
-        <td>
-			Edm.GeographyMultiPoint 
-		</td>
+        <td><strong>Edm.GeometryMultiPoint</strong></td>
 		<td>
 		</td>
     </tr>
     <tr>
-        <td>
-			Edm.GeographyMultiLineString 
-		</td>
+        <td><strong>Edm.GeometryMultiLineString</strong></td>
 		<td>
 		</td>
     </tr>
     <tr>
-        <td>
-			Edm.GeographyMultiPolygon 
-		</td>
-		<td>
-		</td>
-    </tr>
-    <tr>
-        <td>
-			Edm.Geometry 
-		</td>
-		<td>
-		</td>
-    </tr>
-    <tr>
-        <td>
-			Edm.GeometryPoint 
-		</td>
-		<td>
-		</td>
-    </tr>
-    <tr>
-        <td>
-			Edm.GeometryLineString 
-		</td>
-		<td>
-		</td>
-    </tr>
-    <tr>
-        <td>
-			Edm.GeometryPolygon 
-		</td>
-		<td>
-		</td>
-    </tr>
-    <tr>
-        <td>
-			Edm.GeometryCollection 
-		</td>
-		<td>
-		</td>
-    </tr>
-    <tr>
-        <td>
-			Edm.GeometryMultiPoint 
-		</td>
-		<td>
-		</td>
-    </tr>
-    <tr>
-        <td>
-			Edm.GeometryMultiLineString 
-		</td>
-		<td>
-		</td>
-    </tr>
-    <tr>
-        <td>
-			Edm.GeometryMultiPolygon 
-		</td>
+        <td><strong>Edm.GeometryMultiPolygon</strong></td>
 		<td>
 		</td>
     </tr>

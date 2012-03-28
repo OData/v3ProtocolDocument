@@ -179,10 +179,20 @@ The URL for retrieving a particular entity instance may be returned in a respons
 Conventions for constructing a URL to an individual entity using the entity's Key Value(s) are described in [OData URI Conventions](ODataURIConventions).
 
 ### 7.2.2. Requesting Individual Properties ###
-An individual property value may be requested by appending the property name to the URL path for a particular resource. The format of the returned property value is dependent upon the requested format.
+An individual property value may be requested by appending the property name to the URL path for a particular resource. 
 
-#### 7.2.2.1. Returning a Property's Raw Value using `$value` ####
+For example:
+
+    http://services.odata.org/OData/OData.svc/Products(1)/Name
+
+The format of the returned property value is dependent upon the requested format.
+
+#### 7.2.2.1. Requesting a Property's Raw Value using `$value` ####
 The raw value of a primitive typed property may be retrieved without any property wrapping or additional metadata by appending "/$value" to the URL path specifying the individual property.
+
+For example:
+
+    http://services.odata.org/OData/OData.svc/Products(1)/Name/$value 
 
 By default, the raw value of any Simple Type property (except those of type Edm.Binary) SHOULD be represented using the text/plain media type and MUST be serialized as specified in <ref todo...>. 
 
@@ -190,18 +200,18 @@ The raw value of an Edm.Binary property MUST be serialized as an unencoded byte 
 
 A $value request for a property that is NULL SHOULD result in a "404 Not Found" response. 
 
-### 7.2.4. Querying Collections ###
+### 7.2.3. Querying Collections ###
 OData services support querying sets of entities, such as the EntitySets enumerated in the Service Document and navigation links exposed by the service. 
 
 The target collection is specified through a URI, and query operations such as filter, sort, paging, and projection are specified as System Query Options provided as query string parameters. The names of all System Query Options are prefixed with a "$" character.
 
 An OData service may support some or all of the System Query Options defined. If a data service does not support a System Query Option, it must reject any requests which contain the unsupported option.
 
-#### 7.2.4.1. `$filter` System Query Option ####
+#### 7.2.3.1. The `$filter` System Query Option ####
 The set of entities returned may be restricted through the use of the $filter System Query Option. 
 
-##### 7.2.4.1.1. Built-in Filter Operations #####
-OData supports a set of built-in filter operations, as described in this section. For a full description of the syntax use when building requests, see [[OData URI Conventions](OData_URI_Conventions)].
+##### 7.2.3.1.1. Built-in Filter Operations #####
+OData supports a set of built-in filter operations, as described in this section. For a full description of the syntax use when building requests, see [OData URI Conventions](OData_URI_Conventions).
 
   <table border="1">
       <tr>
@@ -295,8 +305,7 @@ OData supports a set of built-in filter operations, as described in this section
       </tr>
   </table>
 
-
-##### 7.2.4.1.2. Built-in Query Functions #####
+##### 7.2.3.1.2. Built-in Query Functions #####
 OData supports a set of built-in functions that can be used within filter operations. The following table lists the available functions. For a full description of the syntax use when building requests, see[[OData URI Conventions](OData_URI_Conventions)].
 
 Note: No ISNULL or COALESCE operators are not defined. Instead, there is a null literal which can be used in comparisons.
@@ -425,8 +434,8 @@ Note: No ISNULL or COALESCE operators are not defined. Instead, there is a null 
   </tr>
 </table>
 
-### 7.2.4.2 `$select` System Query Option ###
-The $select system query option allows clients to requests a limited set of information for each Entity or ComplexType identified by the ResourcePath and other System Query Options like $filter, $top, $skip etc. When present $select instructs the server to return only the Properties, Open Properties, Related Properties, Actions and Functions explicitly requested by the client, however servers MAY choose to return more information.
+##### 7.2.3.2 The `$select` System Query Option #####
+The `$select` system query option allows clients to requests a limited set of information for each Entity or ComplexType identified by the ResourcePath and other System Query Options like $filter, $top, $skip etc. When present $select instructs the server to return only the Properties, Open Properties, Related Properties, Actions and Functions explicitly requested by the client, however servers MAY choose to return more information.
 
 What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that applies to the Select System Query Option: 
 
@@ -495,47 +504,85 @@ Redundant selectClause rules on the same URI MAY be considered valid, but MUST N
 
 For AtomPub formatted responses: The value of a selectClause applies only to the properties returned within the m:properties element. For example, if a property of an entity type is mapped with the Customizable Feeds attribute KeepInContent=false, then that property MUST always be included in the response according to its customizable feed mapping.
 
-### 5.1.4 OrderBy System Query Option ###
-TODO: Mike P
+#### 7.2.3.3 The `$orderby` System Query Option ####
+The `$orderby` System Query option specifies the order in which entities are returned from the service.
 
-### 5.1.5 Top and Skip System Query Options ###
-TODO: Mike P
+The value of the `$orderby` System Query option specifies a comma separated list of property names to sort by. The property name may include the suffix "acs" for ascending or "desc" for descending, separated from the property name by one or more spaces.
 
-### 5.1.6 Inlinecount System Query Option ####
-TODO: Mike P
+For example:
 
-### 5.1.7 Format System Query Option ###
-A data service URI with a $format system query option specifies that a response to the request SHOULD use the media type specified by the query option.
+    http://services.odata.org/OData/OData.svc/Products?$orderby=ReleaseDate asc, Rating desc
+
+#### 7.2.3.4. The `$top` System Query Option ####
+The  `$top` System Query Option specifies that only the first n records should be returned, where n is a positive integer value specified in by `$top` query option.
+
+For example:
+
+    http://services.odata.org/OData/OData.svc/Products?$top=5
+
+Would return only the first five Products in the Products EntitySet.
+
+If no `$order` query option is specified in the request, the server MUST impose a stable ordering across requests that include `$top`.
+
+#### 7.2.3.5. The `$skip` System Query Option ####
+The  `$skip` System Query Option specifies that only the records after the first n should be returned, where n is a positive integer value specified in by `$skip` query option.
+
+For example:
+
+    http://services.odata.org/OData/OData.svc/Products?$skip=5
+
+Would return Products starting with the 6th Product in the Products EntitySet.
+
+Where $top and $skip are used together, the $skip is applied before the $top, regardless of the order in which they appear in the request.
+
+For example:
+
+    http://services.odata.org/OData/OData.svc/Products?$top=5&$skip=2
+
+Would return the first five Products, starting with the 2nd Product in the Products EntitySet.
+
+If no `$order` query option is specified in the request, the server MUST impose a stable ordering across requests that include `$skip`.
+
+#### 7.2.3.6. The `$inlinecount` System Query Option ####
+The `$inlinecount` system query option with a value of `allpages` specifies that the total count of entities matching the request should be returned along with the result.
+
+For example:
+
+    http://services.odata.org/OData/OData.svc/Products?$inlinecount=allpages
+
+Would return, along with the results, the total number of products in the set.
+
+An `$inlinecount` query option with a value of `none` (or not specified) hints that the service SHOULD NOT return a count, although it is still valid for the server to do so.
+
+The service MUST return an HTTP Status code of 404 (Bad Request) if a value other than `allpages` or `none` is specified.
+
+`$inlinecount` ignores any `$top`, `$skip`, or `$expand` query options, but does include only those results matching any specified `$filter`.
+
+How the count is returned is dependent upon the selected format.
+
+#### 7.2.3.7. The  `$format` System Query Option ####
+A data service URI with a `$format` system query option specifies that a response to the request SHOULD use the media type specified by the query option.
 
 The syntax of the format system query option is defined in 'format' rule defined in Appendix A. 
+
 The rules for interpretting the format rule are:
 
-- If the $format query option is present in a request URI, it SHOULD take precedence over the value(s) specified in the Accept request header.
+- If the `$format` query option is present in a request URI, it SHOULD take precedence over the value(s) specified in the Accept request header.
 - If the value of the query option is "atom", then the media type used in the response MUST be "application/atom+xml".
 - If the value of the query option is "json", then the media type used in the response MUST be "application/json".
 - If the value of the query option is "xml", then the media type used in the response MUST be "application/xml".
 
-#### 5.1.7.1 Examples ####
-This request URI:
+For example:
 
 	http://host/service.svc/Orders?$format=json
 
 Is equivalent to a request with the "accept" header set to "application/json", so it requests the set of Order entities represented using the JSON media type, as specified in [RFC4627].
 
-The $format query option MAY be used in conjunction with RAW format (section 2.2.6.4) to specify which RAW format is returned.
+The `$format` query option MAY be used in conjunction with RAW format (section 2.2.6.4) to specify which RAW format is returned.
 
 	http://host/service.svc/Orders(1)/ShipCountry/$value/?$format=json
+
 The raw value of the ShipCountry property of the matching Order using the JSON media type.
-
-## 5.2 Custom Query Options ##
-Custom query options provide an extensible mechanism for data service-specific information to be placed in a data service URI query string. A custom query option is any query option of the form shown by the rule "customQueryOption" in Appendix A: ABNF for OData URI Conventions. 
-
-Custom query options MUST NOT begin with a "$" character because the character is reserved for system query options. A custom query option MAY begin with the "@" character, however this doing  can result in custom query options that collide with Function Parameters values specified using Parameter Aliases.
-
-For example this URI addresses provide a 'securitytoken' via a custom query option:
-	http://service.odata.org/OData/OData.svc/Products?$orderby=Name&securitytoken=0412312321
-
-=========//End Query Section
 
 ## 7.3. Data Modification ##
 

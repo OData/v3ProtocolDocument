@@ -35,7 +35,6 @@ For a description of batch requests and responses please see <todo: insert refer
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[RFC2119](http://tools.ietf.org/html/rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")].
 
-<<<<<<< HEAD
 # 4. Primitive Types in Atom #
 
 OData Atom and XML payloads serialize primitive types as shown in the table below. For full synax rules, see <ref:grammar>:
@@ -220,7 +219,12 @@ OData Atom and XML payloads serialize primitive types as shown in the table belo
 
 # 5. Use of Atom #
 
-The Atom Syndication Format RFC4287 (http://atompub.org/rfc4287.html) defines an XML-based format for describing collections ("feeds") made up of individual "entries". The Atom Publishing Protocol RFC5023 (http://www.ietf.org/rfc/rfc5023.txt) defines an application-level protocol based on HTTP transfer of Atom-formatted representations.
+The Atom Syndication Format RFC4287 (http://atompub.org/rfc4287.html) defines an XML-based format for describing streams ("feeds") made up of individual "entries". The Atom Publishing Protocol RFC5023 (http://www.ietf.org/rfc/rfc5023.txt) defines an application-level protocol based on HTTP transfer of Atom-formatted representations.
+Atom elements and attributes are defined within the Atom namespace: "http://www.w3.org/2005/Atom".
+
+In this specification the namespace prefix "atom" is used to represent the Atom Namespace, however the prefix name is not prescriptive.
+
+OData's Atom format defines extensions and conventions on top of RFC4287 and RFC5023 for representing structured data. In particular, OData defines meaning to defined Atom elements as follows:
 
 # 5.1 Namespaces #
 OData defines meaning for elements and attributes defined in the following namespaces.
@@ -229,75 +233,31 @@ OData defines meaning for elements and attributes defined in the following names
 Atom elements and attributes are defined within the Atom namespace: "http://www.w3.org/2005/Atom".
 
 In this specification the namespace prefix "atom" is used to represent the Atom Namespace, however the prefix name is not prescriptive.
-=======
-# 3. OData Namespaces #
->>>>>>> 17b5b8c150f87780c935875e570a367f3eee9df1
 
-Attributes and elements that have special meaning in OData are defined in one of two OData Namespaces.
+# 5.1.2. Atom Publishing Protocol Namespace # 
+Atom Publishing Protocol (AtomPub) elements and attributes are defined within the AtomPub namespace: "http://www.w3.org/2007/app".
 
-## 3.1.	OData Data Namespace #
+In this specification the namespace prefix "app" is used to represent the AtomPub Namespace, however the prefix name is not prescriptive.
+
+# 5.1.3. OData Data Namespace #
 
 Elements that describe the actual data values for a resource are qualified with the OData Data Namespace: "http://schemas.microsoft.com/ado/2007/08/dataservices"
 
 In this specification the namespace prefix "data" is used to represent the OData Data Namespace, however the prefix name is not prescriptive.
 
-## 3.2.	OData Metadata Namespace ##
+## 5.1.4. OData Metadata Namespace ##
 
-Attributes and elements that represent metadata (such as type, null usage, and entry-level etags) are defined within the OData Metadata Namespace: "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+Attributes and elements that represent metadata (such as type, null usage, and entry-level etags) are defined within the OData Metadata Namespace: "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata". Custom elements or attributes MUST NOT use this namespace.
 
 In this specification the namespace prefix "metadata" is used to represent the OData Metadata Namespace, however the prefix name is not prescriptive.
 
-# 4. xml:base Attribute #
+# 5.2. xml:base Attribute #
 
 OData payloads may use the xml:base attribute to define a base URI for relative references defined within the scope of the element containing the xml:base attribute.
 
-# 5. Primitive Types in Atom #
+# 6. Atom Element Definition #
 
-OData supports the following primitive types.
-
-* Edm.Binary 
-* Edm.Boolean  
-* Edm.Byte  
-* Edm.DateTime  
-* Edm.Decimal  
-* Edm.Double  
-* Edm.Single  
-* Edm.Guid  
-* Edm.Int16  
-* Edm.Int32  
-* Edm.Int64  
-* Edm.SByte
-* Edm.Stream   
-* Edm.String  
-* Edm.Time  
-* Edm.DateTimeOffset  
-* Edm.Geography 
-* Edm.GeographyPoint 
-* Edm.GeographyLineString 
-* Edm.GeographyPolygon 
-* Edm.GeographyCollection 
-* Edm.GeographyMultiPoint 
-* Edm.GeographyMultiLineString 
-* Edm.GeographyMultiPolygon 
-* Edm.Geometry 
-* Edm.GeometryPoint 
-* Edm.GeometryLineString 
-* Edm.GeometryPolygon 
-* Edm.GeometryCollection 
-* Edm.GeometryMultiPoint 
-* Edm.GeometryMultiLineString 
-* Edm.GeometryMultiPolygon 
-
-todo: define atom encodings for each type
-
-# 6. Use of Atom #
-
-The Atom Syndication Format RFC4287 (http://atompub.org/rfc4287.html) defines an XML-based format for describing streams ("feeds") made up of individual "entries". The Atom Publishing Protocol RFC5023 (http://www.ietf.org/rfc/rfc5023.txt) defines an application-level protocol based on HTTP transfer of Atom-formatted representations.
-Atom elements and attributes are defined within the Atom namespace: "http://www.w3.org/2005/Atom".
-
-In this specification the namespace prefix "atom" is used to represent the Atom Namespace, however the prefix name is not prescriptive.
-
-OData's Atom format defines extensions and conventions on top of RFC4287 and RFC5023 for representing structured data. In particular, OData defines meaning to defined Atom elements as follows:
+OData's Atom format defines extensions and conventions on top of RFC4287 and RFC5023 for representing structured data as follows:
 
 ## 6.1.	Entity Instances ##
 Entity Instances, whether individual or within an ATOM feed, are represented as `atom:entry` elements. This section defines the elements and attributes within an `atom:entry` element that are assigned meaning in OData.

@@ -205,12 +205,20 @@ The target collection is specified through a URI, and query operations such as f
 An OData service may support some or all of the System Query Options defined. If a data service does not support a System Query Option, it must reject any requests which contain the unsupported option.
 
 #### 7.2.3.1. The `$filter` System Query Option ####
-The set of entities returned may be restricted through the use of the $filter System Query Option. 
+The set of entities returned may be restricted through the use of the `$filter` System Query Option. 
+
+For example:
+
+    http://services.odata.org/OData/OData.svc/Products?$filter=Price lt 10.00
+
+Returns all Products whose Price is less than $10.00.
+
+The value of the $filter option is a boolean expression as defined in [[OData URI Conventions](ODataURIConventions)].
 
 ##### 7.2.3.1.1. Built-in Filter Operations #####
-OData supports a set of built-in filter operations, as described in this section. For a full description of the syntax use when building requests, see [OData URI Conventions](OData_URI_Conventions).
+OData supports a set of built-in filter operations, as described in this section. For a full description of the syntax used when building requests, see [OData URI Conventions](OData_URI_Conventions).
 
-  <table border="1">
+<table border="1">
       <tr>
         <th>Operator</th>
         <th>Description</th>
@@ -303,7 +311,7 @@ OData supports a set of built-in filter operations, as described in this section
   </table>
 
 ##### 7.2.3.1.2. Built-in Query Functions #####
-OData supports a set of built-in functions that can be used within filter operations. The following table lists the available functions. For a full description of the syntax use when building requests, see[[OData URI Conventions](OData_URI_Conventions)].
+OData supports a set of built-in functions that can be used within filter operations. The following table lists the available functions. For a full description of the syntax used when building requests, see [OData URI Conventions](OData_URI_Conventions).
 
 Note: No ISNULL or COALESCE operators are not defined. Instead, there is a null literal which can be used in comparisons.
  
@@ -455,7 +463,7 @@ The selectClause MUST be interpretted relative to the EntityType or ComplexType 
 
 In this URI the "Rating,ReleaseDate" selectClause MUST be interpreted relative to the Product EntityType which is the EntityType of the resources identified by this http://services.odata.org/OData/OData.svc/Products URI.
 
-Each selectItem in the selectClause, indicates that the response SHOULD include the Properties, Open Properties, Related Properties, Actions and Functions identified by that selectClause. 
+Each selectItem in the selectClause, indicates that the response MUST include the Properties, Open Properties, Related Properties, Actions and Functions identified by that selectClause. 
 
 The simpliest selectItem requests a single Property defined on the EntityType of the resources identified by the resource path section of the URI, for example this URI asks the server to return just the Rating and ReleaseDate for the matching Products: 
 

@@ -132,43 +132,37 @@ For example: [http://services.odata.org/OData/OData.svc/Category(1)/$links/Produ
 ### 4.3 Addressing Operations ###
 
 #### 4.3.1 Addressing Service Operations ####
-OData services can expose Service Operations which, like Entries, are identified using a URI. Service Operations are simple functions exposed by an OData service whose semantics are defined by the author of the function. A Service Operation can accept primitive type input parameters and can be defined to return a single primitive, single complex type, collection of primitives, collection of complex types, a single Entry, a Collection of Entries, or void. The basic rules for constructing URIs to address Service Operations and to pass parameters to them are illustrated in the following figure.
+The semantic rules for addressing and invoking a ServiceOperation are defined in the [OData:Core](OData) document. 
+The grammar for addressing and invoking a ServiceOperation is define by 3 syntax rules in Appendix A:
 
-TODO: AlexJ - needs rewording to sync with ABNF
-- ServiceRootUri: The service root URI identifies the root of the OData service.
-- ServiceOperation: The name of a Service Operation exposed by an OData service.
-- ParamName: The name of a parameter accepted by the Service Operation. If the Service Operation accepts multiple parameters, the order of the parameters in the query string of the URI is insignificant.
-- ParamValue: The value of the parameter. The format of the value is defined by the literal forms governed by the Syntax rule 'primitiveLiteral' in Appendix A.
+- The serviceOperationCall syntax rule defines the grammar for the ResourcePath that addresses the ServiceOperation.
+- The resourcePath syntax rule defines the grammar for any additional composition of OData ResourcePath segments that rely on the results of calling the ServiceOperation.
+- The sopParameterNameAndValue syntax rule defines the grammar for specifying any parameters to the ServiceOperation in the query part of the request Uri.
 
-##### 4.3.1.1 Examples #####
-The example URIs below follow the addressing rules stated above and are based on the reference service found at this service root [http://services.odata.org/OData/OData.svc](http://services.odata.org/OData/OData.svc) and [http://services.odata.org/OData/OData.svc/$metadata](http://services.odata.org/OData/OData.svc/$metadata). In the following examples '[~](http://services.odata.org/OData/OData.svc)' is used as shorthand for [http://services.odata.org/OData/OData.svc](http://services.odata.org/OData/OData.svc) 
+This example, illustrates a call to a ServiceOperation with subsequent resource path segments, that uses all three syntax rules:
 
-[~/ProductsByColor?color='red'](http://services.odata.org/OData/OData.svc/ProductsByColor?color='red')
+	[http://services.odata.org/OData/OData.svc/GetProductsByRating?rating=3&$filter=Price gt 20.0M](http://services.odata.org/OData/OData.svc/GetProductsByRating?rating=3&$filter=Price gt 20.0M)
 
-Identifies the ProductByColor Service Operation and passes it a single string parameter. Since Service Operations are just functions, their semantics are up to the implementer of the function. In this case the Service Operation returns all the red Products. Is described by the Function Import named "ProductsByColor" that accepts a single string parameter named "color" in the service metadata document.
-
-[~/ProductsByColor(3)/Category/Name?color='red'](http://services.odata.org/OData/OData.svc/ProductsByColor(3)/Category/Name?color='red')
-
-Identifies the same function as the example above; however, since the function returns a collection of Entries (here, Products) it acts as a pseudo Collection in that additional path segments may follow identifying Entries or Links from the Entries within the pseudo Collection identified by the Service Operation. In this case, the result of the function is treated as a Collection of Entries, as described by the prior Addressing Entries section. Is described in the service metadata document by: 
-
-- The Function Import named "ProductsByColor" that accepts a single string parameter named "color".
-- The "Category" Navigation Property on the "Product" Entity Type.
-- The "Name" property on the "Category" Entity Type.
-
-[~/ProductsByColor?color='red'&param=foo](http://services.odata.org/OData/OData.svc/ProductsByColor?color='red'&param=foo)
-
-Same as the example below, except an additional parameter (param) is specified. Since the function does not define an input parameter named param, this parameter is ignored and not considered part of the function invocation.
-
-	http://services.odata.org/OData/OData.svc/ProductColors
-
-Identifies the ProductColors Service Operation that accepts no parameters.
-Is described by the Function Import named "ProductColors" in the service metadata document. This function returns a collection of strings.
+This invokes the GetProductsByRating ServiceOperation, with the rating parameter value set to 3, and then subsequently filters Products returned by the  ServiceOperation call to include only those with a price greater than $20. 
 
 #### 4.3.2 Addressing Functions ####
-TODO: AlexJ - extract appropriate content from 'Invoking a Function in OData.markdown'
+The semantic rules for addressing and invoking Functions are defined in the [OData:Core](OData) document. 
+The grammar for addressing and invoking Functions is defined by a number syntax grammar rules in Appendix A, in particular:
+
+- The functionCall syntax rule defines the grammar in the ResourcePath for addressing and providing parameters for a function directly from the Service Root.
+- The boundFunctionCall syntax rule defines the grammar in the ResourcePath for addressing and providing parameters for a function that is appended to a ResourcePath that identifies some resources that should be used as the binding parameter value when invoking the Function.
+- The boundOperation syntax rule (which encompasses the boundFunctionCall syntax rule), when used by the resourcePath syntax rule, illustrates how a boundFunctionCall can be appended to a ResourcePath.
+- The functionExpr, boolFunctionExpr, boundFunctionExpr and boolBoundFunctionExpr syntax rules as used by the filter and orderby syntax rules define the grammar for invoking functions to help filter and order resources identified by the ResourcePath of the uri.
+- The aliasAndValue syntax rule defines the grammar for providing function parameter values using Parameter Alias Syntax [OData:Core 7.4.2.3.2](OData). 
+- The parameterAndValue syntax rule defines the grammar for providing function parameter values using Parameter Name Syntax [OData:Core 7.4.2.3.2](OData).
 
 #### 4.3.3 Addressing Actions ####
-TODO: AlexJ - extract appropriate content from 'Invoking an Action in OData.markdown'
+The semantic rules for addressing and invoking Actions are defined in the [OData:Core](OData) document.
+The grammar for addressing and invoking Actions are defined by the following syntax grammar rules in Appendix A:
+
+- The actionCall syntax rule defines the grammar in the ResourcePath for addressing and invoking an Action directly from the Service Root.
+- The boundActionCall syntax rule defines the grammar in the ResourcePath for addressing and invoking an Action that is appended to a ResourcePath that identifies some resources that should be used as the binding parameter value when invoking the Action.
+- The boundOperation syntax rule (which encompasses the boundActionCall syntax rule), when used by the resourcePath syntax rule, illustrates how a boundActionCall can be appended to a ResourcePath.
 
 ## 5.0 Query String Options ##
 The Query Options section of an OData URI specifies three types of information: System Query Options, Custom Query Options, and Operation (Function and ServiceOperation) Parameters. All OData services MUST follow the query string parsing and construction rules defined in this section and its subsections.
@@ -1001,7 +995,7 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
 	fullAction					= 	[ operationQualifier ] action
 
 	boundAction					= 	fullAction
-									; with the additional 
+									; just like 'action' but with the additional restriction that the action MUST support binding (i.e. IsBindable = true)
 
 	qualifiedActionName			= 	fullActionName
 									; used in $select
@@ -1588,10 +1582,10 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
 	functionExpr				= 	(
 										entityColFuncCall [ singleNavigationExpr ] /
 										entityFuncCall [ collectionNavigationExpr ] /
-										primitiveFuncCall [ boundOperationExpr ] /
-										primitiveColFuncCall [ boundOperationExpr ] /
-										complexFuncCall [ complexPropertyPath / boundOperationExpr ] /
-										bomplexColFuncCall [ boundOperationExpr ]
+										primitiveFuncCall [ boundFunctionExpr ] /
+										primitiveColFuncCall [ boundFunctionExpr ] /
+										complexFuncCall [ complexPropertyPath / boundFunctionExpr ] /
+										complexColFuncCall [ boundFunctionExpr ]
 									)
 
 	boolFunctionExpr 			= 	functionExpr

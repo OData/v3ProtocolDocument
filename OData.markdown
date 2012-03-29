@@ -438,6 +438,7 @@ Note: No ISNULL or COALESCE operators are not defined. Instead, there is a null 
     <td>isof(ShipCountry,'Edm.String')</td>
   </tr>
 </table>
+
 ##### 7.2.3.n The `$expand` System Query Option #####
 The presence of the $expand system query option indicates that entities associated with the EntityType instance or EntitySet, identified by the resource path section of the URI, MUST be represented inline instead of as Deferred Content.
 
@@ -831,7 +832,7 @@ The following rules apply to all FunctionImport elements:
 
 ### EntitySetPathExpression ###
 
-Functions or Actions that return an Entity or Entities MAY return results from an EntitySet that is dependent upon the EntitySet of one the parameter values used to invoke the Operation.
+Functions or Actions that return an Entity or Entities MAY return results from an EntitySet that is dependent upon the EntitySet of one of the parameter values used to invoke the Operation.
 
 When such a dependency exists an EntitySetPathExpression is used. An EntitySetPathExpression MUST begin with the name of a parameter to the Operation, and optionally includes a series NavigationProperties (and occasional type casts) as a succinct way to describe the series of EntitySet transitions. 
 

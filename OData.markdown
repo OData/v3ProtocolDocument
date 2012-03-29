@@ -430,6 +430,44 @@ Note: No ISNULL or COALESCE operators are not defined. Instead, there is a null 
     <td>isof(ShipCountry,'Edm.String')</td>
   </tr>
 </table>
+##### 7.2.3.n The `$expand` System Query Option #####
+The presence of the $expand system query option indicates that entities associated with the EntityType instance or EntitySet, identified by the resource path section of the URI, MUST be represented inline instead of as Deferred Content.
+
+What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that applies to the Expand System Query Option: 
+
+	expand						= 	"$expand=" expandClause 
+
+	expandClause				=  	expandItem *("," expandItem)
+
+	expandItemPath  			= 	[ qualifiedEntityTypeName "/" ] navigationPropertyName 
+									*([ "/" qualifiedEntityTypeName ] "/" navigationPropertyName)  
+
+Each expandItem MUST be evaluated relative to the EntityType of request, which is EntityType of the resource(s) identified by the ResourcePath part of the URI.
+
+To expand a NavigationProperty defined on a derived type first a cast MUST be introduced using the qualifiedEntityTypeName of the required derived type. The left most navigationPropertyName segment MUST identify a Navigation Property defined on the EntityType of the request or an EntityType derived from the EntityType of the request. Subsequent navigationPropertyName segments MUST identify Navigation Properties defined on the EntityType returned by the previous NavigationProperty or the EntityType introduced in the previous cast.
+
+Examples
+
+	http://host/service.svc/Customers?$expand=Orders
+
+For each customer entity within the Customers EntitySet, the value of all associated Orders should be represented inline.
+
+	http://host/service.svc/Orders?$expand=OrderLines/Product,Customer
+
+For each Order within the Orders EntitySet, the following should be represented inline:
+
+- The Order lines associated to the Orders identified by the resource path section of the URI and the products associated to each Order line.
+- The customer associated with each Order returned.
+
+The OData 3.0 protocol supports specifying the namespace-qualified EntityType on which the NavigationProperty is defined as part of the expand statement.
+
+	http://host/service.svc/Customers?$expand=SampleModel.VipCustomer/InHouseStaff
+
+For each Customer entity in the Customers EntitySet, the value of all associated InHouseStaff MUST be represented inline if the entity is of type VipCustomer or a subtype of that. For entity instances that are not of type VipCustomer, or any of its subtypes, that entity instance MUST be returned with no inline representation for the expanded NavigationProperty.
+
+The server MUST include any actions or functions that are bound to the associated entities that are introduced via an expandClause, unless a select system query option is also included in the request and that $select requests that the actions/functions be omitted.
+
+Redundant expandClause rules on the same data service URI MAY be considered valid, but MUST NOT alter the meaning of the URI.
 
 ##### 7.2.3.2 The `$select` System Query Option #####
 The `$select` system query option allows clients to requests a limited set of information for each Entity or ComplexType identified by the ResourcePath and other System Query Options like $filter, $top, $skip etc. When present $select instructs the server to return only the Properties, Open Properties, Related Properties, Actions and Functions explicitly requested by the client, however servers MAY choose to return more information.
@@ -937,7 +975,6 @@ HTTP Response:
 
 
 ### 7.4.2. Functions ###
-
 Functions are operations exposed by an OData server which MAY have parameters and MUST return data and MUST have no observable side effects.  
 
 #### 7.4.2.1. Declaring Functions in Metadata ####

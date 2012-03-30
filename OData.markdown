@@ -439,6 +439,45 @@ Note: No ISNULL or COALESCE operators are not defined. Instead, there is a null 
   </tr>
 </table>
 
+##### 7.2.3.n The `$expand` System Query Option #####
+The presence of the $expand system query option indicates that entities associated with the EntityType instance or EntitySet, identified by the resource path section of the URI, MUST be represented inline instead of as Deferred Content.
+
+What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that applies to the Expand System Query Option: 
+
+	expand						= 	"$expand=" expandClause 
+
+	expandClause				=  	expandItem *("," expandItem)
+
+	expandItemPath  			= 	[ qualifiedEntityTypeName "/" ] navigationPropertyName 
+									*([ "/" qualifiedEntityTypeName ] "/" navigationPropertyName)  
+
+Each expandItem MUST be evaluated relative to the EntityType of request, which is EntityType of the resource(s) identified by the ResourcePath part of the URI.
+
+To expand a NavigationProperty defined on a derived type first a cast MUST be introduced using the qualifiedEntityTypeName of the required derived type. The left most navigationPropertyName segment MUST identify a Navigation Property defined on the EntityType of the request or an EntityType derived from the EntityType of the request. Subsequent navigationPropertyName segments MUST identify Navigation Properties defined on the EntityType returned by the previous NavigationProperty or the EntityType introduced in the previous cast.
+
+Examples
+
+	http://host/service.svc/Customers?$expand=Orders
+
+For each customer entity within the Customers EntitySet, the value of all associated Orders should be represented inline.
+
+	http://host/service.svc/Orders?$expand=OrderLines/Product,Customer
+
+For each Order within the Orders EntitySet, the following should be represented inline:
+
+- The Order lines associated to the Orders identified by the resource path section of the URI and the products associated to each Order line.
+- The customer associated with each Order returned.
+
+The OData 3.0 protocol supports specifying the namespace-qualified EntityType on which the NavigationProperty is defined as part of the expand statement.
+
+	http://host/service.svc/Customers?$expand=SampleModel.VipCustomer/InHouseStaff
+
+For each Customer entity in the Customers EntitySet, the value of all associated InHouseStaff MUST be represented inline if the entity is of type VipCustomer or a subtype of that. For entity instances that are not of type VipCustomer, or any of its subtypes, that entity instance MUST be returned with no inline representation for the expanded NavigationProperty.
+
+The server MUST include any actions or functions that are bound to the associated entities that are introduced via an expandClause, unless a select system query option is also included in the request and that $select requests that the actions/functions be omitted.
+
+Redundant expandClause rules on the same data service URI MAY be considered valid, but MUST NOT alter the meaning of the URI.
+
 ##### 7.2.3.2 The `$select` System Query Option #####
 The `$select` system query option allows clients to requests a limited set of information for each Entity or ComplexType identified by the ResourcePath and other System Query Options like $filter, $top, $skip etc. When present $select instructs the server to return only the Properties, Open Properties, Related Properties, Actions and Functions explicitly requested by the client, however servers MAY choose to return more information.
 
@@ -793,7 +832,7 @@ The following rules apply to all FunctionImport elements:
 
 ### EntitySetPathExpression ###
 
-Functions or Actions that return an Entity or Entities MAY return results from an EntitySet that is dependent upon the EntitySet of one the parameter values used to invoke the Operation.
+Functions or Actions that return an Entity or Entities MAY return results from an EntitySet that is dependent upon the EntitySet of one of the parameter values used to invoke the Operation.
 
 When such a dependency exists an EntitySetPathExpression is used. An EntitySetPathExpression MUST begin with the name of a parameter to the Operation, and optionally includes a series NavigationProperties (and occasional type casts) as a succinct way to describe the series of EntitySet transitions. 
 
@@ -945,7 +984,6 @@ HTTP Response:
 
 
 ### 7.4.2. Functions ###
-
 Functions are operations exposed by an OData server which MAY have parameters and MUST return data and MUST have no observable side effects.  
 
 #### 7.4.2.1. Declaring Functions in Metadata ####
@@ -1206,81 +1244,119 @@ Action *title*: a descriptive name used for an Action. This is intended to be pr
 
 Function *title*: a descriptive name used for a Function. This is intended to be presented to an end user.
 
-**ADO.NET Entity Framework:** A set of technologies that enables developers to create data access applications by programming against the conceptual application model instead of programming directly against a relational storage schema.
+ADO.NET Entity Framework
+: A set of technologies that enables developers to create data access applications by programming against the conceptual application model instead of programming directly against a relational storage schema.
 
-**alias:** A simple identifier that is typically used as a short name for a **namespace**.
+alias
+: A simple identifier that is typically used as a short name for a **namespace**.
 
-**alias qualified name:** A qualified name that is used to refer to a **StructuralType**, except that the 
+alias qualified name
+: A qualified name that is used to refer to a **StructuralType**, except that the 
 **namespace** is replaced by the alias for the **namespace**. For example, if an **EntityType** called "Person" is defined in the "Model.Business" **namespace**, and that **namespace** has been given the **alias** "Self", the alias qualified name for the person **EntityType** is "Self.Person".
 
-**annotation:** Any custom, application-specific extension that is applied to an instance of **CSDL** through the use of custom attributes and elements that are not a part of this **CSDL** specification.
+annotation
+: Any custom, application-specific extension that is applied to an instance of **CSDL** through the use of custom attributes and elements that are not a part of this **CSDL** specification.
 
-**association:** A named independent relationship between two **EntityType** definitions. Associations in the 
+association
+: A named independent relationship between two **EntityType** definitions. Associations in the 
 **Entity Data Model (EDM)** are first-class concepts and are always bidirectional. Indeed, the first-class nature of associations helps distinguish the **EDM** from the relational model. Every association includes exactly two association ends.
 
-**association end:** A term that specifies the **EntityType** elements that are related, the roles of each of those 
+association end
+: A term that specifies the **EntityType** elements that are related, the roles of each of those 
 **EntityType** elements in the **association**, and the **cardinality** rules for each end of the **association**.
 
-**cardinality:** The measure of the number of elements in a set.
+cardinality
+: The measure of the number of elements in a set.
 
-**collection:** A grouping of one or more **EDM types** that are type compatible. A collection can be used as the return type for a **FunctionImport**.
+collection
+: A grouping of one or more **EDM types** that are type compatible. A collection can be used as the return type for a **FunctionImport**.
 
-**conceptual schema definition language (CSDL):** A language that is based on XML and that can be used to define conceptual models that are based on the **EDM**.
+conceptual schema definition language (CSDL)
+: A language that is based on XML and that can be used to define conceptual models that are based on the **EDM**.
 
-**conceptual schema definition language (CSDL) document:** A document that contains a conceptual model that is described by using the **CSDL** code.
+conceptual schema definition language (CSDL) document
+: A document that contains a conceptual model that is described by using the **CSDL** code.
 
-**CSDL 1.0:** A version of **CSDL** that has a slightly reduced set of capabilities, which are called out in this document. CSDL 1.0 documents reference this XML namespace: http://schemas.microsoft.com/ado/2006/04/edm.
+CSDL 1.0
+: A version of **CSDL** that has a slightly reduced set of capabilities, which are called out in this document. CSDL 1.0 documents reference this XML namespace: http://schemas.microsoft.com/ado/2006/04/edm.
 
-**CSDL 1.1:** The version of **CSDL** that is defined immediately prior to **CSDL 1.2**. **CSDL 1.1** documents reference this XML namespace: http://schemas.microsoft.com/ado/2007/05/edm.
+CSDL 1.1
+: The version of **CSDL** that is defined immediately prior to **CSDL 1.2**. **CSDL 1.1** documents reference this XML namespace: http://schemas.microsoft.com/ado/2007/05/edm.
 
-**CSDL 1.2:** The version of **CSDL** that is defined immediately prior to **CSDL 2.0**. **CSDL 1.2** documents reference this XML namespace: http://schemas.microsoft.com/ado/2008/01/edm. The **ADO.NET Entity Framework** does not support CSDL 1.2.
+CSDL 1.2
+: The version of **CSDL** that is defined immediately prior to **CSDL 2.0**. **CSDL 1.2** documents reference this XML namespace: http://schemas.microsoft.com/ado/2008/01/edm. The **ADO.NET Entity Framework** does not support CSDL 1.2.
 
-**CSDL 2.0:** The version of **CSDL** that is defined immediately prior to **CSDL 3.0**. **CSDL 2.0** documents reference this XML namespace: http://schemas.microsoft.com/ado/2008/09/edm.
+CSDL 2.0
+: The version of **CSDL** that is defined immediately prior to **CSDL 3.0**. **CSDL 2.0** documents reference this XML namespace: http://schemas.microsoft.com/ado/2008/09/edm.
 
-**CSDL 3.0:** The version of **CSDL** that is the focus of this document. **CSDL 3.0** documents reference this XML namespace: http://schemas.microsoft.com/ado/2009.11/edm.
+CSDL 3.0
+: The version of **CSDL** that is the focus of this document. **CSDL 3.0** documents reference this XML namespace: http://schemas.microsoft.com/ado/2009.11/edm.
 
-**declared property:** A property that is statically declared by a **Property** element as part of the definition of a **StructuralType**. For example, in the context of an **EntityType**, a declared property includes all properties of an **EntityType** that are represented by the **Property** child elements of the **EntityType** element that defines the **EntityType**.
+declared property
+: A property that is statically declared by a **Property** element as part of the definition of a **StructuralType**. For example, in the context of an **EntityType**, a declared property includes all properties of an **EntityType** that are represented by the **Property** child elements of the **EntityType** element that defines the **EntityType**.
 
-**derived type:** A type that is derived from the **BaseType**. Only WRONG:**ComplexType** and **EntityType** can define a **BaseType**.
+derived type
+: A type that is derived from the **BaseType**. Only WRONG:**ComplexType** and **EntityType** can define a **BaseType**.
 
-**dynamic property:** A designation for an instance of an **OpenEntityType** that includes additional nullable properties (of a **scalar type** or **ComplexType**) beyond its **declared properties**. The set of additional properties, and the type of each, may vary between instances of the same **OpenEntityType**. Such additional properties are referred to as dynamic properties and do not have a representation in a **CSDL document**.
+dynamic property
+: A designation for an instance of an **OpenEntityType** that includes additional nullable properties (of a **scalar type** or **ComplexType**) beyond its **declared properties**. The set of additional properties, and the type of each, may vary between instances of the same **OpenEntityType**. Such additional properties are referred to as dynamic properties and do not have a representation in a **CSDL document**.
 
-**EDM type:** A categorization that includes all the following types: **EDMSimpleType**, **ComplexType**, **EntityType**, **enumeration**, and **association**.
+EDM type
+: A categorization that includes all the following types: **EDMSimpleType**, **ComplexType**, **EntityType**, **enumeration**, and **association**.
 
-**entity:** An instance of an **EntityType** element that has a unique identity and an independent existence. An entity is an operational unit of consistency.
+entity
+: An instance of an **EntityType** element that has a unique identity and an independent existence. An entity is an operational unit of consistency.
 
-**Entity Data Model (EDM):** A set of concepts that describes the structure of data, regardless of its stored form, as described in the Introduction (section 1).
+Entity Data Model (EDM)
+: A set of concepts that describes the structure of data, regardless of its stored form, as described in the Introduction (section 1).
 
-**enumeration type:** A type that represents a custom enumeration that is declared by using the **EnumType** element.
+enumeration type
+: A type that represents a custom enumeration that is declared by using the **EnumType** element.
 
-**facet:** An element that provides information that specializes the usage of a type. For example, the precision (that is, accuracy) facet can be used to define the precision of a **DateTime property**.
+facet
+: An element that provides information that specializes the usage of a type. For example, the precision (that is, accuracy) facet can be used to define the precision of a **DateTime property**.
 
-**identifier:** A string value that is used to uniquely identify a component of the **CSDL** and is of type **SimpleIdentifier**.
+identifier
+: A string value that is used to uniquely identify a component of the **CSDL** and is of type **SimpleIdentifier**.
 
-**in scope:** A designation that is applied to an XML construct that is visible or can be referenced, assuming that all other applicable rules are satisfied. Types that are in scope include all **scalar types** and **StructuralType** types that are defined in **namespaces** that are in scope. **Namespaces** that are in scope include the **namespace** of the current **schema** and other **namespaces** that are referenced in the current **schema** by using the **Using** element.
+in scope
+: A designation that is applied to an XML construct that is visible or can be referenced, assuming that all other applicable rules are satisfied. Types that are in scope include all **scalar types** and **StructuralType** types that are defined in **namespaces** that are in scope. **Namespaces** that are in scope include the **namespace** of the current **schema** and other **namespaces** that are referenced in the current **schema** by using the **Using** element.
 
-**namespace:** A name that is defined on the **schema** and that is subsequently used to prefix **identifiers** to form the **namespace qualified name** of a **StructuralType**. **CSDL** enforces a maximum length of 512 characters for namespace values.
+namespace
+: A name that is defined on the **schema** and that is subsequently used to prefix **identifiers** to form the **namespace qualified name** of a **StructuralType**. **CSDL** enforces a maximum length of 512 characters for namespace values.
 
-**namespace qualified name:** A qualified name that refers to a **StructuralType** by using the name of the **namespace**, followed by a period, followed by the name of the **StructuralType**.
+namespace qualified name
+: A qualified name that refers to a **StructuralType** by using the name of the **namespace**, followed by a period, followed by the name of the **StructuralType**.
 
-**nominal type:** A designation that applies to the types that can be referenced. Nominal types include all primitive types and named **EDM types**. Nominal types are frequently used inline with collection in the following format: collection(nominal_type).
+nominal type
+: A designation that applies to the types that can be referenced. Nominal types include all primitive types and named **EDM types**. Nominal types are frequently used inline with collection in the following format: collection(nominal_type).
 
-**property:** An **EntityType** can have one or more properties of the specified **scalar type** or **ComplexType**. A property can be a **declared property** or a **dynamic property**. (In **CSDL 1.2**, **dynamic properties** are defined only for use with **OpenEntityType** instances.)
+property
+: An **EntityType** can have one or more properties of the specified **scalar type** or **ComplexType**. A property can be a **declared property** or a **dynamic property**. (In **CSDL 1.2**, **dynamic properties** are defined only for use with **OpenEntityType** instances.)
 
-**referential constraint:** A constraint on the keys contained in the **associatio**n type. The ReferentialConstraint **CSDL** construct is used for defining referential constraints.
+referential constraint
+: A constraint on the keys contained in the **associatio**n type. The ReferentialConstraint **CSDL** construct is used for defining referential constraints.
 
-**scalar type:** A designation that applies to all **EDMSimpleType** and **enumeration types**. Scalar types do not include **StructuralTypes**.
+scalar type
+: A designation that applies to all **EDMSimpleType** and **enumeration types**. Scalar types do not include **StructuralTypes**.
 
-**schema:** A container that defines a **namespace** that describes the scope of **EDM types**. All **EDM types** are contained within some **namespace**.
+schema
+: A container that defines a **namespace** that describes the scope of **EDM types**. All **EDM types** are contained within some **namespace**.
 
-**schema level named element:** An element that is a child element of the **schema** and contains a **Name** attribute that must have a unique value.
+schema level named element
+: An element that is a child element of the **schema** and contains a **Name** attribute that must have a unique value.
 
-**StructuralType:** A type that has members that define its structure. **ComplexType**, **EntityType**, and **Association** are all StructuralTypes.
+StructuralType
+: A type that has members that define its structure. **ComplexType**, **EntityType**, and **Association** are all StructuralTypes.
 
-**type annotation:** An **annotation** of a model element that allows a term and provision of zero or more values for the properties of the term.
+type annotation
+: An **annotation** of a model element that allows a term and provision of zero or more values for the properties of the term.
 
-**value annotation:** An **annotation** that attaches a named value to a model element.
+value annotation
+: An **annotation** that attaches a named value to a model element.
 
-**value term:** A term with a single property in EDM.
+value term
+: A term with a single property in EDM.
 
-**vocabulary:** A schema that contains definitions of value terms and/or entity type terms.
+vocabulary
+: A schema that contains definitions of value terms and/or entity type terms.

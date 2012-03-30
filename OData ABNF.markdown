@@ -380,37 +380,37 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
 									) ("D" / "d") /
 									nanInfinity [ "D" / "d" ]
 
-	geography 					= 	TODO: arlo
+	geography 					= 	; Format specific
 
-	geographyCollection 		= 	TODO: arlo 
+	geographyCollection 		= 	; Format specific
 
-	geographyLineString 		= 	TODO: arlo
+	geographyLineString 		= 	; Format specific
 
-	geographyMultiLineString 	= 	TODO: arlo
+	geographyMultiLineString 	= 	; Format specific
 
-	geographyMultiPoint 		= 	TODO: arlo
+	geographyMultiPoint 		= 	; Format specific
 
-	geographyMultiPolygon 		= 	TODO: arlo
+	geographyMultiPolygon 		= 	; Format specific
 
-	geographyPoint 				= 	TODO: arlo
+	geographyPoint 				= 	; Format specific
 
-	geographyPolygon 			= 	TODO: arlo
+	geographyPolygon 			= 	; Format specific
 
-	geometry 					= 	TODO: arlo
+	geometry 					= 	; Format specific
 
-	geometryCollection 			= 	TODO: arlo 
+	geometryCollection 			= 	; Format specific
 
-	geometryLineString 			= 	TODO: arlo
+	geometryLineString 			= 	; Format specific
 
-	geometryMultiLineString 	= 	TODO: arlo
+	geometryMultiLineString 	= 	; Format specific
 
-	geometryMultiPoint 			= 	TODO: arlo
+	geometryMultiPoint 			= 	; Format specific
 
-	geometryMultiPolygon 		= 	TODO: arlo
+	geometryMultiPolygon 		= 	; Format specific
 
-	geometryPoint 				= 	TODO: arlo 
+	geometryPoint 				= 	; Format specific
 
-	geometryPolygon 			= 	TODO: arlo
+	geometryPolygon 			= 	; Format specific
 
 	guid						= 	"guid" SQUOTE 8*HEXDIG "-" 4*HEXDIG "-" 4*HEXDIG "-" 12*HEXDIG SQUOTE
 
@@ -1042,11 +1042,110 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
                                		"(" [WSP] commonExpr [WSP]
                                		"," [WSP] commonExpr  [WSP] ")"
 
+## Geospatial Primitives in URLs ##
 
+-- TODO: Fill in with WKT, possibly taking a normative reference on OGC
 
+	geography 					= 	; Format specific
 
-  
+	geographyCollection 		= 	; Format specific
 
+	geographyLineString 		= 	; Format specific
 
+	geographyMultiLineString 	= 	; Format specific
 
+	geographyMultiPoint 		= 	; Format specific
 
+	geographyMultiPolygon 		= 	; Format specific
+
+	geographyPoint 				= 	; Format specific
+
+	geographyPolygon 			= 	; Format specific
+
+	geometry 					= 	; Format specific
+
+	geometryCollection 			= 	; Format specific
+
+	geometryLineString 			= 	; Format specific
+
+	geometryMultiLineString 	= 	; Format specific
+
+	geometryMultiPoint 			= 	; Format specific
+
+	geometryMultiPolygon 		= 	; Format specific
+
+	geometryPoint 				= 	; Format specific
+
+	geometryPolygon 			= 	; Format specific
+
+## Geospatial Primitives in Atom ##
+
+-- TODO: Fill in with GML, possibly taking a normative reference on OGC
+
+	geography 					= 	; Format specific
+
+	geographyCollection 		= 	; Format specific
+
+	geographyLineString 		= 	; Format specific
+
+	geographyMultiLineString 	= 	; Format specific
+
+	geographyMultiPoint 		= 	; Format specific
+
+	geographyMultiPolygon 		= 	; Format specific
+
+	geographyPoint 				= 	; Format specific
+
+	geographyPolygon 			= 	; Format specific
+
+	geometry 					= 	; Format specific
+
+	geometryCollection 			= 	; Format specific
+
+	geometryLineString 			= 	; Format specific
+
+	geometryMultiLineString 	= 	; Format specific
+
+	geometryMultiPoint 			= 	; Format specific
+
+	geometryMultiPolygon 		= 	; Format specific
+
+	geometryPoint 				= 	; Format specific
+
+	geometryPolygon 			= 	; Format specific
+
+## Geospatial Primitives in Json Verbose or Json Light ##
+
+-- TODO: Fill in with GeoJson
+
+	geography 					= 	; Format specific
+
+	geographyCollection 		= 	; Format specific
+
+	geographyLineString 		= 	; Format specific
+
+	geographyMultiLineString 	= 	; Format specific
+
+	geographyMultiPoint 		= 	; Format specific
+
+	geographyMultiPolygon 		= 	; Format specific
+
+	geographyPoint 				= 	; Format specific
+
+	geographyPolygon 			= 	; Format specific
+
+	geometry 					= 	; Format specific
+
+	geometryCollection 			= 	; Format specific
+
+	geometryLineString 			= 	; Format specific
+
+	geometryMultiLineString 	= 	; Format specific
+
+	geometryMultiPoint 			= 	; Format specific
+
+	geometryMultiPolygon 		= 	; Format specific
+
+	geometryPoint 				= 	; Format specific
+
+	geometryPolygon 			= 	; Format specific

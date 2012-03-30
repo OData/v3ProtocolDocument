@@ -783,7 +783,18 @@ To delete a MLE, delete the MLE's metadata Entity, as described in [Delete An En
 
 #### 7.3.6.2. Managing Resources Using Named Streams ####
 
+
+
+
+
+
+
 --TODO: write this.
+
+
+
+
+
 
 ### 7.3.7. Managing Values and Properties Directly ###
 

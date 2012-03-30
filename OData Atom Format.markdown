@@ -1,11 +1,5 @@
 # OData Atom Format #
 
-#todo: #
-* add more examples 
-* Extensibility 
-* links (Links as Elements)
-* renumber
-
 # 1. Overview #
 
 The OData protocol is comprised of a set of specifications for representing and interacting with structured content.  This document describes the OData Atom Format.
@@ -37,9 +31,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 OData Atom and XML payloads serialize primitive types as shown in the table below, where:  
 
-For full synax rules, see <ref:grammar>:
-
-TODO:Make sure complete
+For full synax rules, see [OData:Uri](odatauriconventions):
 
 <table border="1" cellspacing="0" cellpadding="0">
     <tr>
@@ -90,6 +82,11 @@ TODO:Make sure complete
       <td>["-"][0-9]+.[0-9]</td>
       <td>2.5</td>
     </tr>
+    <tr>
+      <td><strong>Edm.Float</strong><br/>Represents a floating point number with 7 digits precision that can represent values with approximate range of ± 1.18e -38 through ± 3.40e +38</td>
+      <td>["-"][0-9]+.[0-9]</td>
+      <td>2.5</td>
+    </tr>    
     <tr>
       <td><strong>Edm.Guid</strong><br/>Represents a 16-byte (128-bit) unique identifier value</td>
       <td>dddddddd "-" dddd "-" dddd "-" dddd "-" dddddddddddd <br/><br/>d= A-F |a-f | 0-9</td>
@@ -214,12 +211,11 @@ TODO:Make sure complete
 		<td>string "MultiPolygon(" multipolygon ")"</td>
 		<td>SRID=123435;MultiPolygon(((33.84 -117.91,(33.84 -117.91,28.36 -81.56,33.84 -117.91)))</td>
     </tr>
-
 </table>
 
 # 5. Use of Atom #
 
-The Atom Syndication Format RFC4287 (http://atompub.org/rfc4287.html) defines an XML-based format for describing collections ("feeds") made up of individual "entries". The Atom Publishing Protocol RFC5023 (http://www.ietf.org/rfc/rfc5023.txt) defines an application-level protocol based on HTTP transfer of Atom-formatted representations.
+The Atom Syndication Format [RFC4287](http://www.ietf.org/rfc/rfc4287) defines an XML-based format for describing collections ("feeds") made up of individual "entries". The Atom Publishing Protocol [RFC5023](http://www.ietf.org/rfc/rfc5023.txt) defines an application-level protocol based on HTTP transfer of Atom-formatted representations.
 
 # 5.1 Namespaces #
 OData defines meaning for elements and attributes defined in the following namespaces.
@@ -255,7 +251,34 @@ OData payloads may use the xml:base attribute to define a base URI for relative 
 OData's Atom format defines extensions and conventions on top of RFC4287 and RFC5023 for representing structured data as follows:
 
 ## 6.1.	Entity Instances ##
-Entity Instances, whether individual or within an ATOM feed, are represented as `atom:entry` elements. This section defines the elements and attributes within an `atom:entry` element that are assigned meaning in OData.
+Entity Instances, whether individual or within an ATOM feed, are represented as `atom:entry` elements. 
+
+For example, the following `atom:entry` element describes a Product:
+ 
+	<entry>
+	  <id>http://services.odata.org/OData/OData.svc/Products(0)</id> 
+	  <title type="text">Bread</title> 
+	  <summary type="text">Whole grain bread</summary> 
+	  <updated>2012-03-30T07:11:05Z</updated> 
+	  <author>
+	    <name /> 
+	  </author>
+	  <link rel="edit" title="Product" href="Products(0)" /> 
+	  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Category" type="application/atom+xml;type=entry" title="Category" href="Products(0)/Category" /> 
+	  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Supplier" type="application/atom+xml;type=entry" title="Supplier" href="Products(0)/Supplier" /> 
+	  <category term="ODataDemo.Product" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" /> 
+	  <content type="application/xml">
+	    <m:properties>
+	      <d:ID m:type="Edm.Int32">0</d:ID> 
+	      <d:ReleaseDate m:type="Edm.DateTime">1992-01-01T00:00:00</d:ReleaseDate> 
+	      <d:DiscontinuedDate m:type="Edm.DateTime" m:null="true" /> 
+	      <d:Rating m:type="Edm.Int32">4</d:Rating> 
+	      <d:Price m:type="Edm.Decimal">2.5</d:Price> 
+	    </m:properties>
+	  </content>
+	</entry>
+
+This section defines the elements and attributes within an `atom:entry` element that are assigned meaning in OData.
 
 ### 6.1.1.	The `atom:entry` Element ###
 An `atom:entry` element is used to represent a single resource, or entity, which is an instance of a structured type with an identity.
@@ -430,7 +453,6 @@ The `<data:element>` element representing the instance may include a `metadata:t
 
 For example, the collection typed property "PhoneNumbers" would be respresented as:
 
-
 	<data:PhoneNumbers metadata:type="Collection(Person.PhoneNumber)"">  
 	    <data:element metadata:type="Person.PhoneNumber">  
 	        <data:Number>425-555-1212</data:Number>  
@@ -480,7 +502,7 @@ The `atom:id` element defines a durable, opaque, globally unique identifier for 
 
 ### 6.2.2.	Count as a `metadata:count` Element ###
 
-The `atom:feed` element may contain an m:count element to specify the total count of rows in the result. This may be greater than the number of rows in the feed if server side paging has been applied, in which case the feed will include a next results link, as described below.
+The `atom:feed` element may contain an `m:count` element to specify the total count of rows in the result. This may be greater than the number of rows in the feed if server side paging has been applied, in which case the feed will include a next results link, as described below.
 
 ### 6.2.3.	Self Links as `atom:link` Elements ###
 
@@ -498,6 +520,16 @@ The contents of the href should be treated as an opaque URI that can be used to 
 
 # 7. Actions #
 Zero or more actions may be associated with a feed or entry.
+
+The actions associated with a particular feed or entry MAY be described using `metadata:action` element(s) that are direct children of the feed or entry on which the action(s) exist.
+
+For example, the following element describes an "Order" action:
+
+	<metadata:action
+	  metadata="#DemoService.OrderProduct"
+	  target="http://services.odata.org/OData/OData.svc/Products(1)/OrderProduct"
+	  title="Order"
+	/>
 
 ## 7.1. Actions as a `metadata:action` Element ##
 Actions are represented as `metadata:action` elements that appear as direct children of the `atom:feed` or `atom:entry` element representing the feed or entity on which the action(s) exist.
@@ -518,6 +550,16 @@ The `metadata:action` element MUST have a `metadata:title` attribute that contai
 # 8. Functions #
 Zero or more functions may be associated with a feed or entry.
 
+The functions associated with a particular feed or entry MAY be described using `metadata:function` element(s) that are direct children of the feed or entry on which the action(s) exist.
+
+For example, the following element describes a "GetTopProducts" function:
+
+	<metadata:function
+	  metadata="#DemoService.GetTopProducts"
+	  target="http://services.odata.org/OData/OData.svc/Categories(0)/GetTopProducts()"
+	  title="GetTopProducts"
+	/>
+
 ## 8.1. Functions as a `metadata:function` Element ##
 Functions are represented as `metadata:function` elements that appear as direct children of the `atom:feed` or `atom:entry` element representing the feed or entity on which the function(s) exist.
 
@@ -529,7 +571,7 @@ The named function may have multiple overloads (multiple function imports) withi
 If the metadata cannot be retrieved by appending $metadata to the service root, then this name must additionally be prefixed by a URL that can be used to retrieve the metadata document containing the function import that describes the function.
 
 ### 8.1.2. The `metadata:target` Attribute ###
-A `metadata:function` element MUST have a `metadata:target` attribute that specifies the URL to GET from in order to invoke the function. 
+A `metadata:function` element MUST have a `metadata:target` element that specifies the URL to GET from in order to invoke the function. 
 
 The first parameter of the function MUST be a binding parameter that is bound to the feed or entity on which the function is specified, and MUST NOT be provided as a separate parameter by the client when invoking the function.
 
@@ -562,7 +604,7 @@ For example; the following specifies a value of "Home" for the "PhoneNumberType"
         <data:CustomerID>ALFKI</data:CustomerID>
         <data:ContactName> Alfreds Futterkiste </data:ContactName>
         <data:Phone>030-0074321</data:Phone>
-		<contact:PhoneNumberType target="Phone">Home</contact:PhoneNumberType>
+		<contact:PhoneNumberType metadata:target="Phone">Home</contact:PhoneNumberType>
       </metadata:properties>
 
 ### 9.1.1. The `metadata:target` attribute.
@@ -585,7 +627,7 @@ For example; the following specifies the "StreetAddress", "City", "Region", "Cou
         <contact:Address metadata:target=".">  
           <contact:StreetAddress>Obere Str. 578</contact:StreetAddress>
           <contact:City>Toronto</contact:City>
-          <contact:Region m:null="true" />
+          <contact:Region metadata:null="true" />
           <contact:PostalCode>12209</contact:PostalCode>
           <contact:Country>Germany</contact:Country>
         </contact:Address>
@@ -597,7 +639,9 @@ The `metadata:target` attribute MUST be present on a TypeAnnotation and identifi
 # 10. Custom Mapping to Atom Elements #
 
 Individual property values may be mapped to predefined atom elements or custom content within the entry.  The mapping is described through attributes in the metadata.
+
 The mapping may specify whether the property value appears within the metadata:properties element as well as being mapped, however in the case of a null value the property MUST always appear within the metadata:properties element as an empty element and the metadata:null=true attribute as described above. 
+
 For more information on the format of the mapping specification, see <todo: insert reference>.
 
 # 11.	Individual Primitive or Complex Scalar Values #
@@ -656,31 +700,50 @@ Similarly, the following payload represents a collection of full names.
 
 Atom defines the concept of a Service Document to represent the set of available collections. OData uses Service Documents to describe the set of EntitySets available through the service.
 
-## 13.1.	AtomPub Document Namespace ##
+## 13.2. The `app:service` element ##
 
-Service Documents are described in AtomPub using elements from the following namespace: "http://www.w3.org/2007/app".
+The atom ServiceDocument is represented by the app:service element.  The app:service element contains one or more `app:workspaces`, which represents a set of collections.
 
-In this specification the namespace prefix "app" is used to represent the app Namespace, however the prefix name is not prescriptive.
+### 13.2.1.	EntityContainer as an `app:workspace` element ###
 
-## 13.2.	app:service element ##
+OData represents EntityContainers as `app:workspace` elements.  An `app:workspace` element contains zero or more `app:collections`. 
 
-The atom ServiceDocument is represented by the app:service element.  The app:service element contains one or more app:workspaces, which represents a set of collections.
+#### 13.2.1.1.	EntitySets as an `app:collection` elements ####
 
-### 13.2.1.	EntityContainer as an app:workspace element ###
-
-OData represents EntityContainers as app:workspace elements.  An app:workspace element contains zero or more app:collections. 
-
-#### 13.2.1.1.	EntitySets as an app:collection elements ####
-
-OData describes available EntitySets as app:collection elements.
+OData describes available EntitySets as `app:collection` elements.
 The app:collection element contains an href attribute which represents a URI that can be used to retrieve the members of the EntitySet.
 
-##### 13.2.1.1.1	EntitySet Name as atom:title element #####
+##### 13.2.1.1.1	EntitySet Name as an `atom:title` element #####
 
-The atom:title element within the app:collection contains the name of the EntitySet.
+The `atom:title` element within the app:collection contains the name of the EntitySet.
 
-# 14. Links as XML Elements #
-TODO...
+# 14. Links 
+Links represent the relationships between an entity and related entity(s). The link(s) available from a particular entity for a particular relationship can be retrieved from the service as a colleciton of URIs within a [`data:link`](#Linkswithinadata:linkselement) element.
+
+## 14.1 Links within a `data:links` Element ##
+A `data:link` element represents the set of references from one entity to all related entities according to a particular relationship.
+
+The reference for each related entity is represented as a `data:uri` element that appears as a direct child of the `data:link` element.
+
+For example, a query for links to Products within the Category with ID=1:
+
+	http://services.odata.org/OData/OData.svc/Categories(1)$links/Products
+
+might return the following XML response:
+	
+	<links xmlns="http://schemas.microsoft.com/ado/2007/08/dataservices"> 
+		<uri>http://services.odata.org/OData/OData.svc/Products(1)</uri> 
+		<uri>http://services.odata.org/OData/OData.svc/Products(2)</uri> 
+		<uri>http://services.odata.org/OData/OData.svc/Products(3)</uri> 
+		<uri>http://services.odata.org/OData/OData.svc/Products(4)</uri> 
+		<uri>http://services.odata.org/OData/OData.svc/Products(5)</uri> 
+		<uri>http://services.odata.org/OData/OData.svc/Products(6)</uri> 
+	</links>
+	
+## 14.1 Individual Links as `data:uri` Elements ##
+Each related entity is represented as a `data:uri` element, which appears as a direct child of a [`data:link`](#linkswithinadata:linkselement) element.
+
+The content of the `data:uri` element is the URI of the related entity.
 
 #15. Extensibility#
-TODO...
+Implementations may add custom content anywhere allowed by [RFC4287](http://www.ietf.org/rfc/rfc4287), Section 6, "Extending Atom"; however, custom elements and attributes MUST NOT be defined in the [OData Data Namespace](#odatadatanamespace) nor the [OData Metadata Namespace](#odatametadatanamespace).

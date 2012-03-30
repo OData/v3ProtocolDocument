@@ -35,8 +35,11 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 # 4. Primitive Types in Atom #
 
+OData Atom and XML payloads serialize primitive types as shown in the table below, where:  
 
-OData Atom and XML payloads serialize primitive types as shown in the table below. For full synax rules, see <ref:grammar>:
+For full synax rules, see <ref:grammar>:
+
+TODO:Make sure complete
 
 <table border="1" cellspacing="0" cellpadding="0">
     <tr>
@@ -52,45 +55,44 @@ OData Atom and XML payloads serialize primitive types as shown in the table belo
     </tr>
     <tr>
       <td><strong>Edm.Binary</strong><br/>Represent fixed- or variable- length binary data</td>
-      <td>[A-Fa-f0-9][A-Fa-f0-9]* <br/> Odd pairs of hex digits
+      <td>(A-F | a-f | 0-9)[A-F | a-f | 0-9]* <br/> Odd pairs of hex digits
         are not allowed.
       </td>
       <td>23ABFF</td>
     </tr>
     <tr>
       <td><strong>Edm.Boolean</strong><br />Represents the mathematical concept of binary-valued logic</td>
-      <td>true | 1 or false | 0 </td>
+      <td>"true" | "1" <br/> "false" | "0" </td>
       <td>true <br/>false</td>
     </tr>
     <tr>
       <td><strong>Edm.Byte</strong><br />Unsigned 8-bit integer value</td>
-      <td>[A-Fa-f0-9]</td>
+      <td>[A-F | a-f | 0-9]</td>
       <td>FF</td>
     </tr>
     <tr>
       <td><strong>Edm.DateTime</strong><br/>Represents date and time with values ranging from 12:00:00 midnight, January 1, 1753 A.D. through 11:59:59 P.M, December 9999 A.D.</td>
-      <td>yyyy-mm-ddThh:mm[:ss[.fffffff]]</td>
+      <td>yyyy "-" mm "-" dd "T" hh ":" mm [":" ss["." fffffff]]</td>
       <td>2000-12-12T12:00</td>
     </tr>
     <tr>
       <td><strong>Edm.Decimal</strong><br/>Represents numeric values with fixed precision and scale. This type can describe a numeric value ranging from negative 10^255 + 1 to positive 10^255 -1</td>
-      <td>[0-9]+.[0-9]</td>
+      <td>["-"][0-9]+.[0-9]</td>
       <td>2.345</td>
     </tr>
     <tr>
-      <td><strong>Edm.Double</strong><br/>Represents a floating point number with 15 digits precision that can represent values with approximate range of Â± 2.23e -308 through Â± 1.79e +308</td>
-      <td>[0-9]+ ((.[0-9]+) | [E[+ | -][0-9]+])</td>
+      <td><strong>Edm.Double</strong><br/>Represents a floating point number with 15 digits precision that can represent values with approximate range of ± 2.23e -308 through ± 1.79e +308</td>
+      <td>["-"][0-9]+ ((.[0-9]+) | [E[+ | -][0-9]+])</td>
       <td>2.345</td>
     </tr>
     <tr>
-      <td><strong>Edm.Single</strong><br/>Represents a floating point number with 7 digits precision that can represent values with approximate range of Â± 1.18e -38 through Â± 3.40e +38</td>
-      <td>[0-9]+.[0-9]</td>
+      <td><strong>Edm.Single</strong><br/>Represents a floating point number with 7 digits precision that can represent values with approximate range of ± 1.18e -38 through ± 3.40e +38</td>
+      <td>["-"][0-9]+.[0-9]</td>
       <td>2.5</td>
     </tr>
     <tr>
       <td><strong>Edm.Guid</strong><br/>Represents a 16-byte (128-bit) unique identifier value</td>
-      <td>dddddddd-dddd-dddd-dddd-dddddddddddd where each d represents [A-Fa-f0-9]
-      </td>
+      <td>dddddddd "-" dddd "-" dddd "-" dddd "-" dddddddddddd <br/><br/>d= A-F |a-f | 0-9</td>
       <td>12345678-aaaa-bbbb-cccc-ddddeeeeffff</td>
     </tr>
     <tr>
@@ -117,103 +119,102 @@ OData Atom and XML payloads serialize primitive types as shown in the table belo
       <td><strong>Edm.String</strong><br/>Represents fixed- or variable-length character data</td>
       <td>any UTF-8 character <br/> Note: See definition of UTF8-char in <a href="http://tools.ietf.org/html/rfc3629">[RFC3629]</a>
       </td>
-      <td>Hello OData</td>
+      <td>OData</td>
     </tr>
     <tr>
       <td><strong>Edm.Time</strong><br/>Represents the time of day with values ranging from 0:00:00.x to 23:59:59.y, where x and y depend upon the precision</td>
-      <td>&lt;timeLiteral&gt; timeLiteral = Defined by the lexical representation for
+      <td>Defined by the lexical representation for
         time at <a href="http://www.w3.org/TR/xmlschema-2">http://www.w3.org/TR/xmlschema-2</a></td>
       <td>13:20:00</td>
     </tr>
     <tr>
       <td><strong>Edm.DateTimeOffset</strong><br/>Represents date and time as an Offset in minutes from GMT, with values ranging from 12:00:00 midnight, January 1, 1753 A.D. through 11:59:59 P.M, December 9999 A.D</td>
-      <td>&lt;dateTimeOffsetLiteral&gt; dateTimeOffsetLiteral = Defined by
+      <td>Defined by
         the lexical representation for datetime (including timezone offset) at <a href="http://www.w3.org/TR/xmlschema-2">
           http://www.w3.org/TR/xmlschema-2</a></td>
       <td>2002-10-10T17:00:00Z</td>
     </tr>
     <tr>
-        <td><strong>Edm.Geography</strong> 
-		</td>
-		<td>
-		</td>
+        <td><strong>Edm.Geography</strong><br/>Abstract base type for all Geography types.</td>
+		<td>N/A</td>
+		<td>N/A</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeographyPoint</strong> 
-		</td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyPoint</strong><br/>Represents a point in a round-earth coordinate system.</td>
+		<td>srid "Point(" point ")" <br/><i>srid=</i> "SRID=" 1*5DIGIT ";"<br/><i>point=</i> LONG LAT <br/><br/>Where LONG and LAT are EDM.Doubles representing Longitude and Latitude.</td>
+		<td>SRID=123435;Point(33.84 -117.91)</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeographyLineString</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyLineString</strong><br/>Represents a linestring in a round-earth coordinate system.</td>
+		<td>srid "LineString(" linestring ")" <br/><i>linestring=</i> point ["," point]+</td>
+		<td>SRID=123435;Linestring(33.84 -117.91,48.87 2.78)</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeographyPolygon</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyPolygon</strong>Represents a polygon in a round-earth coordinate system.</td>
+		<td>srid "Polygon(" polygon ")"<br/><i>polygon=</i> ring "," [ring ","]* <br/><i>ring=</i> "(" firstpoint "," [point ","]* firstpoint ")" ]* ")"<br/><i>firstpoint</i> = point</td>
+		<td>SRID=123435;Polygon((33.84 -117.91,48.87 2.78,33.84 -117.91))</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeographyCollection</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyCollection</strong><br/>Represents a collection of Geography Values.</td>
+		<td>srid "GeographyCollection(" geographycollection ")"<br/><i>geographycollection</i>= geographyvalue [","  geographyvalue]*<br/><i>geographyvalue=</i>"Point("point")" |<br/> "LineString(" linestring ")" | <br/>"Polygon(" polygon ")" |<br/>"GeographyCollection(" geographycollection ")" |<br/>"MultiPoint("multipoint ")" |<br/>"MultiLineString("multilinestring ")" |<br/>"MultiPolygon("multipolygon ")"<br/></td>
+        <td>SRID=123435;GeographyCollection(Point(33.84 -117.91),Point(48.87 2.78))</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeographyMultiPoint</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyMultiPoint</strong>Represents a collection of points in a round-earth coordinate system</td>
+		<td>srid "MultiPoint(" multipoint ")" <br/><i>multipoint=</i> point ["," point]*</td>
+		<td>SRID=123435;MultiPoint((33.84 -117.91),(48.87 2.78))</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeographyMultiLineString</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyMultiLineString</strong>Represents a collection of linestrings in a round-earth coordinate system.</td>
+		<td>srid "MultiLineString(" multilinestring ")"<br/><i>multilinestring=</i> "(" linestring ")" [",(" linestring ")" ]*</td>
+		<td>SRID=123435;MultiLineString((33.84 -117.91,48.87 2.78),(33.84 -117.91, 28.36 -81.56))</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeographyMultiPolygon</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyMultiPolygon</strong>Represents a collection of polygons in a round-earth coordinate system.</td>
+		<td>srig "MultiPolygon(" multipolygon ")"<br/><i>multipolygon=</i> "(" polygon ")" [",(" polygon ")"]*</td>
+		<td>SRID=123435;MultiPolygon(((33.84 -117.91,(33.84 -117.91,28.36 -81.56,33.84 -117.91)))</td>
     </tr>
     <tr>
-        <td><strong>Edm.Geometry</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.Geometry</strong><br/>Abstract base type for all Geometry types</td>
+		<td>N/A</td>
+		<td>N/A</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeometryPoint</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeometryPoint</strong><br/>Represents a point in a flat-earth coordinate system.</td>
+		<td>srid "Point(" point ")"</td>
+		<td>SRID=123435;Point(33.84 -117.91)</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeometryLineString</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeometryLineString</strong><br/>Represents a linestring in a flat-earth coordinate system.</td>
+		<td>srid "LineString(" linestring ")"</td>
+		<td>SRID=123435;Linestring(33.84 -117.91,48.87 2.78)</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeometryPolygon</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeometryPolygon</strong>Represents a polygon in a flat-earth coordinate system.</td>
+		<td>srid "Polygon(" polygon ")"</td>
+		<td>SRID=123435;Polygon((33.84 -117.91,48.87 2.78,33.84 -117.91))</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeometryCollection</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeometryCollection</strong><br/>Represents a collection of Geometry Values.</td>
+		<td>srid "GeometryCollection(" geometrycollection ")"<br/><i>geometrycollection=</i> geometryvalue [","  geometryvalue]*<br/><i>geometryvalue=</i> "Point("point")" |<br/> "LineString(" linestring ")" | <br/>"Polygon(" polygon ")" |<br/>"GeometryCollection(" geometrycollection ")" |<br/>"MultiPoint("multipoint ")" |<br/>"MultiLineString("multilinestring ")" |<br/>"MultiPolygon("multipolygon ")"<br/></td>
+        <td>SRID=123435;GeometryCollection(Point(33.84 -117.91),Point(48.87 2.78))</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeometryMultiPoint</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeometryMultiPoint</strong>Represents a collection of points in a flat-earth coordinate system.</td>
+		<td>srid "MultiPoint(" multipoint ")"</td>
+		<td>SRID=123435;MultiPoint((33.84 -117.91),(48.87 2.78))</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeometryMultiLineString</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyMultiLineString</strong>Represents a collection of linestrings in a flat-earth coordinate system.</td>
+		<td>srid "MultiLineString(" multilinestring ")"<br/></td>
+		<td>SRID=123435;MultiLineString((33.84 -117.91,48.87 2.78),(33.84 -117.91, 28.36 -81.56))</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeometryMultiPolygon</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyMultiPolygon</strong>Represents a collection of polygons in a flat-earth coordinate system.</td>
+		<td>string "MultiPolygon(" multipolygon ")"</td>
+		<td>SRID=123435;MultiPolygon(((33.84 -117.91,(33.84 -117.91,28.36 -81.56,33.84 -117.91)))</td>
     </tr>
+
 </table>
 
 # 5. Use of Atom #
@@ -679,4 +680,7 @@ The app:collection element contains an href attribute which represents a URI tha
 The atom:title element within the app:collection contains the name of the EntitySet.
 
 # 14. Links as XML Elements #
-<todo...>
+TODO...
+
+#15. Extensibility#
+TODO...

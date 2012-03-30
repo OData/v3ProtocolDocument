@@ -1,0 +1,8 @@
+General headers
+ * Min DSV (suggested)
+ * DSV (required)
+ * Max DSV (required)
+ * ETag
+ * If-Match
+ * ? If-None-match (conditional GET)
+

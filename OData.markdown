@@ -558,6 +558,7 @@ Redundant selectClause rules on the same URI MAY be considered valid, but MUST N
 For AtomPub formatted responses: The value of a selectClause applies only to the properties returned within the m:properties element. For example, if a property of an entity type is mapped with the Customizable Feeds attribute KeepInContent=false, then that property MUST always be included in the response according to its customizable feed mapping.
 
 #### 7.2.3.3 The `$orderby` System Query Option ####
+
 The `$orderby` System Query option specifies the order in which entities are returned from the service.
 
 The value of the `$orderby` System Query option specifies a comma separated list of property names to sort by. The property name may include the suffix "acs" for ascending or "desc" for descending, separated from the property name by one or more spaces.
@@ -783,18 +784,23 @@ To delete a MLE, delete the MLE's metadata Entity, as described in [Delete An En
 
 #### 7.3.6.2. Managing Resources Using Named Streams ####
 
+Named Resource Streams allow an Entity to have a Property that refers directly to a resource. Unlike with MLEs, there is no special Entity for the resource metadata. Instead, the metadata is simply the value of the Property.
 
+The metadata for a Named Resource Stream is determined by the server. The client is not able to modify the metadata.
 
+If the stream is editable, the metadata will include an edit URI.
 
+Named streams are not deletable or directly creatable by the client. The server owns their lifetime. The client MAY request to set the stream data to empty (0 bytes).
 
+#### 7.3.6.2.1 Edit Resource Data ######
 
+To change the data for a named stream, the client MUST send a PUT request to the edit URI.
 
---TODO: write this.
+If the stream metadata includes an ETag value, the client SHOULD include an If-Match header with the ETag value.
 
+The request MUST contain a Content-Type header, set to the correct value.
 
-
-
-
+The body of the request MUST be the binary data that will be the new value for the stream.
 
 ### 7.3.7. Managing Values and Properties Directly ###
 

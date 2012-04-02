@@ -151,11 +151,11 @@ The format of the Service Document is dependent upon the format selected. For At
 
 ### 7.1.2. Metadata Document ###
 
-An OData Metadata Document is an representation of the data model (<ref> see section 2. Data Model</ref>) that describes the data and operations exposed by an OData service. 
+An OData Metadata Document is an representation of the [data model](#DataModel) that describes the data and operations exposed by an OData service. 
 
-<ref>Appendix A</ref> describes an XML representation for OData Metadata Documents and provides an XSD to validate its syntax rules. The media type of the XML representation of an OData Metadata Document is 'application/xml'      
+[OData:CSDL](odatacsdldefinition) describes an XML representation for OData Metadata Documents and provides an XSD to validate its syntax rules. The media type of the XML representation of an OData Metadata Document is 'application/xml'      
 
-As of OData v3, OData services MUST expose a Metadata Document which defines all data exposed by the service.  The URI of the document MUST be http://<service root>/$metadata, where <service root> is the root URI of the OData service as described in <ref>//TODO</ref>. 
+As of OData v3, OData services MUST expose a Metadata Document which defines all data exposed by the service.  The URI of the document MUST be the root URI of the service  with "/$metadata" appended. 
 
 Retrieval of a Metadata Document by a client MUST be done by issuing a HTTP GET request to document's URI.  If the request doesn't specify a format preference (via Accept header or <ref>$format query string option</ref>) then the XML representation MUST be returned.
 
@@ -169,6 +169,7 @@ The format of the returned data is dependent upon the request and the format spe
 This section describes the types of data requests defined by OData. For complete details on the syntax for building requests, see [[OData URI Conventions](ODataURIConventions)].
 
 ### 7.2.1. Requesting Individual Entities ###
+
 Clients may invoke an HTTP GET request in order to retrieve an individual entity.
 
 The URL for retrieving a particular entity instance may be returned in a response payload containing that instance (for example, as a self-link in an [Atom Payload](ODataAtomPayload)).
@@ -176,6 +177,7 @@ The URL for retrieving a particular entity instance may be returned in a respons
 Conventions for constructing a URL to an individual entity using the entity's Key Value(s) are described in [OData URI Conventions](ODataURIConventions).
 
 ### 7.2.2. Requesting Individual Properties ###
+
 An individual property value may be requested by appending the property name to the URL path for a particular resource. 
 
 For example:
@@ -185,6 +187,7 @@ For example:
 The format of the returned property value is dependent upon the requested format.
 
 #### 7.2.2.1. Requesting a Property's Raw Value using `$value` ####
+
 The raw value of a primitive typed property may be retrieved without any property wrapping or additional metadata by appending "/$value" to the URL path specifying the individual property.
 
 For example:
@@ -198,6 +201,7 @@ The raw value of an Edm.Binary property MUST be serialized as an unencoded byte 
 A $value request for a property that is NULL SHOULD result in a "404 Not Found" response. 
 
 ### 7.2.3. Querying Collections ###
+
 OData services support querying sets of entities, such as the EntitySets enumerated in the Service Document and navigation links exposed by the service. 
 
 The target collection is specified through a URI, and query operations such as filter, sort, paging, and projection are specified as System Query Options provided as query string parameters. The names of all System Query Options are prefixed with a "$" character.
@@ -205,6 +209,7 @@ The target collection is specified through a URI, and query operations such as f
 An OData service may support some or all of the System Query Options defined. If a data service does not support a System Query Option, it must reject any requests which contain the unsupported option.
 
 #### 7.2.3.1. The `$filter` System Query Option ####
+
 The set of entities returned may be restricted through the use of the `$filter` System Query Option. 
 
 For example:
@@ -216,6 +221,7 @@ Returns all Products whose Price is less than $10.00.
 The value of the $filter option is a boolean expression as defined in [[OData URI Conventions](ODataURIConventions)].
 
 ##### 7.2.3.1.1. Built-in Filter Operations #####
+
 OData supports a set of built-in filter operations, as described in this section. For a full description of the syntax used when building requests, see [OData URI Conventions](OData_URI_Conventions).
 
 <table border="1">
@@ -311,6 +317,7 @@ OData supports a set of built-in filter operations, as described in this section
   </table>
 
 ##### 7.2.3.1.2. Built-in Query Functions #####
+
 OData supports a set of built-in functions that can be used within filter operations. The following table lists the available functions. For a full description of the syntax used when building requests, see [OData URI Conventions](OData_URI_Conventions).
 
 Note: No ISNULL or COALESCE operators are not defined. Instead, there is a null literal which can be used in comparisons.
@@ -438,7 +445,9 @@ Note: No ISNULL or COALESCE operators are not defined. Instead, there is a null 
     <td>isof(ShipCountry,'Edm.String')</td>
   </tr>
 </table>
+
 ##### 7.2.3.n The `$expand` System Query Option #####
+
 The presence of the $expand system query option indicates that entities associated with the EntityType instance or EntitySet, identified by the resource path section of the URI, MUST be represented inline instead of as Deferred Content.
 
 What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that applies to the Expand System Query Option: 
@@ -478,6 +487,7 @@ The server MUST include any actions or functions that are bound to the associate
 Redundant expandClause rules on the same data service URI MAY be considered valid, but MUST NOT alter the meaning of the URI.
 
 ##### 7.2.3.2 The `$select` System Query Option #####
+
 The `$select` system query option allows clients to requests a limited set of information for each Entity or ComplexType identified by the ResourcePath and other System Query Options like $filter, $top, $skip etc. When present $select instructs the server to return only the Properties, Open Properties, Related Properties, Actions and Functions explicitly requested by the client, however servers MAY choose to return more information.
 
 What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that applies to the Select System Query Option: 
@@ -548,6 +558,7 @@ Redundant selectClause rules on the same URI MAY be considered valid, but MUST N
 For AtomPub formatted responses: The value of a selectClause applies only to the properties returned within the m:properties element. For example, if a property of an entity type is mapped with the Customizable Feeds attribute KeepInContent=false, then that property MUST always be included in the response according to its customizable feed mapping.
 
 #### 7.2.3.3 The `$orderby` System Query Option ####
+
 The `$orderby` System Query option specifies the order in which entities are returned from the service.
 
 The value of the `$orderby` System Query option specifies a comma separated list of property names to sort by. The property name may include the suffix "acs" for ascending or "desc" for descending, separated from the property name by one or more spaces.
@@ -557,6 +568,7 @@ For example:
     http://services.odata.org/OData/OData.svc/Products?$orderby=ReleaseDate asc, Rating desc
 
 #### 7.2.3.4. The `$top` System Query Option ####
+
 The  `$top` System Query Option specifies that only the first n records should be returned, where n is a positive integer value specified in by `$top` query option.
 
 For example:
@@ -568,6 +580,7 @@ Would return only the first five Products in the Products EntitySet.
 If no `$order` query option is specified in the request, the server MUST impose a stable ordering across requests that include `$top`.
 
 #### 7.2.3.5. The `$skip` System Query Option ####
+
 The  `$skip` System Query Option specifies that only the records after the first n should be returned, where n is a positive integer value specified in by `$skip` query option.
 
 For example:
@@ -587,6 +600,7 @@ Would return the first five Products, starting with the 2nd Product in the Produ
 If no `$order` query option is specified in the request, the server MUST impose a stable ordering across requests that include `$skip`.
 
 #### 7.2.3.6. The `$inlinecount` System Query Option ####
+
 The `$inlinecount` system query option with a value of `allpages` specifies that the total count of entities matching the request should be returned along with the result.
 
 For example:
@@ -604,6 +618,7 @@ The service MUST return an HTTP Status code of 404 (Bad Request) if a value othe
 How the count is returned is dependent upon the selected format.
 
 #### 7.2.3.7. The  `$format` System Query Option ####
+
 A data service URI with a `$format` system query option specifies that a response to the request SHOULD use the media type specified by the query option.
 
 The syntax of the format system query option is defined in 'format' rule defined in Appendix A. 
@@ -769,7 +784,23 @@ To delete a MLE, delete the MLE's metadata Entity, as described in [Delete An En
 
 #### 7.3.6.2. Managing Resources Using Named Streams ####
 
-TBD.
+Named Resource Streams allow an Entity to have a Property that refers directly to a resource. Unlike with MLEs, there is no special Entity for the resource metadata. Instead, the metadata is simply the value of the Property.
+
+The metadata for a Named Resource Stream is determined by the server. The client is not able to modify the metadata.
+
+If the stream is editable, the metadata will include an edit URI.
+
+Named streams are not deletable or directly creatable by the client. The server owns their lifetime. The client MAY request to set the stream data to empty (0 bytes).
+
+#### 7.3.6.2.1 Edit Resource Data ######
+
+To change the data for a named stream, the client MUST send a PUT request to the edit URI.
+
+If the stream metadata includes an ETag value, the client SHOULD include an If-Match header with the ETag value.
+
+The request MUST contain a Content-Type header, set to the correct value.
+
+The body of the request MUST be the binary data that will be the new value for the stream.
 
 ### 7.3.7. Managing Values and Properties Directly ###
 
@@ -831,7 +862,7 @@ The following rules apply to all FunctionImport elements:
 
 ### EntitySetPathExpression ###
 
-Functions or Actions that return an Entity or Entities MAY return results from an EntitySet that is dependent upon the EntitySet of one the parameter values used to invoke the Operation.
+Functions or Actions that return an Entity or Entities MAY return results from an EntitySet that is dependent upon the EntitySet of one of the parameter values used to invoke the Operation.
 
 When such a dependency exists an EntitySetPathExpression is used. An EntitySetPathExpression MUST begin with the name of a parameter to the Operation, and optionally includes a series NavigationProperties (and occasional type casts) as a succinct way to describe the series of EntitySet transitions. 
 
@@ -1243,81 +1274,119 @@ Action *title*: a descriptive name used for an Action. This is intended to be pr
 
 Function *title*: a descriptive name used for a Function. This is intended to be presented to an end user.
 
-**ADO.NET Entity Framework:** A set of technologies that enables developers to create data access applications by programming against the conceptual application model instead of programming directly against a relational storage schema.
+ADO.NET Entity Framework
+: A set of technologies that enables developers to create data access applications by programming against the conceptual application model instead of programming directly against a relational storage schema.
 
-**alias:** A simple identifier that is typically used as a short name for a **namespace**.
+alias
+: A simple identifier that is typically used as a short name for a **namespace**.
 
-**alias qualified name:** A qualified name that is used to refer to a **StructuralType**, except that the 
+alias qualified name
+: A qualified name that is used to refer to a **StructuralType**, except that the 
 **namespace** is replaced by the alias for the **namespace**. For example, if an **EntityType** called "Person" is defined in the "Model.Business" **namespace**, and that **namespace** has been given the **alias** "Self", the alias qualified name for the person **EntityType** is "Self.Person".
 
-**annotation:** Any custom, application-specific extension that is applied to an instance of **CSDL** through the use of custom attributes and elements that are not a part of this **CSDL** specification.
+annotation
+: Any custom, application-specific extension that is applied to an instance of **CSDL** through the use of custom attributes and elements that are not a part of this **CSDL** specification.
 
-**association:** A named independent relationship between two **EntityType** definitions. Associations in the 
+association
+: A named independent relationship between two **EntityType** definitions. Associations in the 
 **Entity Data Model (EDM)** are first-class concepts and are always bidirectional. Indeed, the first-class nature of associations helps distinguish the **EDM** from the relational model. Every association includes exactly two association ends.
 
-**association end:** A term that specifies the **EntityType** elements that are related, the roles of each of those 
+association end
+: A term that specifies the **EntityType** elements that are related, the roles of each of those 
 **EntityType** elements in the **association**, and the **cardinality** rules for each end of the **association**.
 
-**cardinality:** The measure of the number of elements in a set.
+cardinality
+: The measure of the number of elements in a set.
 
-**collection:** A grouping of one or more **EDM types** that are type compatible. A collection can be used as the return type for a **FunctionImport**.
+collection
+: A grouping of one or more **EDM types** that are type compatible. A collection can be used as the return type for a **FunctionImport**.
 
-**conceptual schema definition language (CSDL):** A language that is based on XML and that can be used to define conceptual models that are based on the **EDM**.
+conceptual schema definition language (CSDL)
+: A language that is based on XML and that can be used to define conceptual models that are based on the **EDM**.
 
-**conceptual schema definition language (CSDL) document:** A document that contains a conceptual model that is described by using the **CSDL** code.
+conceptual schema definition language (CSDL) document
+: A document that contains a conceptual model that is described by using the **CSDL** code.
 
-**CSDL 1.0:** A version of **CSDL** that has a slightly reduced set of capabilities, which are called out in this document. CSDL 1.0 documents reference this XML namespace: http://schemas.microsoft.com/ado/2006/04/edm.
+CSDL 1.0
+: A version of **CSDL** that has a slightly reduced set of capabilities, which are called out in this document. CSDL 1.0 documents reference this XML namespace: http://schemas.microsoft.com/ado/2006/04/edm.
 
-**CSDL 1.1:** The version of **CSDL** that is defined immediately prior to **CSDL 1.2**. **CSDL 1.1** documents reference this XML namespace: http://schemas.microsoft.com/ado/2007/05/edm.
+CSDL 1.1
+: The version of **CSDL** that is defined immediately prior to **CSDL 1.2**. **CSDL 1.1** documents reference this XML namespace: http://schemas.microsoft.com/ado/2007/05/edm.
 
-**CSDL 1.2:** The version of **CSDL** that is defined immediately prior to **CSDL 2.0**. **CSDL 1.2** documents reference this XML namespace: http://schemas.microsoft.com/ado/2008/01/edm. The **ADO.NET Entity Framework** does not support CSDL 1.2.
+CSDL 1.2
+: The version of **CSDL** that is defined immediately prior to **CSDL 2.0**. **CSDL 1.2** documents reference this XML namespace: http://schemas.microsoft.com/ado/2008/01/edm. The **ADO.NET Entity Framework** does not support CSDL 1.2.
 
-**CSDL 2.0:** The version of **CSDL** that is defined immediately prior to **CSDL 3.0**. **CSDL 2.0** documents reference this XML namespace: http://schemas.microsoft.com/ado/2008/09/edm.
+CSDL 2.0
+: The version of **CSDL** that is defined immediately prior to **CSDL 3.0**. **CSDL 2.0** documents reference this XML namespace: http://schemas.microsoft.com/ado/2008/09/edm.
 
-**CSDL 3.0:** The version of **CSDL** that is the focus of this document. **CSDL 3.0** documents reference this XML namespace: http://schemas.microsoft.com/ado/2009.11/edm.
+CSDL 3.0
+: The version of **CSDL** that is the focus of this document. **CSDL 3.0** documents reference this XML namespace: http://schemas.microsoft.com/ado/2009.11/edm.
 
-**declared property:** A property that is statically declared by a **Property** element as part of the definition of a **StructuralType**. For example, in the context of an **EntityType**, a declared property includes all properties of an **EntityType** that are represented by the **Property** child elements of the **EntityType** element that defines the **EntityType**.
+declared property
+: A property that is statically declared by a **Property** element as part of the definition of a **StructuralType**. For example, in the context of an **EntityType**, a declared property includes all properties of an **EntityType** that are represented by the **Property** child elements of the **EntityType** element that defines the **EntityType**.
 
-**derived type:** A type that is derived from the **BaseType**. Only WRONG:**ComplexType** and **EntityType** can define a **BaseType**.
+derived type
+: A type that is derived from the **BaseType**. Only WRONG:**ComplexType** and **EntityType** can define a **BaseType**.
 
-**dynamic property:** A designation for an instance of an **OpenEntityType** that includes additional nullable properties (of a **scalar type** or **ComplexType**) beyond its **declared properties**. The set of additional properties, and the type of each, may vary between instances of the same **OpenEntityType**. Such additional properties are referred to as dynamic properties and do not have a representation in a **CSDL document**.
+dynamic property
+: A designation for an instance of an **OpenEntityType** that includes additional nullable properties (of a **scalar type** or **ComplexType**) beyond its **declared properties**. The set of additional properties, and the type of each, may vary between instances of the same **OpenEntityType**. Such additional properties are referred to as dynamic properties and do not have a representation in a **CSDL document**.
 
-**EDM type:** A categorization that includes all the following types: **EDMSimpleType**, **ComplexType**, **EntityType**, **enumeration**, and **association**.
+EDM type
+: A categorization that includes all the following types: **EDMSimpleType**, **ComplexType**, **EntityType**, **enumeration**, and **association**.
 
-**entity:** An instance of an **EntityType** element that has a unique identity and an independent existence. An entity is an operational unit of consistency.
+entity
+: An instance of an **EntityType** element that has a unique identity and an independent existence. An entity is an operational unit of consistency.
 
-**Entity Data Model (EDM):** A set of concepts that describes the structure of data, regardless of its stored form, as described in the Introduction (section 1).
+Entity Data Model (EDM)
+: A set of concepts that describes the structure of data, regardless of its stored form, as described in the Introduction (section 1).
 
-**enumeration type:** A type that represents a custom enumeration that is declared by using the **EnumType** element.
+enumeration type
+: A type that represents a custom enumeration that is declared by using the **EnumType** element.
 
-**facet:** An element that provides information that specializes the usage of a type. For example, the precision (that is, accuracy) facet can be used to define the precision of a **DateTime property**.
+facet
+: An element that provides information that specializes the usage of a type. For example, the precision (that is, accuracy) facet can be used to define the precision of a **DateTime property**.
 
-**identifier:** A string value that is used to uniquely identify a component of the **CSDL** and is of type **SimpleIdentifier**.
+identifier
+: A string value that is used to uniquely identify a component of the **CSDL** and is of type **SimpleIdentifier**.
 
-**in scope:** A designation that is applied to an XML construct that is visible or can be referenced, assuming that all other applicable rules are satisfied. Types that are in scope include all **scalar types** and **StructuralType** types that are defined in **namespaces** that are in scope. **Namespaces** that are in scope include the **namespace** of the current **schema** and other **namespaces** that are referenced in the current **schema** by using the **Using** element.
+in scope
+: A designation that is applied to an XML construct that is visible or can be referenced, assuming that all other applicable rules are satisfied. Types that are in scope include all **scalar types** and **StructuralType** types that are defined in **namespaces** that are in scope. **Namespaces** that are in scope include the **namespace** of the current **schema** and other **namespaces** that are referenced in the current **schema** by using the **Using** element.
 
-**namespace:** A name that is defined on the **schema** and that is subsequently used to prefix **identifiers** to form the **namespace qualified name** of a **StructuralType**. **CSDL** enforces a maximum length of 512 characters for namespace values.
+namespace
+: A name that is defined on the **schema** and that is subsequently used to prefix **identifiers** to form the **namespace qualified name** of a **StructuralType**. **CSDL** enforces a maximum length of 512 characters for namespace values.
 
-**namespace qualified name:** A qualified name that refers to a **StructuralType** by using the name of the **namespace**, followed by a period, followed by the name of the **StructuralType**.
+namespace qualified name
+: A qualified name that refers to a **StructuralType** by using the name of the **namespace**, followed by a period, followed by the name of the **StructuralType**.
 
-**nominal type:** A designation that applies to the types that can be referenced. Nominal types include all primitive types and named **EDM types**. Nominal types are frequently used inline with collection in the following format: collection(nominal_type).
+nominal type
+: A designation that applies to the types that can be referenced. Nominal types include all primitive types and named **EDM types**. Nominal types are frequently used inline with collection in the following format: collection(nominal_type).
 
-**property:** An **EntityType** can have one or more properties of the specified **scalar type** or **ComplexType**. A property can be a **declared property** or a **dynamic property**. (In **CSDL 1.2**, **dynamic properties** are defined only for use with **OpenEntityType** instances.)
+property
+: An **EntityType** can have one or more properties of the specified **scalar type** or **ComplexType**. A property can be a **declared property** or a **dynamic property**. (In **CSDL 1.2**, **dynamic properties** are defined only for use with **OpenEntityType** instances.)
 
-**referential constraint:** A constraint on the keys contained in the **associatio**n type. The ReferentialConstraint **CSDL** construct is used for defining referential constraints.
+referential constraint
+: A constraint on the keys contained in the **associatio**n type. The ReferentialConstraint **CSDL** construct is used for defining referential constraints.
 
-**scalar type:** A designation that applies to all **EDMSimpleType** and **enumeration types**. Scalar types do not include **StructuralTypes**.
+scalar type
+: A designation that applies to all **EDMSimpleType** and **enumeration types**. Scalar types do not include **StructuralTypes**.
 
-**schema:** A container that defines a **namespace** that describes the scope of **EDM types**. All **EDM types** are contained within some **namespace**.
+schema
+: A container that defines a **namespace** that describes the scope of **EDM types**. All **EDM types** are contained within some **namespace**.
 
-**schema level named element:** An element that is a child element of the **schema** and contains a **Name** attribute that must have a unique value.
+schema level named element
+: An element that is a child element of the **schema** and contains a **Name** attribute that must have a unique value.
 
-**StructuralType:** A type that has members that define its structure. **ComplexType**, **EntityType**, and **Association** are all StructuralTypes.
+StructuralType
+: A type that has members that define its structure. **ComplexType**, **EntityType**, and **Association** are all StructuralTypes.
 
-**type annotation:** An **annotation** of a model element that allows a term and provision of zero or more values for the properties of the term.
+type annotation
+: An **annotation** of a model element that allows a term and provision of zero or more values for the properties of the term.
 
-**value annotation:** An **annotation** that attaches a named value to a model element.
+value annotation
+: An **annotation** that attaches a named value to a model element.
 
-**value term:** A term with a single property in EDM.
+value term
+: A term with a single property in EDM.
 
-**vocabulary:** A schema that contains definitions of value terms and/or entity type terms.
+vocabulary
+: A schema that contains definitions of value terms and/or entity type terms.

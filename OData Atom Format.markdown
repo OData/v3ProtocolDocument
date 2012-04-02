@@ -1,11 +1,5 @@
 # OData Atom Format #
 
-#todo: #
-* add more examples 
-* Extensibility 
-* links (Links as Elements)
-* renumber
-
 # 1. Overview #
 
 The OData protocol is comprised of a set of specifications for representing and interacting with structured content.  This document describes the OData Atom Format.
@@ -35,8 +29,9 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 # 4. Primitive Types in Atom #
 
+OData Atom and XML payloads serialize primitive types as shown in the table below, where:  
 
-OData Atom and XML payloads serialize primitive types as shown in the table below. For full synax rules, see <ref:grammar>:
+For full synax rules, see [OData:Uri](odatauriconventions):
 
 <table border="1" cellspacing="0" cellpadding="0">
     <tr>
@@ -52,45 +47,49 @@ OData Atom and XML payloads serialize primitive types as shown in the table belo
     </tr>
     <tr>
       <td><strong>Edm.Binary</strong><br/>Represent fixed- or variable- length binary data</td>
-      <td>[A-Fa-f0-9][A-Fa-f0-9]* <br/> Odd pairs of hex digits
+      <td>(A-F | a-f | 0-9)[A-F | a-f | 0-9]* <br/> Odd pairs of hex digits
         are not allowed.
       </td>
       <td>23ABFF</td>
     </tr>
     <tr>
       <td><strong>Edm.Boolean</strong><br />Represents the mathematical concept of binary-valued logic</td>
-      <td>true | 1 or false | 0 </td>
+      <td>"true" | "1" <br/> "false" | "0" </td>
       <td>true <br/>false</td>
     </tr>
     <tr>
       <td><strong>Edm.Byte</strong><br />Unsigned 8-bit integer value</td>
-      <td>[A-Fa-f0-9]</td>
+      <td>[A-F | a-f | 0-9]</td>
       <td>FF</td>
     </tr>
     <tr>
       <td><strong>Edm.DateTime</strong><br/>Represents date and time with values ranging from 12:00:00 midnight, January 1, 1753 A.D. through 11:59:59 P.M, December 9999 A.D.</td>
-      <td>yyyy-mm-ddThh:mm[:ss[.fffffff]]</td>
+      <td>yyyy "-" mm "-" dd "T" hh ":" mm [":" ss["." fffffff]]</td>
       <td>2000-12-12T12:00</td>
     </tr>
     <tr>
       <td><strong>Edm.Decimal</strong><br/>Represents numeric values with fixed precision and scale. This type can describe a numeric value ranging from negative 10^255 + 1 to positive 10^255 -1</td>
-      <td>[0-9]+.[0-9]</td>
+      <td>["-"][0-9]+.[0-9]</td>
       <td>2.345</td>
     </tr>
     <tr>
-      <td><strong>Edm.Double</strong><br/>Represents a floating point number with 15 digits precision that can represent values with approximate range of Â± 2.23e -308 through Â± 1.79e +308</td>
-      <td>[0-9]+ ((.[0-9]+) | [E[+ | -][0-9]+])</td>
+      <td><strong>Edm.Double</strong><br/>Represents a floating point number with 15 digits precision that can represent values with approximate range of ± 2.23e -308 through ± 1.79e +308</td>
+      <td>["-"][0-9]+ ((.[0-9]+) | [E[+ | -][0-9]+])</td>
       <td>2.345</td>
     </tr>
     <tr>
-      <td><strong>Edm.Single</strong><br/>Represents a floating point number with 7 digits precision that can represent values with approximate range of Â± 1.18e -38 through Â± 3.40e +38</td>
-      <td>[0-9]+.[0-9]</td>
+      <td><strong>Edm.Single</strong><br/>Represents a floating point number with 7 digits precision that can represent values with approximate range of ± 1.18e -38 through ± 3.40e +38</td>
+      <td>["-"][0-9]+.[0-9]</td>
       <td>2.5</td>
     </tr>
     <tr>
+      <td><strong>Edm.Float</strong><br/>Represents a floating point number with 7 digits precision that can represent values with approximate range of ± 1.18e -38 through ± 3.40e +38</td>
+      <td>["-"][0-9]+.[0-9]</td>
+      <td>2.5</td>
+    </tr>    
+    <tr>
       <td><strong>Edm.Guid</strong><br/>Represents a 16-byte (128-bit) unique identifier value</td>
-      <td>dddddddd-dddd-dddd-dddd-dddddddddddd where each d represents [A-Fa-f0-9]
-      </td>
+      <td>dddddddd "-" dddd "-" dddd "-" dddd "-" dddddddddddd <br/><br/>d= A-F |a-f | 0-9</td>
       <td>12345678-aaaa-bbbb-cccc-ddddeeeeffff</td>
     </tr>
     <tr>
@@ -117,108 +116,106 @@ OData Atom and XML payloads serialize primitive types as shown in the table belo
       <td><strong>Edm.String</strong><br/>Represents fixed- or variable-length character data</td>
       <td>any UTF-8 character <br/> Note: See definition of UTF8-char in <a href="http://tools.ietf.org/html/rfc3629">[RFC3629]</a>
       </td>
-      <td>Hello OData</td>
+      <td>OData</td>
     </tr>
     <tr>
       <td><strong>Edm.Time</strong><br/>Represents the time of day with values ranging from 0:00:00.x to 23:59:59.y, where x and y depend upon the precision</td>
-      <td>&lt;timeLiteral&gt; timeLiteral = Defined by the lexical representation for
+      <td>Defined by the lexical representation for
         time at <a href="http://www.w3.org/TR/xmlschema-2">http://www.w3.org/TR/xmlschema-2</a></td>
       <td>13:20:00</td>
     </tr>
     <tr>
       <td><strong>Edm.DateTimeOffset</strong><br/>Represents date and time as an Offset in minutes from GMT, with values ranging from 12:00:00 midnight, January 1, 1753 A.D. through 11:59:59 P.M, December 9999 A.D</td>
-      <td>&lt;dateTimeOffsetLiteral&gt; dateTimeOffsetLiteral = Defined by
+      <td>Defined by
         the lexical representation for datetime (including timezone offset) at <a href="http://www.w3.org/TR/xmlschema-2">
           http://www.w3.org/TR/xmlschema-2</a></td>
       <td>2002-10-10T17:00:00Z</td>
     </tr>
     <tr>
-        <td><strong>Edm.Geography</strong> 
-		</td>
-		<td>
-		</td>
+        <td><strong>Edm.Geography</strong><br/>Abstract base type for all Geography types.</td>
+		<td>N/A</td>
+		<td>N/A</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeographyPoint</strong> 
-		</td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyPoint</strong><br/>Represents a point in a round-earth coordinate system.</td>
+		<td>srid "Point(" point ")" <br/><i>srid=</i> "SRID=" 1*5DIGIT ";"<br/><i>point=</i> LONG LAT <br/><br/>Where LONG and LAT are EDM.Doubles representing Longitude and Latitude.</td>
+		<td>SRID=123435;Point(33.84 -117.91)</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeographyLineString</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyLineString</strong><br/>Represents a linestring in a round-earth coordinate system.</td>
+		<td>srid "LineString(" linestring ")" <br/><i>linestring=</i> point ["," point]+</td>
+		<td>SRID=123435;Linestring(33.84 -117.91,48.87 2.78)</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeographyPolygon</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyPolygon</strong>Represents a polygon in a round-earth coordinate system.</td>
+		<td>srid "Polygon(" polygon ")"<br/><i>polygon=</i> ring "," [ring ","]* <br/><i>ring=</i> "(" firstpoint "," [point ","]* firstpoint ")" ]* ")"<br/><i>firstpoint</i> = point</td>
+		<td>SRID=123435;Polygon((33.84 -117.91,48.87 2.78,33.84 -117.91))</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeographyCollection</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyCollection</strong><br/>Represents a collection of Geography Values.</td>
+		<td>srid "GeographyCollection(" geographycollection ")"<br/><i>geographycollection</i>= geographyvalue [","  geographyvalue]*<br/><i>geographyvalue=</i>"Point("point")" |<br/> "LineString(" linestring ")" | <br/>"Polygon(" polygon ")" |<br/>"GeographyCollection(" geographycollection ")" |<br/>"MultiPoint("multipoint ")" |<br/>"MultiLineString("multilinestring ")" |<br/>"MultiPolygon("multipolygon ")"<br/></td>
+        <td>SRID=123435;GeographyCollection(Point(33.84 -117.91),Point(48.87 2.78))</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeographyMultiPoint</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyMultiPoint</strong>Represents a collection of points in a round-earth coordinate system</td>
+		<td>srid "MultiPoint(" multipoint ")" <br/><i>multipoint=</i> point ["," point]*</td>
+		<td>SRID=123435;MultiPoint((33.84 -117.91),(48.87 2.78))</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeographyMultiLineString</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyMultiLineString</strong>Represents a collection of linestrings in a round-earth coordinate system.</td>
+		<td>srid "MultiLineString(" multilinestring ")"<br/><i>multilinestring=</i> "(" linestring ")" [",(" linestring ")" ]*</td>
+		<td>SRID=123435;MultiLineString((33.84 -117.91,48.87 2.78),(33.84 -117.91, 28.36 -81.56))</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeographyMultiPolygon</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyMultiPolygon</strong>Represents a collection of polygons in a round-earth coordinate system.</td>
+		<td>srig "MultiPolygon(" multipolygon ")"<br/><i>multipolygon=</i> "(" polygon ")" [",(" polygon ")"]*</td>
+		<td>SRID=123435;MultiPolygon(((33.84 -117.91,(33.84 -117.91,28.36 -81.56,33.84 -117.91)))</td>
     </tr>
     <tr>
-        <td><strong>Edm.Geometry</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.Geometry</strong><br/>Abstract base type for all Geometry types</td>
+		<td>N/A</td>
+		<td>N/A</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeometryPoint</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeometryPoint</strong><br/>Represents a point in a flat-earth coordinate system.</td>
+		<td>srid "Point(" point ")"</td>
+		<td>SRID=123435;Point(33.84 -117.91)</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeometryLineString</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeometryLineString</strong><br/>Represents a linestring in a flat-earth coordinate system.</td>
+		<td>srid "LineString(" linestring ")"</td>
+		<td>SRID=123435;Linestring(33.84 -117.91,48.87 2.78)</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeometryPolygon</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeometryPolygon</strong>Represents a polygon in a flat-earth coordinate system.</td>
+		<td>srid "Polygon(" polygon ")"</td>
+		<td>SRID=123435;Polygon((33.84 -117.91,48.87 2.78,33.84 -117.91))</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeometryCollection</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeometryCollection</strong><br/>Represents a collection of Geometry Values.</td>
+		<td>srid "GeometryCollection(" geometrycollection ")"<br/><i>geometrycollection=</i> geometryvalue [","  geometryvalue]*<br/><i>geometryvalue=</i> "Point("point")" |<br/> "LineString(" linestring ")" | <br/>"Polygon(" polygon ")" |<br/>"GeometryCollection(" geometrycollection ")" |<br/>"MultiPoint("multipoint ")" |<br/>"MultiLineString("multilinestring ")" |<br/>"MultiPolygon("multipolygon ")"<br/></td>
+        <td>SRID=123435;GeometryCollection(Point(33.84 -117.91),Point(48.87 2.78))</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeometryMultiPoint</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeometryMultiPoint</strong>Represents a collection of points in a flat-earth coordinate system.</td>
+		<td>srid "MultiPoint(" multipoint ")"</td>
+		<td>SRID=123435;MultiPoint((33.84 -117.91),(48.87 2.78))</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeometryMultiLineString</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyMultiLineString</strong>Represents a collection of linestrings in a flat-earth coordinate system.</td>
+		<td>srid "MultiLineString(" multilinestring ")"<br/></td>
+		<td>SRID=123435;MultiLineString((33.84 -117.91,48.87 2.78),(33.84 -117.91, 28.36 -81.56))</td>
     </tr>
     <tr>
-        <td><strong>Edm.GeometryMultiPolygon</strong></td>
-		<td>
-		</td>
+        <td><strong>Edm.GeographyMultiPolygon</strong>Represents a collection of polygons in a flat-earth coordinate system.</td>
+		<td>string "MultiPolygon(" multipolygon ")"</td>
+		<td>SRID=123435;MultiPolygon(((33.84 -117.91,(33.84 -117.91,28.36 -81.56,33.84 -117.91)))</td>
     </tr>
 </table>
 
 # 5. Use of Atom #
 
-The Atom Syndication Format RFC4287 (http://atompub.org/rfc4287.html) defines an XML-based format for describing collections ("feeds") made up of individual "entries". The Atom Publishing Protocol RFC5023 (http://www.ietf.org/rfc/rfc5023.txt) defines an application-level protocol based on HTTP transfer of Atom-formatted representations.
+The Atom Syndication Format [RFC4287](http://www.ietf.org/rfc/rfc4287) defines an XML-based format for describing collections ("feeds") made up of individual "entries". The Atom Publishing Protocol [RFC5023](http://www.ietf.org/rfc/rfc5023.txt) defines an application-level protocol based on HTTP transfer of Atom-formatted representations.
 
 # 5.1 Namespaces #
 OData defines meaning for elements and attributes defined in the following namespaces.
@@ -254,7 +251,34 @@ OData payloads may use the xml:base attribute to define a base URI for relative 
 OData's Atom format defines extensions and conventions on top of RFC4287 and RFC5023 for representing structured data as follows:
 
 ## 6.1.	Entity Instances ##
-Entity Instances, whether individual or within an ATOM feed, are represented as `atom:entry` elements. This section defines the elements and attributes within an `atom:entry` element that are assigned meaning in OData.
+Entity Instances, whether individual or within an ATOM feed, are represented as `atom:entry` elements. 
+
+For example, the following `atom:entry` element describes a Product:
+ 
+	<entry>
+	  <id>http://services.odata.org/OData/OData.svc/Products(0)</id> 
+	  <title type="text">Bread</title> 
+	  <summary type="text">Whole grain bread</summary> 
+	  <updated>2012-03-30T07:11:05Z</updated> 
+	  <author>
+	    <name /> 
+	  </author>
+	  <link rel="edit" title="Product" href="Products(0)" /> 
+	  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Category" type="application/atom+xml;type=entry" title="Category" href="Products(0)/Category" /> 
+	  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Supplier" type="application/atom+xml;type=entry" title="Supplier" href="Products(0)/Supplier" /> 
+	  <category term="ODataDemo.Product" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" /> 
+	  <content type="application/xml">
+	    <m:properties>
+	      <d:ID m:type="Edm.Int32">0</d:ID> 
+	      <d:ReleaseDate m:type="Edm.DateTime">1992-01-01T00:00:00</d:ReleaseDate> 
+	      <d:DiscontinuedDate m:type="Edm.DateTime" m:null="true" /> 
+	      <d:Rating m:type="Edm.Int32">4</d:Rating> 
+	      <d:Price m:type="Edm.Decimal">2.5</d:Price> 
+	    </m:properties>
+	  </content>
+	</entry>
+
+This section defines the elements and attributes within an `atom:entry` element that are assigned meaning in OData.
 
 ### 6.1.1.	The `atom:entry` Element ###
 An `atom:entry` element is used to represent a single resource, or entity, which is an instance of a structured type with an identity.
@@ -429,7 +453,6 @@ The `<data:element>` element representing the instance may include a `metadata:t
 
 For example, the collection typed property "PhoneNumbers" would be respresented as:
 
-
 	<data:PhoneNumbers metadata:type="Collection(Person.PhoneNumber)"">  
 	    <data:element metadata:type="Person.PhoneNumber">  
 	        <data:Number>425-555-1212</data:Number>  
@@ -479,7 +502,7 @@ The `atom:id` element defines a durable, opaque, globally unique identifier for 
 
 ### 6.2.2.	Count as a `metadata:count` Element ###
 
-The `atom:feed` element may contain an m:count element to specify the total count of rows in the result. This may be greater than the number of rows in the feed if server side paging has been applied, in which case the feed will include a next results link, as described below.
+The `atom:feed` element may contain an `m:count` element to specify the total count of rows in the result. This may be greater than the number of rows in the feed if server side paging has been applied, in which case the feed will include a next results link, as described below.
 
 ### 6.2.3.	Self Links as `atom:link` Elements ###
 
@@ -497,6 +520,16 @@ The contents of the href should be treated as an opaque URI that can be used to 
 
 # 7. Actions #
 Zero or more actions may be associated with a feed or entry.
+
+The actions associated with a particular feed or entry MAY be described using `metadata:action` element(s) that are direct children of the feed or entry on which the action(s) exist.
+
+For example, the following element describes an "Order" action:
+
+	<metadata:action
+	  metadata="#DemoService.OrderProduct"
+	  target="http://services.odata.org/OData/OData.svc/Products(1)/OrderProduct"
+	  title="Order"
+	/>
 
 ## 7.1. Actions as a `metadata:action` Element ##
 Actions are represented as `metadata:action` elements that appear as direct children of the `atom:feed` or `atom:entry` element representing the feed or entity on which the action(s) exist.
@@ -517,6 +550,16 @@ The `metadata:action` element MUST have a `metadata:title` attribute that contai
 # 8. Functions #
 Zero or more functions may be associated with a feed or entry.
 
+The functions associated with a particular feed or entry MAY be described using `metadata:function` element(s) that are direct children of the feed or entry on which the action(s) exist.
+
+For example, the following element describes a "GetTopProducts" function:
+
+	<metadata:function
+	  metadata="#DemoService.GetTopProducts"
+	  target="http://services.odata.org/OData/OData.svc/Categories(0)/GetTopProducts()"
+	  title="GetTopProducts"
+	/>
+
 ## 8.1. Functions as a `metadata:function` Element ##
 Functions are represented as `metadata:function` elements that appear as direct children of the `atom:feed` or `atom:entry` element representing the feed or entity on which the function(s) exist.
 
@@ -528,7 +571,7 @@ The named function may have multiple overloads (multiple function imports) withi
 If the metadata cannot be retrieved by appending $metadata to the service root, then this name must additionally be prefixed by a URL that can be used to retrieve the metadata document containing the function import that describes the function.
 
 ### 8.1.2. The `metadata:target` Attribute ###
-A `metadata:function` element MUST have a `metadata:target` attribute that specifies the URL to GET from in order to invoke the function. 
+A `metadata:function` element MUST have a `metadata:target` element that specifies the URL to GET from in order to invoke the function. 
 
 The first parameter of the function MUST be a binding parameter that is bound to the feed or entity on which the function is specified, and MUST NOT be provided as a separate parameter by the client when invoking the function.
 
@@ -561,7 +604,7 @@ For example; the following specifies a value of "Home" for the "PhoneNumberType"
         <data:CustomerID>ALFKI</data:CustomerID>
         <data:ContactName> Alfreds Futterkiste </data:ContactName>
         <data:Phone>030-0074321</data:Phone>
-		<contact:PhoneNumberType target="Phone">Home</contact:PhoneNumberType>
+		<contact:PhoneNumberType metadata:target="Phone">Home</contact:PhoneNumberType>
       </metadata:properties>
 
 ### 9.1.1. The `metadata:target` attribute.
@@ -584,7 +627,7 @@ For example; the following specifies the "StreetAddress", "City", "Region", "Cou
         <contact:Address metadata:target=".">  
           <contact:StreetAddress>Obere Str. 578</contact:StreetAddress>
           <contact:City>Toronto</contact:City>
-          <contact:Region m:null="true" />
+          <contact:Region metadata:null="true" />
           <contact:PostalCode>12209</contact:PostalCode>
           <contact:Country>Germany</contact:Country>
         </contact:Address>
@@ -596,7 +639,9 @@ The `metadata:target` attribute MUST be present on a TypeAnnotation and identifi
 # 10. Custom Mapping to Atom Elements #
 
 Individual property values may be mapped to predefined atom elements or custom content within the entry.  The mapping is described through attributes in the metadata.
+
 The mapping may specify whether the property value appears within the metadata:properties element as well as being mapped, however in the case of a null value the property MUST always appear within the metadata:properties element as an empty element and the metadata:null=true attribute as described above. 
+
 For more information on the format of the mapping specification, see <todo: insert reference>.
 
 # 11.	Individual Primitive or Complex Scalar Values #
@@ -655,28 +700,50 @@ Similarly, the following payload represents a collection of full names.
 
 Atom defines the concept of a Service Document to represent the set of available collections. OData uses Service Documents to describe the set of EntitySets available through the service.
 
-## 13.1.	AtomPub Document Namespace ##
+## 13.2. The `app:service` element ##
 
-Service Documents are described in AtomPub using elements from the following namespace: "http://www.w3.org/2007/app".
+The atom ServiceDocument is represented by the app:service element.  The app:service element contains one or more `app:workspaces`, which represents a set of collections.
 
-In this specification the namespace prefix "app" is used to represent the app Namespace, however the prefix name is not prescriptive.
+### 13.2.1.	EntityContainer as an `app:workspace` element ###
 
-## 13.2.	app:service element ##
+OData represents EntityContainers as `app:workspace` elements.  An `app:workspace` element contains zero or more `app:collections`. 
 
-The atom ServiceDocument is represented by the app:service element.  The app:service element contains one or more app:workspaces, which represents a set of collections.
+#### 13.2.1.1.	EntitySets as an `app:collection` elements ####
 
-### 13.2.1.	EntityContainer as an app:workspace element ###
-
-OData represents EntityContainers as app:workspace elements.  An app:workspace element contains zero or more app:collections. 
-
-#### 13.2.1.1.	EntitySets as an app:collection elements ####
-
-OData describes available EntitySets as app:collection elements.
+OData describes available EntitySets as `app:collection` elements.
 The app:collection element contains an href attribute which represents a URI that can be used to retrieve the members of the EntitySet.
 
-##### 13.2.1.1.1	EntitySet Name as atom:title element #####
+##### 13.2.1.1.1	EntitySet Name as an `atom:title` element #####
 
-The atom:title element within the app:collection contains the name of the EntitySet.
+The `atom:title` element within the app:collection contains the name of the EntitySet.
 
-# 14. Links as XML Elements #
-<todo...>
+# 14. Links 
+Links represent the relationships between an entity and related entity(s). The link(s) available from a particular entity for a particular relationship can be retrieved from the service as a colleciton of URIs within a [`data:link`](#Linkswithinadata:linkselement) element.
+
+## 14.1 Links within a `data:links` Element ##
+A `data:link` element represents the set of references from one entity to all related entities according to a particular relationship.
+
+The reference for each related entity is represented as a `data:uri` element that appears as a direct child of the `data:link` element.
+
+For example, a query for links to Products within the Category with ID=1:
+
+	http://services.odata.org/OData/OData.svc/Categories(1)$links/Products
+
+might return the following XML response:
+	
+	<links xmlns="http://schemas.microsoft.com/ado/2007/08/dataservices"> 
+		<uri>http://services.odata.org/OData/OData.svc/Products(1)</uri> 
+		<uri>http://services.odata.org/OData/OData.svc/Products(2)</uri> 
+		<uri>http://services.odata.org/OData/OData.svc/Products(3)</uri> 
+		<uri>http://services.odata.org/OData/OData.svc/Products(4)</uri> 
+		<uri>http://services.odata.org/OData/OData.svc/Products(5)</uri> 
+		<uri>http://services.odata.org/OData/OData.svc/Products(6)</uri> 
+	</links>
+	
+## 14.1 Individual Links as `data:uri` Elements ##
+Each related entity is represented as a `data:uri` element, which appears as a direct child of a [`data:link`](#linkswithinadata:linkselement) element.
+
+The content of the `data:uri` element is the URI of the related entity.
+
+#15. Extensibility#
+Implementations may add custom content anywhere allowed by [RFC4287](http://www.ietf.org/rfc/rfc4287), Section 6, "Extending Atom"; however, custom elements and attributes MUST NOT be defined in the [OData Data Namespace](#odatadatanamespace) nor the [OData Metadata Namespace](#odatametadatanamespace).

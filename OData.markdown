@@ -9,30 +9,30 @@ The OData Protocol is an application-level protocol for interacting with data vi
 - Querying: Requesting that the server perform a set of filtering and other transformations to its data, then return the results.
 - Editing: Creating, editing, and deleting data.
 
-The OData Protocol is different from other REST-based web service approaches in that it provides a uniform way to describe both the data and the data model. This improves semmantic interoperability between systems and allows an ecosystem to emerge.
+The OData Protocol is different from other REST-based web service approaches in that it provides a uniform way to describe both the data and the data model. This improves semantic interoperability between systems and allows an ecosystem to emerge.
 
 Towards that end, the OData Protocol follows these design principles:
 
 - Prefer mechanisms that work on a variety of data stores. In particular, do not assume a relational data model.
-- Backwards compatability is paramount. Clients and servers which speak different versions of the OData Protocol should interoperate, supporting everything allowed in lower versions.
+- Backwards compatibility is paramount. Clients and servers which speak different versions of the OData Protocol should interoperate, supporting everything allowed in lower versions.
 - Follow REST principles unless there is a good and specific reason not to.
-- OData should degrade gracefully. It should be easy to make a very basic but compliant OData endpoint, with additional work necessary only to support additional capabilities.
+- OData should degrade gracefully. It should be easy to build a very basic but compliant OData service, with additional work necessary only to support additional capabilities.
 
 # 2. Data Model #
 
 This section provides a high-level description of the Entity Data Model (EDM); the abstract data model that MUST be used to describe the data exposed by an OData service. An [OData Metadata Document](*MetadataDocument) is a representation of a service's data model exposed for client consumption.  
 
-The central concepts in the EDM are **entities** and **associations**. Entities are instances of **Entity Types** (e.g. Customer, Employee, etc) which are nominal structured records with a key. Entity Types contain named primitive- or complex- valued properties. 
+The central concepts in the EDM are **entities** and **associations**. Entities are instances of **Entity Types** (e.g. Customer, Employee, etc.) which are nominal structured records with a key. Entity Types contain named primitive- or complex-valued properties. 
 
 **Complex Types** are nominal structured types also consisting of a list of properties but with no key, thus can only exist as a property of a containing Entity Type or as a temporary value. 
 
-The **Entity Key** of an Entity Type is formed from a subset of primitive properties of the Entity Type. The Entity Key (e.g. CustomerId, OrderId, etc) is a fundamental concept to uniquely identify instances of Entity Types (entities) and allows entities to participate in relationships. 
+The **Entity Key** of an Entity Type is formed from a subset of primitive properties of the Entity Type. The Entity Key (e.g. CustomerId, OrderId, etc.) is a fundamental concept to uniquely identify instances of Entity Types (entities) and allows entities to participate in relationships. 
 
 Properties statically declared as part of the Entity Type's structural definition are called **declared properties** and those which are not are **dynamic properties**. Entity Types which allow dynamic properties are called Open Entity Types. If an instance of an Open Entity Type does not include a value for a dynamic property, the instance must be treated as if it included the property with a value of null. A dynamic property MUST NOT have the same name as a declared property.
 
 Entities are grouped in named collections called **Entity Sets** (e.g. Customers is a set of Customer Entity Type instances).
 
-**Association Types** define the relationship between two or more Entity Types (e.g. Employee WorksFor Department). Instances of Association Types are grouped in **Association Sets**. **Navigation Properties** are special properties on Entity Types which are bound to a specific association and are used to refer to specific associations of an entity. Navigation Properties, like scalar properties, may be declared as part of the Entity Type's structural definition or may be dynamic properties of an Open Entity Type. 
+**Association Types** define the relationship between two Entity Types (e.g. Employee WorksFor Department). Instances of Association Types are grouped in **Association Sets**. **Navigation Properties** are special properties on Entity Types which are bound to a specific association and are used to refer to specific associations of an entity. Navigation Properties, like scalar properties, may be declared as part of the Entity Type's structural definition or may be dynamic properties of an Open Entity Type. 
  
 Finally, all instance containers (Entity Sets and Association Sets) are grouped in an **Entity Container**.
 
@@ -47,7 +47,7 @@ Finally, all instance containers (Entity Sets and Association Sets) are grouped 
 
 ## 2.2 NavigationProperties ##
 
-Entities are related to each other via NavigationProperties. A NavigationProperty is a one-way relationship with cardinality 1:many, 1:1, or 1:[0,1]. The property's name defines the relationship. Its value is a reference to the related Entity or collection of Entities.
+Entities reference each other via NavigationProperties. A NavigationProperty represents one side of a relationship with cardinality 1:many, 1:1, or 1:[0,1]. The property's name defines the relationship. Its value is a reference to the related Entity or collection of Entities.
 
 A NavigationProperty can be seen as a Property on its source Entity. It can also be seen as a relationship. The NavigationLink is the URI that addresses the relationship itself.
 
@@ -93,7 +93,7 @@ The service MUST include a DataServiceVersion header to specify the version of t
 
 # 6. Extensibility #
 
-The OData protocol supports both user- and version- driven extensibility through a combination of versioning, convention, and explicit extension points.
+The OData protocol supports both user- and version-driven extensibility through a combination of versioning, convention, and explicit extension points.
 
 ## 6.1. Query Option Extensibility ##
 
@@ -123,9 +123,9 @@ Servers MUST fail any request that contains actions or functions that it does no
 
 Vocabularies provide the ability to annotate metadata as well as instance data, and define a powerful extensibility point for OData.
 
-Metadata annotations can be used to define additional characteristics or capabilities of a metadata element, such as a service, entitytype, property, function, action, parameter, or association. For example, a metadata annotation may define ranges of valid values for a particular field, or required query operators for a particular entityset.
+Metadata annotations can be used to define additional characteristics or capabilities of a metadata element, such as a service, entity type, property, function, action, parameter, or association. For example, a metadata annotation may define ranges of valid values for a particular field, or required query operators for a particular entity set.
 
-Instance annotations can be used to define additional information associated with a particular feed, resource or property; for example whether a particular property is read-only for a particular instance.
+Instance annotations can be used to define additional information associated with a particular result, entity or property; for example whether a particular property is read-only for a particular instance.
 
 Annotations that apply across instances SHOULD be specified within the metadata. Where the same annotation is defined at both the metadata and instance level, the instance-annotation overrides whatever defaults have been specified at the metadata level.
 
@@ -135,7 +135,7 @@ Metadata and instance annotations defined outside of the OData specification SHO
 
 OData defines semantics around certain HTTP Header Fields that may be included in requests to, and responses from, the data service. Services advertising compliance with a particular version of the OData Specification MUST understand and comply with the header fields defined in that version of the specification, either by honoring the semantics of the header field or by failing the request.
 
-Individual services MAY define additional header fields specific to that particular service. Such header fields MUST NOT be begin with "OData-" and, for maximum interoperability, SHOULD be optional when making requests against the service. Custom header fields MUST NOT be required to be understood by the client in order to accurately interpret the response.
+Individual services MAY define additional header fields specific to that particular service. Such header fields MUST NOT begin with "OData-" and, for maximum interoperability, SHOULD be optional when making requests to the service. Custom header fields MUST NOT be required to be understood by the client in order to accurately interpret the response.
 
 # 7. Interaction Semantics #
 
@@ -151,13 +151,13 @@ The format of the Service Document is dependent upon the format selected. For At
 
 ### 7.1.2. Metadata Document ###
 
-An OData Metadata Document is an representation of the [data model](#DataModel) that describes the data and operations exposed by an OData service. 
+An OData Metadata Document is a representation of the [data model](#DataModel) that describes the data and operations exposed by an OData service. 
 
 [OData:CSDL](odatacsdldefinition) describes an XML representation for OData Metadata Documents and provides an XSD to validate its syntax rules. The media type of the XML representation of an OData Metadata Document is 'application/xml'      
 
-As of OData v3, OData services MUST expose a Metadata Document which defines all data exposed by the service.  The URI of the document MUST be the root URI of the service  with "/$metadata" appended. 
+As of OData version 3.0, OData services MUST expose a Metadata Document which defines all data exposed by the service.  The URI of the document MUST be the root URI of the service with "/$metadata" appended. 
 
-Retrieval of a Metadata Document by a client MUST be done by issuing a HTTP GET request to document's URI.  If the request doesn't specify a format preference (via Accept header or <ref>$format query string option</ref>) then the XML representation MUST be returned.
+Retrieval of a Metadata Document by a client MUST be done by issuing a HTTP GET request to the document's URI.  If the request doesn't specify a format preference (via Accept header or [$format](#FormatSystemQueryOption)) then the XML representation MUST be returned.
 
 ## 7.2. Requesting Data ##
 OData services support requesting data through the use of HTTP GET requests.
@@ -320,7 +320,7 @@ OData supports a set of built-in filter operations, as described in this section
 
 OData supports a set of built-in functions that can be used within filter operations. The following table lists the available functions. For a full description of the syntax used when building requests, see [OData URI Conventions](OData_URI_Conventions).
 
-Note: No ISNULL or COALESCE operators are not defined. Instead, there is a null literal which can be used in comparisons.
+Note: No ISNULL or COALESCE operators are defined. Instead, there is a null literal which can be used in comparisons.
  
 <table border="1">
   <tr>
@@ -456,12 +456,12 @@ What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that
 
 	expandClause				=  	expandItem *("," expandItem)
 
-	expandItemPath  			= 	[ qualifiedEntityTypeName "/" ] navigationPropertyName 
+	expandItem      			= 	[ qualifiedEntityTypeName "/" ] navigationPropertyName 
 									*([ "/" qualifiedEntityTypeName ] "/" navigationPropertyName)  
 
 Each expandItem MUST be evaluated relative to the EntityType of request, which is EntityType of the resource(s) identified by the ResourcePath part of the URI.
 
-To expand a NavigationProperty defined on a derived type first a cast MUST be introduced using the qualifiedEntityTypeName of the required derived type. The left most navigationPropertyName segment MUST identify a Navigation Property defined on the EntityType of the request or an EntityType derived from the EntityType of the request. Subsequent navigationPropertyName segments MUST identify Navigation Properties defined on the EntityType returned by the previous NavigationProperty or the EntityType introduced in the previous cast.
+To expand a NavigationProperty defined on a derived type first a cast MUST be introduced using the qualifiedEntityTypeName of the required derived type. The leftmost navigationPropertyName segment MUST identify a Navigation Property defined on the EntityType of the request or an EntityType derived from the EntityType of the request. Subsequent navigationPropertyName segments MUST identify Navigation Properties defined on the EntityType returned by the previous NavigationProperty or the EntityType introduced in the previous cast.
 
 Examples
 
@@ -505,15 +505,15 @@ What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that
 									)
 
 
-The selectClause MUST be interpretted relative to the EntityType or ComplexType of the resources identified by the resource path section of the URI, for example:
+The selectClause MUST be interpreted relative to the EntityType or ComplexType of the resources identified by the resource path section of the URI, for example:
 
 	http://services.odata.org/OData/OData.svc/Products?$select=Rating,ReleaseDate
 
 In this URI the "Rating,ReleaseDate" selectClause MUST be interpreted relative to the Product EntityType which is the EntityType of the resources identified by this http://services.odata.org/OData/OData.svc/Products URI.
 
-Each selectItem in the selectClause, indicates that the response MUST include the Properties, Open Properties, Related Properties, Actions and Functions identified by that selectClause. 
+Each selectItem in the selectClause indicates that the response MUST include the Properties, Open Properties, Related Properties, Actions and Functions identified by that selectClause. 
 
-The simpliest selectItem requests a single Property defined on the EntityType of the resources identified by the resource path section of the URI, for example this URI asks the server to return just the Rating and ReleaseDate for the matching Products: 
+The simplest selectItem requests a single Property defined on the EntityType of the resources identified by the resource path section of the URI, for example this URI asks the server to return just the Rating and ReleaseDate for the matching Products: 
 
 	http://services.odata.org/OData/OData.svc/Products?$select=Rating,ReleaseDate
 
@@ -545,7 +545,7 @@ For example this URI requests the ID property, the 'ActionName' action defined i
 
 	http://service.odata.org/OData/OData.svc/Products?$select=Container.ActionName,Container2.*
 
-If an action is requested as a selectedItem, either explicitly by using an qualifiedActionName clause or implicitly by using an allOperationsInContainer clause, the server MUST include in the response information about how to invoke that action for each of the entities identified by the last path segment in the request URI, if the action can be bound to those entities.
+If an action is requested as a selectedItem, either explicitly by using a qualifiedActionName clause or implicitly by using an allOperationsInContainer clause, then for each entity identified by the last path segment in the request URI for which the action can be bound the server MUST include information about how to invoke that action.
 
 If a function is requested as a selectedItem, either explicitly by using an qualifiedFunctionName clause or implicitly by using an allOperationsInContainer clause, the server MUST include in the response information about how to invoke that function for each of the entities that are identified by the last path segment in the request URI, if and only if the function can be bound to those entities.
 
@@ -561,7 +561,7 @@ For AtomPub formatted responses: The value of a selectClause applies only to the
 
 The `$orderby` System Query option specifies the order in which entities are returned from the service.
 
-The value of the `$orderby` System Query option specifies a comma separated list of property names to sort by. The property name may include the suffix "acs" for ascending or "desc" for descending, separated from the property name by one or more spaces.
+The value of the `$orderby` System Query option specifies a comma separated list of property names to sort by. The property name may include the suffix "asc" for ascending or "desc" for descending, separated from the property name by one or more spaces.
 
 For example:
 
@@ -569,7 +569,7 @@ For example:
 
 #### 7.2.3.4. The `$top` System Query Option ####
 
-The  `$top` System Query Option specifies that only the first n records should be returned, where n is a positive integer value specified in by `$top` query option.
+The  `$top` System Query Option specifies that only the first n records should be returned, where n is a non-negative integer value specified in by `$top` query option.
 
 For example:
 
@@ -581,7 +581,7 @@ If no `$order` query option is specified in the request, the server MUST impose 
 
 #### 7.2.3.5. The `$skip` System Query Option ####
 
-The  `$skip` System Query Option specifies that only the records after the first n should be returned, where n is a positive integer value specified in by `$skip` query option.
+The `$skip` System Query Option specifies that only the records after the first n should be returned, where n is a non-negative integer value specified in by `$skip` query option.
 
 For example:
 
@@ -597,7 +597,7 @@ For example:
 
 Would return the first five Products, starting with the 2nd Product in the Products EntitySet.
 
-If no `$order` query option is specified in the request, the server MUST impose a stable ordering across requests that include `$skip`.
+If no `$orderby` query option is specified in the request, the server MUST impose a stable ordering across requests that include `$skip`.
 
 #### 7.2.3.6. The `$inlinecount` System Query Option ####
 
@@ -623,10 +623,10 @@ A data service URI with a `$format` system query option specifies that a respons
 
 The syntax of the format system query option is defined in 'format' rule defined in Appendix A. 
 
-The rules for interpretting the format rule are:
+The rules for interpreting the format rule are:
 
 - If the `$format` query option is present in a request URI, it SHOULD take precedence over the value(s) specified in the Accept request header.
-- If the value of the query option is "atom", then the media type used in the response MUST be "application/atom+xml".
+- If the value of the query option is "atom", then the media type used in the response MUST be "application/atom+xml", or "application/atomsvc+xml" for the [service document](#ServiceDocument).
 - If the value of the query option is "json", then the media type used in the response MUST be "application/json".
 - If the value of the query option is "xml", then the media type used in the response MUST be "application/xml".
 
@@ -662,7 +662,7 @@ A non-empty body MUST contain the new, post-update, value for the identified res
 
 ### 7.3.1. Modifying Entities ###
 
-Entities are described in [Section 2.1](#entities). URI conventions for entites are described in [URI Conventions](uri_conventions).
+Entities are described in [Section 2.1](#entities). URI conventions for entities are described in [URI Conventions](uri_conventions).
 
 #### 7.3.2. Create an Entity ####
 
@@ -742,15 +742,15 @@ If the NavigationProperty is nullable, then a change MAY be perfomed by first re
 
 Alternatively, a relationship MAY be updated as part of an update to the source Entity. Update the entity; the NavigationProperty MUST include the required binding information for the new target Entity. This binding information MUST be formatted as for a deferred NavigationProperty in a response.
 
-### 7.3.6 Managing Resources ###
+### 7.3.6 Managing Binary Resources ###
 
 Binary resources are one of the primitive types that can be used in the definition of a Property. However, they are complex enough that there are special rules for manipulating them.
 
-There are two ways to associate a Property with a particular value Resoruce: Media Link Entries (MLEs) or Named Streams.
+There are two ways to represent binary values as streams; an entity that represents a binary value (for example, a photograph entity) may be represented as a Media Resource whose properties (for example, Title, Location, Resolution, etc.) are contained by a Media Link Entry (MLE). An entity that has one or more binary properties (for example, an Employee entity with a photo property) may be represented through a named stream property.
 
 #### 7.3.6.1. Manage a Media Resource Using MLEs ####
 
-A server MAY expose Media Resoruces using Media Link Entries. These are Entities which represent a single data BLOB. They behave very similarly to normal Entities, but they have a different representation for some operations.
+A server MAY expose Media Resources using Media Link Entries. These are Entities which represent a single data BLOB. They behave very similarly to normal Entities, but they have a different representation for some operations.
 
 MLE Entities have two parts: data and metadata. A given request body may refer to either of these parts, but not both.
 
@@ -761,7 +761,7 @@ The metadata is always represented as a standard Entity. All MLE Entities have a
 Because a MLE has two parts, it has multiple URIs. These URIs are defined as follows:
 
 * **Entity URI**. The edit URI that may be used to modify the metadata part of the MLE.
-* **Edit URI**. The URI which may be used to modify the data part of the MLE. This URI is contained in the MLE metadata, if the data is modifyable.
+* **Edit-Media URI**. The URI which may be used to modify the data part of the MLE. This URI is contained in the MLE metadata, if the data is modifyable.
 * **Source URI**. The URI which may be used to request the data part of the MLE. This URI is contained in the MLE metadata.
 
 The edit URI for the Entity represents the metadata Entity. This metadata entity is manipulated as per a normal Entity.
@@ -770,13 +770,13 @@ A MLE MUST NOT exist with only one of data and metadata. Any time the server cre
 
 ##### 7.3.6.1.1. Create a MLE #####
 
-To create a MLE, send a POST request to the MLE metadata's EnititySet. The request body MUST contain the representation of the data for the resource, not the representation for the metadata.
+To create a MLE, send a POST request to the MLE metadata's EntitySet. The request body MUST contain the representation of the data for the resource, not the representation for the metadata.
 
 The server MUST respond with the representation for the metadata. All MLE metadata entities include a property which contains the data URI for that resource.
 
 ##### 7.3.6.1.2. Reference a Media Resource Modeled as a MLE #####
 
-To refer to a MLE Media Resource from an Entitiy, associate a NavigationProperty with that resource's metadata Entity. Manage this relationship as per any other Entity to Entity relationship.
+To refer to a MLE Media Resource from an Entity, associate a NavigationProperty with that resource's metadata Entity. Manage this relationship as per any other Entity to Entity relationship.
 
 ##### 7.3.6.1.3. Delete a MLE #####
 
@@ -876,9 +876,9 @@ For example this EntitySetPathExpression: "p1/Orders/Customer" can only be evalu
 
 Some Operations (Actions and Functions but not ServiceOperations) support binding if the 'IsBindable' attribute is set to 'true'. When Binding is supported the first parameter of an Operation is the 'Binding Parameter'. 
 
-In OData version 3 binding parameters MUST be of a Type that is either an EntityType or a collection of EntityType.
+In OData version 3.0, binding parameters MUST be of a Type that is either an EntityType or a collection of EntityType.
 
-Any url that can identify a 'Binding Parameter' of the correct type MAY be used as the foundation of a uri to invoke an Operation that supports Binding using the resource identified by that url as the 'Binding Parameter Value'.
+Any URL that can identify a 'Binding Parameter' of the correct type MAY be used as the foundation of a URL to invoke an Operation that supports Binding using the resource identified by that URL as the 'Binding Parameter Value'.
 
 For example, the Function
 
@@ -907,8 +907,8 @@ A server that supports Actions SHOULD declare them in $metadata. Actions that ar
 In addition to the [Common Rules for FunctionImports](#commonrulesforfunctionimports) the following rules apply for FunctionImport elements that represent Actions:
 
 - Actions MUST NOT specify the 'm:HttpMethod' attribute as this is reserved for ServiceOperations.
-- Actions MUST be side effecting, indicated by either omiting or setting the 'IsSideEffecting' attribute to 'true'.
-- Actions MUST NOT be composable, indicated by either omiting or setting the 'IsComposable' attribute  to 'false'.
+- Actions MUST be side effecting, indicated by either omitting or setting the 'IsSideEffecting' attribute to 'true'.
+- Actions MUST NOT be composable, indicated by either omitiing or setting the 'IsComposable' attribute to 'false'.
 
 For example this FunctionImport represents an Action that Creates an Order for a customer using the specified quantity and discountCode, which can be bound to any resource path that represents a Customer entity:
 
@@ -975,7 +975,7 @@ The server might respond with a Customer entity that advertises a binding of the
 
 When the resource retrieved represents a collection, the 'Target Url' of any Actions advertised MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
 
-An efficient format that assumes client knowledge of metadata SHOULD NOT advertise Actions whose availability ('IsAlwaysBindable' is set to 'true') and target url can be established via metadata. 
+An efficient format that assumes client knowledge of metadata SHOULD NOT advertise Actions whose availability ('IsAlwaysBindable' is set to 'true') and the target url can be established via metadata. 
 
 ### 7.4.1.3. Invoking an Action ###
 
@@ -989,7 +989,7 @@ Each non-binding parameter value specified MUST be encoded as a separate 'name/v
 
 If the Action returns results the client SHOULD use content type negotiation to request the results in the desired format, otherwise the default content type will be used.
 
-If a client only wants an Action invoke request to be processed when the binding parameter value, an Entity or collection of Entities, is unmodified, the client SHOULD include the 'If-Match' header with the latest known ETag value for the Entity or collection of Entities. When presents a Server MUST attempt to verify that the ETag found in the 'If-Match' header is current before processing the request. If the ETag cannot be verified or is found to be out of date the server response MUST be '412 Precondition Failed'. 
+If a client only wants an Action invoke request to be processed when the binding parameter value, an Entity or collection of Entities, is unmodified, the client SHOULD include the 'If-Match' header with the latest known ETag value for the Entity or collection of Entities. When present, a Server MUST attempt to verify that the ETag found in the 'If-Match' header is current before processing the request. If the ETag cannot be verified or is found to be out of date the server response MUST be '412 Precondition Failed'. 
 
 On success, the response SHOULD be '200 OK' for Actions with a return type or '204 No Content' for Action without a return type. 
 
@@ -1108,7 +1108,7 @@ The server might respond with a collection of Orders that advertising the `Sampl
  
 When the resource retrieved represents a collection, the 'Target Url' of any Functions advertized MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
 
-An efficient format that assumes client knowledge of metadata SHOULD NOT advertize Functions whose availability ('IsAlwaysBindable' is set to 'true') and target url can be established via metadata.
+An efficient format that assumes client knowledge of metadata SHOULD NOT advertize Functions whose availability ('IsAlwaysBindable' is set to 'true') and the target url can be established via metadata.
 
 #### 7.4.2.3. Invoking a Function ####
 
@@ -1122,9 +1122,9 @@ Functions calls MAY be present in the Request Uri Path or the Request Uri Query 
 
 ##### 7.4.2.3.1. Inline Parameter Syntax #####
 
-The simpliest way to pass parameter values to a Function is using inline parameter syntax.
+The simplest way to pass parameter values to a Function is using inline parameter syntax.
 
-To use Inline Parameter Syntax, whereever a Function is called, parameter values MUST be specified inside the parenthesis, i.e. `()`, appended directly to the Function name. 
+To use Inline Parameter Syntax, where-ever a Function is called, parameter values MUST be specified inside the parenthesis, i.e. `()`, appended directly to the Function name. 
 
 The parameter values MUST be constructed by concatenating Name/Value pairs for each parameter separated by `,`'s, where the Name/Value pairs are in the format `Name=Value` and where `Name` is the Name of the parameter to the Function and `Value` is the parameter value.
 
@@ -1180,7 +1180,7 @@ Notice though that only the third request can be built without complicated Parsi
 
 Functions overloads are supported in OData, meaning a server MAY expose multiple Functions with the same name that take a different set of parameters.
 
-When a function is invoked (using any of the 3 parameter syntaxes) the parameter names and parameter values are specified in the URL, and the parameter types can be deduced from each parameter value. The combination of the Function name, and the unordered parameter names and types is always sufficient to identify a particular Function overload. 
+When a function is invoked (using any of the three parameter syntaxes) the parameter names and parameter values are specified in the URL, and the parameter types can be deduced from each parameter value. The combination of the Function name, and the unordered parameter names and types is always sufficient to identify a particular Function overload. 
 
 ### 7.4.3. Service Operations ###
 
@@ -1326,16 +1326,16 @@ declared property
 : A property that is statically declared by a **Property** element as part of the definition of a **StructuralType**. For example, in the context of an **EntityType**, a declared property includes all properties of an **EntityType** that are represented by the **Property** child elements of the **EntityType** element that defines the **EntityType**.
 
 derived type
-: A type that is derived from the **BaseType**. Only WRONG:**ComplexType** and **EntityType** can define a **BaseType**.
+: A type that is derived from the **BaseType**. Only **ComplexType** and **EntityType** can define a **BaseType**.
 
 dynamic property
-: A designation for an instance of an **OpenEntityType** that includes additional nullable properties (of a **scalar type** or **ComplexType**) beyond its **declared properties**. The set of additional properties, and the type of each, may vary between instances of the same **OpenEntityType**. Such additional properties are referred to as dynamic properties and do not have a representation in a **CSDL document**.
+: A designation for an instance of an **OpenEntityType** that includes additional nullable properties (of a **scalar type** or **ComplexType**), or navigation properties, beyond its **declared properties**. The set of additional properties, and the type of each, may vary between instances of the same **OpenEntityType**. Such additional properties are referred to as dynamic properties and do not have a representation in a **CSDL document**.
 
 EDM type
 : A categorization that includes all the following types: **EDMSimpleType**, **ComplexType**, **EntityType**, **enumeration**, and **association**.
 
 entity
-: An instance of an **EntityType** element that has a unique identity and an independent existence. An entity is an operational unit of consistency.
+: An instance of an **EntityType** that has a unique identity and an independent existence. An entity is an operational unit of consistency.
 
 Entity Data Model (EDM)
 : A set of concepts that describes the structure of data, regardless of its stored form, as described in the Introduction (section 1).

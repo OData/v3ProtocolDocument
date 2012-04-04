@@ -29,9 +29,9 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 # 4. Primitive Types in Atom #
 
-OData Atom and XML payloads serialize primitive types as shown in the table below, where:  
+OData Atom and XML payloads serialize primitive types as shown in the table below.
 
-For full synax rules, see [OData:Uri](odatauriconventions):
+For full sytnax rules, see [OData:Uri](odatauriconventions):
 
 <table border="1" cellspacing="0" cellpadding="0">
     <tr>
@@ -42,7 +42,7 @@ For full synax rules, see [OData:Uri](odatauriconventions):
     <tr>
       <td>
         <strong>Null</strong><br/>Represents the absence of a value</td>
-      <td>null</td>
+      <td>"null"</td>
       <td>null</td>
     </tr>
     <tr>
@@ -59,7 +59,7 @@ For full synax rules, see [OData:Uri](odatauriconventions):
     </tr>
     <tr>
       <td><strong>Edm.Byte</strong><br />Unsigned 8-bit integer value</td>
-      <td>[A-F | a-f | 0-9]</td>
+      <td>(A-F | a-f | 0-9)(A-F | a-f | 0-9)</td>
       <td>FF</td>
     </tr>
     <tr>
@@ -69,7 +69,7 @@ For full synax rules, see [OData:Uri](odatauriconventions):
     </tr>
     <tr>
       <td><strong>Edm.Decimal</strong><br/>Represents numeric values with fixed precision and scale. This type can describe a numeric value ranging from negative 10^255 + 1 to positive 10^255 -1</td>
-      <td>["-"][0-9]+.[0-9]</td>
+      <td>["-"][0-9]+[.][0-9]*</td>
       <td>2.345</td>
     </tr>
     <tr>
@@ -300,13 +300,13 @@ OData uses `atom:link` elements to represent named stream properties of an Entit
 
 For example, a stream property named "Photo" be represented through an `atom:link` element as a child of the `atom:entry` element as follows:
 
-	<atom:link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/mediaresource/photo" 
-	type=application/atom+xml;type=feed" title=Products" href="Categories(0)/Products"/>
+	<atom:link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/mediaresource/Photo" 
+	type="img/jpg" title="Photo" href="Categories(0)/Photo"/>
 
 A stream property named "Photo" be edited through an `atom:link` element as a child of the `atom:entry` element as follows:
 
-	<atom:link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/edit-media/photo" 
-	type=application/atom+xml;type=feed" title=Products" href="Categories(0)/Products"/>
+	<atom:link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/edit-media/Photo" 
+	type="img/jpg" title="Photo" href="Categories(0)/Photo"/>
 
 #### 6.1.5.1 The `rel` attribute of a Link Representing a Stream Property ####
 The `rel` attribute for an `atom:link` element that can be used to retrieve a stream property is made up of the name of the [OData Data Namespace](#ODataDataNamespace), followed by the string "/mediaresource/", followed by the name of the stream property on the entity.  
@@ -319,7 +319,7 @@ Note that the full name must be used; the use of relative URLs in the rel attrib
 The `href` attribute of an `atom:link` element describing an OData stream property contains the URI that can be used to specify the URI that can be used to read, or write, the stream, according to the [`rel`](#The`rel`attributeofaLinkRepresentingaStreamProperty) attribute. This URI may be relative or absolute.
 
 #### 6.1.5.3 The `title` attribute of a Link Representing a Stream Property ####
-The `title` attribute on an `atom:link` element describing an OData relationship provides human-readable information about the link. It has no implied semantics in OData.
+The `title` attribute on an `atom:link` element describing an OData relationship provides human-readable, possibly language-dependent, and not necessarily unique information about the link. It has no implied semantics in OData.
 
 ### 6.1.6.	Relationships as `atom:link` Elements ###
 OData uses `atom:link` elements to represent relationships between entities.
@@ -329,8 +329,8 @@ For example, the set of related products for a particular catagory may be repres
 	<atom:link 
 		rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Products" 
 		href="Categories(0)/Products"
-		type=application/atom+xml;type=feed" 
-		title=Products" />
+		type="application/atom+xml;type=feed" 
+		title="Products" />
 
 The related data for the relationship MAY be included in the Entity using a single child [`metadata:inline`](#InlineContentwithina`metadata:inline`Element) element.
 	
@@ -349,7 +349,7 @@ The `type` attribute on an `atom:link` element describing an OData relationship 
 * a collection of entities, in which case the `type`="application/atom+xml;type=feed"  
 
 #### 6.1.6.4. The `title` attribute of an `atom:link` element Representing a Relationship ####
-The `title` attribute on an `atom:link` element describing an OData relationship SHOULD be present and equal to the name of the navigation property, and provides human-readable information about the link.
+The `title` attribute on an `atom:link` element describing an OData relationship SHOULD be present and equal to the name of the navigation property, and provides human-readable, possibly language-dependent, and not necessarily unique information about the link.
 
 #### 6.1.7.	Inline Content within a `metadata:inline` Element ####
 An [`atom:link`](#RelationshipsasAtomLinkElements) element describing an OData relationship MAY contain a single `metadata:inline` element, in which case the element contains the feed (in the case of a collection) or entry (in the case of a single entity), where the feed or entry is a child of the `metadata:inline` element formatted as per this document.  
@@ -381,7 +381,7 @@ The `href` attribute of an `atom:link` element describing relationship links MUS
 The `type` attribute on an `atom:link` element describing relationship links MUST be present and equal to the content type "application/xml"
 
 #### 6.1.8.4. The `title` attribute of an `atom:link` element Representing Relationship Links ####
-The `title` attribute on an `atom:link` element describing relationship links SHOULD be present and equal to the name of the navigation property, and provides human-readable information about the link.
+The `title` attribute on an `atom:link` element describing relationship links SHOULD be present and equal to the name of the navigation property, and provides human-readable, possibly language-dependent, and not necessarily unique information about the link.
 
 ### 6.1.11.	Entity Type as an `atom:category` Element ###
 An OData entry MAY contain a single `atom:category` element with a scheme attribute equal to `"http://schemas.microsoft.com/ado/2007/08/dataservices/scheme"` to identify the entity type of the entry. This element MUST be present if the entry represents an entity whose type is part of a type hierarchy.
@@ -420,7 +420,7 @@ For simple typed properties, the content of the `data:[propertyName]` element re
 `<data:Title>CEO</data:Title>`
 
 ##### 6.1.13.1.2. Complex Typed Properties ######
-For complex typed properties, the content of the `data:[propertyName]` element consists of nested `data:[propertyName]` elements describing the properties of the complex type.  
+For complex typed properties, the content of the `data:[propertyName]` element consists of nested `data:[propertyName]` elements describing the properties of the complex type. It MAY include a `metadata:type` attribute to specify the type.   
 
 For example, the complex typed property "Name", with properties "FirstName" and "LastName" would be respresented as:
 
@@ -473,7 +473,7 @@ The metadata:null attribute distinguishes null values from other empty content (
 
 For example, the following represents an empty apartment number:
 
-	<data:Apartment metadata:null="true"></data:Apartment>
+	<data:Apartment metadata:null="true"/>
 
 The absence of the metadata:null attribute is equivalent to specifying metadata:null="false".
 

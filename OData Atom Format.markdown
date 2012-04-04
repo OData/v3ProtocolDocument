@@ -8,30 +8,34 @@ An OData payload may represent:
 
 * a single Primitive value  
 * a sequence of Primitive values  
-* a single structured value  
-* a sequence of structured values  
-* a single resource, where a resource represents an Entity (a structured type with an identity)  
-* a sequence of resources  
+* a single structured ("Complex") value  
+* a sequence of structured ("Complex") values  
+* an Entity (a structured type with an identity)  
+* a sequence of Entities  
 * a media resource  
 * a single instance of a mime type  
-* a service document describing the resource collections (EntitySets) exposed by the service  
+* a service document describing the collections (EntitySets) exposed by the service  
 * an xml document describing the entity model exposed by the service  
 * an error  
 * a batch of requests to be executed in a single request  
 * a set of responses returned from a batch request  
 
-For a description of batch requests and responses please see <todo: insert reference here…>
+For a description of batch requests and responses please see [OData:Batch](ODataBatchProcessingFormat).
 
 
 # 2. Notational Conventions #
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[RFC2119](http://tools.ietf.org/html/rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")].
 
+# 3. xml:base Attribute #
+
+OData payloads may use the `xml:base` attribute to define a base URI for relative references defined within the scope of the element containing the `xml:base` attribute.
+
 # 4. Primitive Types in Atom #
 
 OData Atom and XML payloads serialize primitive types as shown in the table below.
 
-For full sytnax rules, see [OData:Uri](odatauriconventions):
+For full syntax rules, see [OData:ABNF](odatabnf):
 
 <table border="1" cellspacing="0" cellpadding="0">
     <tr>
@@ -47,8 +51,7 @@ For full sytnax rules, see [OData:Uri](odatauriconventions):
     </tr>
     <tr>
       <td><strong>Edm.Binary</strong><br/>Represent fixed- or variable- length binary data</td>
-      <td>(A-F | a-f | 0-9)[A-F | a-f | 0-9]* <br/> Odd pairs of hex digits
-        are not allowed.
+      <td>((A-F | a-f | 0-9)(A-F | a-f | 0-9))*
       </td>
       <td>23ABFF</td>
     </tr>
@@ -168,7 +171,7 @@ For full sytnax rules, see [OData:Uri](odatauriconventions):
     </tr>
     <tr>
         <td><strong>Edm.GeographyMultiPolygon</strong>Represents a collection of polygons in a round-earth coordinate system.</td>
-		<td>srig "MultiPolygon(" multipolygon ")"<br/><i>multipolygon=</i> "(" polygon ")" [",(" polygon ")"]*</td>
+		<td>srid "MultiPolygon(" multipolygon ")"<br/><i>multipolygon=</i> "(" polygon ")" [",(" polygon ")"]*</td>
 		<td>SRID=123435;MultiPolygon(((33.84 -117.91,(33.84 -117.91,28.36 -81.56,33.84 -117.91)))</td>
     </tr>
     <tr>
@@ -208,7 +211,7 @@ For full sytnax rules, see [OData:Uri](odatauriconventions):
     </tr>
     <tr>
         <td><strong>Edm.GeographyMultiPolygon</strong>Represents a collection of polygons in a flat-earth coordinate system.</td>
-		<td>string "MultiPolygon(" multipolygon ")"</td>
+		<td>srid "MultiPolygon(" multipolygon ")"</td>
 		<td>SRID=123435;MultiPolygon(((33.84 -117.91,(33.84 -117.91,28.36 -81.56,33.84 -117.91)))</td>
     </tr>
 </table>
@@ -232,7 +235,7 @@ In this specification the namespace prefix "app" is used to represent the AtomPu
 
 # 5.1.3. OData Data Namespace #
 
-Elements that describe the actual data values for a resource are qualified with the OData Data Namespace: "http://schemas.microsoft.com/ado/2007/08/dataservices"
+Elements that describe the actual data values for an entity are qualified with the OData Data Namespace: "http://schemas.microsoft.com/ado/2007/08/dataservices"
 
 In this specification the namespace prefix "data" is used to represent the OData Data Namespace, however the prefix name is not prescriptive.
 
@@ -242,13 +245,9 @@ Attributes and elements that represent metadata (such as type, null usage, and e
 
 In this specification the namespace prefix "metadata" is used to represent the OData Metadata Namespace, however the prefix name is not prescriptive.
 
-# 5.2. xml:base Attribute #
-
-OData payloads may use the xml:base attribute to define a base URI for relative references defined within the scope of the element containing the xml:base attribute.
-
 # 6. Atom Element Definition #
 
-OData's Atom format defines extensions and conventions on top of RFC4287 and RFC5023 for representing structured data as follows:
+OData's Atom format defines extensions and conventions on top of [RFC4287](http://www.ietf.org/rfc/rfc4287) and [RFC5023](http://www.ietf.org/rfc/rfc5023.txt) for representing structured data as follows:
 
 ## 6.1.	Entity Instances ##
 Entity Instances, whether individual or within an ATOM feed, are represented as `atom:entry` elements. 
@@ -281,17 +280,17 @@ For example, the following `atom:entry` element describes a Product:
 This section defines the elements and attributes within an `atom:entry` element that are assigned meaning in OData.
 
 ### 6.1.1.	The `atom:entry` Element ###
-An `atom:entry` element is used to represent a single resource, or entity, which is an instance of a structured type with an identity.
+An `atom:entry` element is used to represent a single entity, which is an instance of a structured type with an identity.
 
-The `atom:entry` element MAY contain a `metadata:etag` attribute, representing an opaque string value that can be used in a subsequent request to determine if the value of the resource has changed.  For details on how ETags are used, refer to the <todo:insert reference here> spec.
+The `atom:entry` element MAY contain a `metadata:etag` attribute, representing an opaque string value that can be used in a subsequent request to determine if the value of the entity has changed.  For details on how ETags are used, refer to the <todo:insert reference here> spec.
 
 ### 6.1.2.	The `atom:id` Element ###
-The `atom:id` element defines a durable, opaque, globally unique identifier for the entry. Its content must be an IRI as defined in http://www.ietf.org/rfc/rfc3987. The consumer of the feed must not assume this IRI can be de-referenced, nor assume any semantics from its structure.
+The `atom:id` element defines a durable, opaque, globally unique identifier for the entry. Its content must be an IRI as defined in [RFC3987](http://www.ietf.org/rfc/rfc3987). The consumer of the feed must not assume this IRI can be de-referenced, nor assume any semantics from its structure.
 
 ### 6.1.3.	Self and Edit Links as `atom:link` Elements ###
-Atom defines two types of links within an entry that represent retrieve or update/delete operations on the entry. `atom:link` elements with a rel attribute of `"self"` can be used to retrieve the resource (via the URL specified in the `href` attribute). `atom:link` elements with a rel attribute of `"edit"` can be used to retrieve, update, or delete the resource (via the URL specified in the `href` attribute).
+Atom defines two types of links within an entry that represent retrieve or update/delete operations on the entry. `atom:link` elements with a rel attribute of `"self"` can be used to retrieve the entity (via the URL specified in the `href` attribute). `atom:link` elements with a rel attribute of `"edit"` can be used to retrieve, update, or delete the entity (via the URL specified in the `href` attribute).
 
-An OData resource SHOULD contain a self link, an edit link, or both for a particular entry, but MUST NOT contain more than one edit link for a given entry.  Absence of an edit link implies that the entry is read-only.
+An `atom:entry` element representing an OData entity SHOULD contain a self link, an edit link, or both for a particular entry, but MUST NOT contain more than one edit link for a given entry.  Absence of an edit link implies that the entry is read-only.
 
 #### 6.1.5 Stream Properties as `atom:link` Elements ####
 An entity may have one or stream properties (for example, a photo property of an employee entity). Properties that represent streams have a type of "Edm.Stream".
@@ -340,7 +339,7 @@ The `rel` attribute for an `atom:link` element that represents a relationship MU
 Note that the full name must be used; the use of relative URLs in the rel attribute is not allowed.
 
 #### 6.1.6.2 The `href` attribute of an `atom:link` element Representing a Relationship ####
-The `href` attribute of an `atom:link` element describing an OData relationship MUST be present and specifies the URI that represents the collection of related resource(s). This URI may be relative or absolute.
+The `href` attribute of an `atom:link` element describing an OData relationship MUST be present and specifies the URL that can be used to retrieve the related entities. This URL may be relative or absolute.
 
 #### 6.1.6.3. The `type` attribute of an `atom:link` element Representing a Relationship ####
 The `type` attribute on an `atom:link` element describing an OData relationship MUST be present and determines whether the cardinality of the related end is:  
@@ -408,10 +407,10 @@ Within an `atom:entry` representing a Media Link Entry, an `atom:link` element w
 An atom:link element representing the link used to write to the BLOB associated with the entity MUST include an `href` attribute to specify the URI that can be used to write the stream. This URI may be relative or absolute. 
 
 ### 6.1.13.	Entity Properties within a `metadata:properties` Element ###
-The `metadata:properties` element represents a subset of the property values for a resource that are not exclusively mapped to defined or custom elements, as described in [Custom Mapping to Atom Elements](). The `metadata:properties` element MUST be a direct child of the `atom:content` element EXCEPT for the case where the entry represents a media resource, in which case the `metadata:properties` element MUST be a sibling of the `atom:content` element.  In the case that all properties of the resource are exclusively mapped to defined or custom elements, an empty `metadata:properties` element MAY be present.
+The `metadata:properties` element represents a subset of the property values for an entity that are not exclusively mapped to defined or custom elements, as described in [Custom Mapping to Atom Elements](). The `metadata:properties` element MUST be a direct child of the `atom:content` element EXCEPT for the case where the entry represents a media resource, in which case the `metadata:properties` element MUST be a sibling of the `atom:content` element.  In the case that all properties of the entity are exclusively mapped to defined or custom elements, an empty `metadata:properties` element MAY be present.
 
 #### 6.1.13.1. Entity Property as a `data:[propertyName]` Element ####
-Within the `metadata:properties` element, individual data values of the resource are represented as elements where the name of the element is the name of the resource property within the [OData Data Namespace]().
+Within the `metadata:properties` element, individual data values of the entity are represented as elements where the name of the element is the name of the entity property within the [OData Data Namespace]().
 
 The `data:[PropertyName]` element MAY include a [`metadata:type`](#DataTyperepresentedusingthemetadata:typeAttribute) attribute to specify the type of the simple- or complex-typed instance.
 

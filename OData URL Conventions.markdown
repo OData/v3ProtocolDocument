@@ -27,7 +27,7 @@ The following are two example URLs broken down into their component parts:
 ## 3.0 Service Root URL ##
 The service root URL identifies the root of an OData service. The resource identified by this URL MUST be an AtomPub Service Document (as specified in [RFC5023]) and follow the OData conventions for AtomPub Service Documents (or an alternate representation of an Atom Service Document if a different format is requested). OData: JSON Format specifies such an alternate JSON-based representation of a service document. The service document is required to be returned from the root of an OData service to provide clients with a simple mechanism to enumerate all of the collections of resources available for the data service.
 
-## 4.0 Resource Path ##
+## 4.0 resource path ##
 The resource path construction rules defined in this section are optional. OData servers are encouraged to follow the URL path construction rules (in addition to the required query string rules) as such consistency promotes a rich ecosystem of reusable client components and libraries.
 
 The resource path section of a URL identifies the resource to be interacted with (such as Customers, a single Customer, Orders related to Customers in London, and so forth). The resource path enables any aspect of the data model (collections of entities, a single entity, properties, Links, service operations, and so on) exposed by an OData service to be addressed.
@@ -57,7 +57,7 @@ Since OData has a uniform composable URL syntax and associated rules there are m
 		For Example: http://services.odata.org/OData/OData.svc/GetProductsByCategoryId(categoryId=2)
 
 - By invoking an Action that returns a collection of Entities (see rule: actionCall)
-- By invoking a ServiceOperation that returns a collection of Entities (see rule: entityColServiceOpCall)
+- By invoking a service operation that returns a collection of Entities (see rule: entityColServiceOpCall)
 
 		For Example: http://services.odata.org/OData/OData.svc/ProductsByColor?color='red'
 
@@ -67,7 +67,7 @@ Sometimes a single entity can be accessed directly, for example by:
 
 - Invoking a Function that returns a single entity (see rule: entityFunctionCall)
 - Invoking an Action that returns a single entity (see rule: actionCall)
-- Invoking a ServiceOperation that returns a single entity (see rule: entityServiceOpCall)
+- Invoking a service operation that returns a single entity (see rule: entityServiceOpCall)
  
 Often however a single entity is accessed by composing more path segments to a resourcePath that identifies a Collection of Entities, for example by:
 
@@ -129,19 +129,19 @@ Links between entities are addressable in OData just like entities themselves ar
 
 For example: [http://services.odata.org/OData/OData.svc/Category(1)/$links/Products](http://services.odata.org/OData/OData.svc/Category(1)/$links/Products) addresses the links between Category(1) and Products.
 
-### 4.3 Addressing Operations ###
+### 4.3 Addressing operatoins ###
 
 #### 4.3.1 Addressing service operations ####
-The semantic rules for addressing and invoking a ServiceOperation are defined in the [OData:Core](OData) document. 
-The grammar for addressing and invoking a ServiceOperation is define by 3 syntax rules in Appendix A:
+The semantic rules for addressing and invoking a service operation are defined in the [OData:Core](OData) document. 
+The grammar for addressing and invoking a service operation is define by 3 syntax rules in Appendix A:
 
-- The serviceOperationCall syntax rule defines the grammar for the ResourcePath that addresses the ServiceOperation.
-- The resourcePath syntax rule defines the grammar for any additional composition of OData ResourcePath segments that rely on the results of calling the ServiceOperation.
-- The sopParameterNameAndValue syntax rule defines the grammar for specifying any parameters to the ServiceOperation in the query part of the request URL.
+- The serviceOperationCall syntax rule defines the grammar for the ResourcePath that addresses the service operation.
+- The resourcePath syntax rule defines the grammar for any additional composition of OData ResourcePath segments that rely on the results of calling the service operation.
+- The sopParameterNameAndValue syntax rule defines the grammar for specifying any parameters to the service operation in the query part of the request URL.
 
-This example, illustrates a call to a ServiceOperation with subsequent resource path segments, that uses all three syntax rules: [http://services.odata.org/OData/OData.svc/GetProductsByRating?rating=3&$filter=Price gt 20.0M](http://services.odata.org/OData/OData.svc/GetProductsByRating?rating=3&$filter=Price gt 20.0M)
+This example, illustrates a call to a service operation with subsequent resource path segments, that uses all three syntax rules: [http://services.odata.org/OData/OData.svc/GetProductsByRating?rating=3&$filter=Price gt 20.0M](http://services.odata.org/OData/OData.svc/GetProductsByRating?rating=3&$filter=Price gt 20.0M)
 
-This invokes the GetProductsByRating ServiceOperation, with the rating parameter value set to 3, and then subsequently filters Products returned by the  ServiceOperation call to include only those with a price greater than $20. 
+This invokes the GetProductsByRating service operation, with the rating parameter value set to 3, and then subsequently filters Products returned by the service operation call to include only those with a price greater than $20. 
 
 #### 4.3.2 Addressing Functions ####
 The semantic rules for addressing and invoking Functions are defined in the [OData:Core](OData) document. 
@@ -170,7 +170,7 @@ If the property has a complex type value, properties of that value can be addres
 To address the raw value of a property, client compose `/$value` to the property url.
 
 ## 5.0 Query Options ##
-The Query Options section of an OData URL specifies three types of information: System Query Options, Custom Query Options, and Operation (Function and ServiceOperation) Parameters. All OData services MUST follow the query string parsing and construction rules defined in this section and its subsections.
+The Query Options section of an OData URL specifies three types of information: System Query Options, Custom Query Options, and Operation (Function and service operation) Parameters. All OData services MUST follow the query string parsing and construction rules defined in this section and its subsections.
 
 ### 5.1 System Query Options ###
 System Query Options are query string parameters a client may specify to control the amount and order of the data that an OData service returns for the resource identified by the URL. The names of all System Query Options are prefixed with a "$" character. 

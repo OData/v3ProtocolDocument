@@ -7,7 +7,7 @@ The OData protocol is comprised of a set of specifications for representing and 
 An OData Json payload may represent:
 
 * a single Primitive value
-* a Collection of Primitive values
+* a sequence of Primitive values
 * a single ComplexType
 * a sequence of ComplexTypes
 * a single Entity
@@ -75,7 +75,7 @@ This section describes the representation for OData values in Verbose Json. A re
 
 An instance of an EntityType MUST be serialized as a JSON object.
 
-Each Property to be transmitted MUST be represented as a name/value pair within the object. See [Representing a Property](#representingaproperty) for details. The order Properties appear withing the object MUST be considered insignificant. Name/value pairs not representing a property defined on the EntityType SHOULD NOT be included.
+Each Property to be transmitted MUST be represented as a name/value pair within the object. See [Representing a Property](#representingaproperty) for details. The order Properties appear within the object MUST be considered insignificant. Name/value pairs not representing a property defined on the EntityType SHOULD NOT be included.
 
 An Entity in a payload MAY be a complete Entity, a projected Entity (see <ref>`$select`</ref>), or a partial Entity update (see <ref>Patch</ref>). A complete Entity MUST transmit every property, including NavigationProperties. A projected Entity MUST transmit the requested properties and MAY transmit other properties. A partial Entity MUST transmit the properties that it intends to change; it MUST NOT transmit any other properties.
 
@@ -85,13 +85,13 @@ An Entity Json object MAY include a name/value pair named `__metadata`. This nam
 
 ### 4.1.1 Entity Metadata ###
 
-The value of the `__metadata` property MUST be Json object.
+The value of the `__metadata` property MUST be a Json object.
 
-In OData 1.0 and OData 2.0, the value of the `__metadata` property contains seven name/value pairs: `uri`, `type`, `etag`, `edit_media`, `media_src`, `media_etag`, and `content_type`. In OData 3.0, four more name/value pairs are added: `properties`, `actions`, `functions`, and `id`. The order of these name/value pairs MUST be considered insignificant.
+In OData 1.0 and OData 2.0, the value of the `__metadata` property contains up to seven name/value pairs: `uri`, `type`, `etag`, `edit_media`, `media_src`, `media_etag`, and `content_type`. In OData 3.0, four more name/value pairs are added: `properties`, `actions`, `functions`, and `id`. The order of these name/value pairs MUST be considered insignificant.
 
-If the Entity is not a Media Link Entry, then the `edit_media`, `media_src`, `media_etag`, and `content_type` name/value pairs MUST NOT be included.
+If the entity is not a Media Link Entry, then the `edit_media`, `media_src`, `media_etag`, and `content_type` name/value pairs MUST NOT be included.
 
-The value of the `uri` name/value pair MUST be the Canonical URI identifying the Entity.
+The value of the `uri` name/value pair MUST be present and MUST be the canonical URI identifying the entity.
 
 The `type` name/value pair MUST be included if the Entity's EntityType is part of an inheritance hierarchy, as described in <ref>CSDL</ref>. If the EntityType is not part of an inheritance hierarchy, then the `type` name/value pair MAY be included. The value of the `type` name/value pair MUST be the namespace qualified name of the Entity's EntityType.
 
@@ -109,11 +109,11 @@ The `actions` and `functions` name/value pairs MAY be included in request payloa
 
 #### 4.1.1.1 Entity Metadata for Media Link Entries ####
 
-The `media_src` and `content_type` name/value pairs MUST be included and the `edit_media` and `media_etag` name/value pairs MAY be included if the Entity is a Media Link Entry.
+If the entity is a media link entity, the `media_src` name/value pair MUST be included and the `edit_media`, `content_type`, and `media_etag` name/value pairs MAY be included.
 
 The value of the `media_src` name/value pair MUST be the source URI for the data corresponding to this MLE.
 
-The value of the `content_type` name/value pair MUST be the MIME type of the data corresponding to this MLE.
+The value of the `content_type` name/value pair SHOULD be the MIME type of the data corresponding to this MLE. This is only a hint. The actual content type will be included in a header when the resource is requested.
 
 The value of the `edit_media` name/value pair MUST be the edit URI for the data corresponding to this MLE.
 
@@ -180,7 +180,7 @@ A client MAY request that a NavigationProperty be expanded, using a combination 
 	{
 		"CustomerID": "ALFKI",
 		"Orders": {
-			Results: [
+			"results": [
 				{
 					"__metadata": { ... },
 					"OrderID": 1,
@@ -406,7 +406,7 @@ In OData 1.0 responses, a set of Links is represented exactly as described in [R
 In OData 2.0 and 3.0 responses, a set of Links is represented as shown in the following example.
 
 	{
-		`results`: [
+		"results": [
 			{"uri": "http://host/service.svc/Orders(1)"},
 			{"uri": "http://host/service.svc/Orders(2)"}
 		]

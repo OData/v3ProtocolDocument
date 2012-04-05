@@ -69,15 +69,11 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 Some sections of this specification are illustrated with non-normative example OData request and response payloads. However, the text of this specification provides the definition of conformance.
 
-<<<<<<< HEAD
-OData payloads are representable in multiple formats. Those formats are specified in separate documents. In this document, when an example is necessary, it will be given in the [JSON Light][OData JSON Light Format] format.
-=======
-OData payloads are representable in multiple formats. Those formats are specified in separate documents. In this document, when an example is necessary, it will be given in the JSON Light format.
->>>>>>> 8a47d8c405ce3f604cb96f7316a9997574c5405e
+OData payloads are representable in multiple formats. Those formatgits are specified in separate documents. In this document, when an example is necessary, it will be given in the [JSON Light][OData JSON Light Format] format.
 
-## 4.2. CSDL Schema ##
+## 4.2. Interpreting Examples ##
 
-Some sections of this specification are illustrated with fragments of a non-normative RELAX NG Compact schema [[RNC](http://tools.ietf.org/html/rfc5023#ref-RNC "RELAX NG Compact Syntax")]. However, the text of this specification provides the definition of conformance. Complete schemas appear in Appendix B.
+All code examples with the exception of the XSD and the BNF are non-normative.
 
 # 5. Versioning#
 

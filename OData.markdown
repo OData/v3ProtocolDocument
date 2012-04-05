@@ -8,6 +8,8 @@ The OData Protocol is an application-level protocol for interacting with data vi
 - Data: sets of data entities and the relationships between them.
 - Querying: requesting that the server perform a set of filtering and other transformations to its data, then return the results.
 - Editing: creating, editing, and deleting data.
+- Operations: invoking custom logic
+- Vocabularies: attaching custom semantics
 
 The OData Protocol is different from other REST-based web service approaches in that it provides a uniform way to describe both the data and the data model. This improves semantic interoperability between systems and allows an ecosystem to emerge.
 
@@ -20,49 +22,42 @@ Towards that end, the OData Protocol follows these design principles:
 
 # 2. Data Model #
 
-This section provides a high-level description of the Entity Data Model (EDM); the abstract data model that MUST be used to describe the data exposed by an OData service. An [OData Metadata Document](#MetadataDocument) is a representation of a service's data model exposed for client consumption.  
+This section provides a high-level description of the Entity Data Model (EDM): the abstract data model that MUST be used to describe the data exposed by an OData service. An [OData Metadata Document](#MetadataDocument) is a representation of a service's data model exposed for client consumption.  
 
 The central concepts in the EDM are *entities*, *entity sets*, and *relationships*.
 
-*Entities* are instances of *entity types* (e.g. Customer, Employee, etc.). Entity types are nominal structured types with a key. Entities consist of named primitive- or complex-valued properties and may include relationships with other entities. Entities are the core identity types that make up the most important parts of most models.
+*Entities* are instances of entity types (e.g. `Customer`, `Employee`, etc.). *Entity types* are nominal structured types with a key. Entities consist of named properties and may include relationships with other entities. Entities are the core identity types in a data model.
 
-*Entity sets* are named collections of entities (e.g. Customers is a set of Customer entities). Entity sets provide the primary entry points into your data model.
+*Entity sets* are named collections of entities (e.g. `Customers` is a set of `Customer` entities). An entity can be a member of at most one entity set. Entity sets provide the primary entry points into your data model.
 
-*Relationships* have a name and are used to navigate from one entity to one or more related entities. They are represented via *navigation properties*.
+*Relationships* have a name and are used to navigate from an entity to related entities. Relationships are represented via *navigation properties*. Each relationship has a cardinality.
 
-*Complex types* are keyless nominal structured types consisting of a set of properties. These are value types; they lack identity. Complex types are commonly used as property values in an entity or as parameters to operations.
+*Complex types* are keyless nominal structural types consisting of a set of properties. These are value types that lack identity. Complex types are commonly used as property values in an entity or as parameters to operations.
 
-The *entity key* of an entity type is formed from a subset of primitive properties (e.g. CustomerId, OrderId + LineId, etc.) of the entity type. The entity key value uniquely identifies entities within an entity set and allows entities to participate in relationships. 
+The *entity key* of an entity type is formed from a subset of primitive properties (e.g. `CustomerId`, `OrderId, LineId`, etc.) of the entity type. The entity key value uniquely identifies an entity within a collection of entities.
 
 Properties declared as part of the entity type's definition are called *declared properties*. Entity types which allow additional undeclared properties are called *open entity types*. These additional properties are called *dynamic properties*. A dynamic property MUST NOT have the same name as a declared property.
 
-Relationships are also modeled via associations. Each relationship definition corresponds to a single *association set*. All instances in a given association set have the same *association type*. An association type describes the cardinality and types of its endpoints.
+*Operations* allow the execution of custom logic on parts of a data model. *Functions* do not allow side effects and are composable. *Actions* allow side effects and are not composable. Actions and functions are global to the service and may be used as members of entities and collections of entities.
 
-Finally, all instance containers (entity sets and association sets) are grouped in a named *entity container*. This container represents your domain model as a whole.
+<!-- TODO: Add entity inheritance (succinct) -->
 
-//TODO: put primitive type table here in subsection
+Finally, entity sets and operations are grouped in a named *entity container*. This container represents a service's model.
 
-//TODO: named streams
-
-//TODO: I think we need subsections here. This does a reasonable job of giving an overview. However, we need somewhere where we go into more details on each of the concepts. Unless we put it here, this stuff will end up in the format-specific documents. I've put some examples here as subsections, but don't think this is complete, nor do I think that everything here necessarily should be here.
+Refer to the [CSDL specification][OData CSDL Specification] for more information on the data model.
 
 ## 2.1 Definitions ##
 
-Structured elements are composed of other model elements. Structured elements are common in entity models as they are the typical means of representing entities in the OData service. The structured types are entity type, complex type, row type and association type.
+<!-- TODO: This section needs work. -->
+
+
+Structural elements are composed of other model elements. Structural elements are common in entity models as they are the typical means of representing entities in the OData service. The structural types are: entity type, complex type, row type and association type.
+
+The NavigationLink is the URI that addresses the relationship itself.
 
 - Relatable types: entity type, collection of entity type
 
 //TODO: Fill this in as we discover common type categories.
-
-## 2.1 Entities ##
-
-## 2.2 NavigationProperties ##
-
-Entities reference each other via NavigationProperties. A NavigationProperty represents one side of a relationship with cardinality 1:many, 1:1, or 1:[0,1]. The property's name defines the relationship. Its value is a reference to the related Entity or collection of Entities.
-
-A NavigationProperty can be seen as a Property on its source Entity. It can also be seen as a relationship. The NavigationLink is the URI that addresses the relationship itself.
-
-## 2.3 EntitySets and collections of Entities ##
 
 ## 2.4 Annotations ##
 

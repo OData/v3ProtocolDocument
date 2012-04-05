@@ -85,17 +85,26 @@ OData clients MAY use the DataServiceVersion header on a request to specify the 
 
 If the DataServiceVersion header is present, the service MUST interpret the request according to the rules defined in the specified version of the protocol, or fail the request with a 4xx response code. If not specified, the service MUST assume the request is generated using the maximum version of the protocol that the service understands.
 
-The OData client MAY also use the MinDataServiceVersion and MaxDataServiceVersion headers. The service MUST generate a response compatible with a version greater than or equal to the specified MinDataServiceVersion and less than or equal to the specified MaxDataServiceVersion, and SHOULD generate a response formatted according to the maximum version supported by the service that is less than or equal to the specified MaxDataServiceVersion. If MaxDataServiceVersion is not specified, then the service SHOULD return a response formatted according to the latest version of the format supported by the service.
+The OData client SHOULD also use the MinDataServiceVersion and MaxDataServiceVersion headers. 
+
+
+// TODO: arlo has an idea that involved defining a range of acceptable response versions etc.
+
+If specified the service MUST generate a response with a version greater than or equal to the specified MinDataServiceVersion.
+
+The service MUST generate a response with a version less than or equal to the specified MaxDataServiceVersion. If MaxDataServiceVersion is not specified, then the service SHOULD interpret the request as having a MaxDataServiceVersion equal to the maximum version supported by the service.
+
+The service SHOULD respond with the maximum version supported by the service that is less than or equal to the specified MaxDataServiceVersion. 
 
 If the MinDataService header is not specified by the client, it is assumed by the service to be version 1.0.
 
 DataServiceVersion, MinDataServiceVersion, and MaxDataServiceVersion header fields MUST be of the following form:  
-
-   **majorversionnumber + "." + minorversionnumber**. 
+	
+	majorversionnumber + "." + minorversionnumber 
 
 This version of the specification defines the following valid data service version values: "1.0", "2.0", and "3.0", corresponding to OData versions 1.0, 2.0, and 3.0, respectively.
 
-The service MUST include a DataServiceVersion header to specify the version of the format according to which the response is generated. If the service is unable to generate a response that is within the specified version range it MUST fail the request with a 4xx response code and a description of the error using the error format defined in [todo].
+The service MUST include a DataServiceVersion header to specify the version of the format according to which the response is generated. If the service is unable to generate a response that is within the specified version range it MUST fail the request with a 4xx response code and a description of the error using the error format defined by the requested response format.
 
 # 6. Extensibility #
 
@@ -103,25 +112,27 @@ The OData protocol supports both user- and version-driven extensibility through 
 
 ## 6.1. Query Option Extensibility ##
 
-Query Options within the Request URL can control how a particular request is processed by the service. 
+Query options within the request URL can control how a particular request is processed by the service. 
 
 OData-defined system query options are prefixed with "$". Services MAY support additional query options not defined in the OData specification, but they MUST NOT begin with the "$" character.
 
-OData Services SHOULD NOT require any query options to be specified in a request, and MUST fail any request that contains query options that it does not understand. 
-
-*REVIEWER: Alex: is this too strong - for example WCF Data Services would be forced to fail a request with $format in the url, even though an intermediary might make it unnecessary to correctly understand it?*
+OData services SHOULD NOT require any query options to be specified in a request, and SHOULD fail any request that contains query options that it does not understand. 
 
 ## 6.2. Payload Extensibility ##
 
 OData supports extensibility in the payload, according to the specific format.
 
-Regardless of the format, additional content MAY be present only if it need not be understood by the receiver in order to correctly interpret the payload. Thus, clients and services MAY safely ignore any content not specifically defined in the version of the payload specified by the DataServiceVersion header.
+Regardless of the format, additional content MUST NOT be present if it needs to be understood by the receiver in order to correctly interpret the payload. Thus, clients and services MAY safely ignore any content not specifically defined in the version of the payload specified by the DataServiceVersion header.
 
 ### 6.3. Action/Function Extensibility ###
 
-Actions and Functions extend the set of operations that can be performed on or with a service or resource. Actions MAY have side-effects and be used, for example, to extend CUD operations, invoke custom operations, etc. Functions MUST NOT have side-effects, and can generally be invoked directly on a service or resource or composed within, for example, a predicate.
+Actions and functions extend the set of operations that can be performed on or with a service or resource. Actions MAY have side-effects. For example actions may be used to extend CUD operations or to invoke custom operations. Functions MUST NOT have side-effects. Functions can be invoked:
 
-Services MAY support additional actions and functions not defined in the OData specification. Such functions MUST be qualified with a namespace other than one of the OData namespaces specified in [todo]. 
+- directly from the service root
+- from an url that addresses a resource
+- inside a predicate to a `$filter` or `$orderby` system query option.
+
+Fully qualified action and function names include a namespace prefix. The `odata` and `geo` namespaces are reserved for the use of this specification. 
 
 Services MUST fail any request that contains actions or functions that it does not understand.
 

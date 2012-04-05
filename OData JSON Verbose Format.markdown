@@ -42,20 +42,20 @@ To request this format using <ref>$format</ref>, use the value `jsonverbose`. To
 
 ## 3.1 Client/Server Format Compatibility and Versions ##
 
-Prior to version 3.0, Verbose JSON format was simply the only OData JSON format. In version 3.0 and later, <ref>JSON Light</ref> is the default JSON format.
+Prior to version 3.0, Verbose JSON format was simply the only OData JSON format. In version 3.0 and later, <ref>JSON</ref> is the default JSON format.
 
 A request with Accept header `application/json` or with a $format value of `json` MUST be treated as a request for the server's default JSON format.
 
-Therefore, such a request on a version 1.0 or 2.0 server, or if specified with a <ref>MaxDataServiceVersion header</ref> of 1.0 or 2.0 will result in Verbose JSON. However, a request for default JSON on a version 3.0 or higher server with a MaxDataServiceVersion of 3.0 or higher will result in <ref>JSON Light</ref>
+Therefore, such a request on a version 1.0 or 2.0 server, or if specified with a <ref>MaxDataServiceVersion header</ref> of 1.0 or 2.0 will result in Verbose JSON. However, a request for default JSON on a version 3.0 or higher server with a MaxDataServiceVersion of 3.0 or higher will result in <ref>JSON</ref>
 
-Clients and servers SHOULD prefer the new <ref>JSON Light</ref> format as long as they both support it. To maximize compatibility, clients MAY use one of the following sets of headers.
+Clients and servers SHOULD prefer the new <ref>JSON</ref> format as long as they both support it. To maximize compatibility, clients MAY use one of the following sets of headers.
 
 If the client does not understand OData version 3.0:
 
 	MaxDataServiceVersion: 2.0
 	Accept: application/json
 
-If the client understands OData version 3.0 but does not support JSON Light:
+If the client understands OData version 3.0 but does not support JSON:
 
 	MaxDataServiceVersion: 3.0
 	Accept: application/json;odata=verbose
@@ -361,7 +361,7 @@ This section describes additional payload semantics that only apply to response 
 
 Verbose JSON is represented with a Content-Type of "application/json;odata=verbose".
 
-In OData 1.0 and 2.0, it was also represented with a Content-Type of "applicaton/json". However, in OData 3.0, "application/json" has been redefined to mean <ref>JSON Light</ref>.
+In OData 1.0 and 2.0, it was also represented with a Content-Type of "applicaton/json". However, in OData 3.0, "application/json" has been redefined to mean <ref>JSON</ref>.
 
 ## 6.3 Representing Multiple Entities in a Response ##
 

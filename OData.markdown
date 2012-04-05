@@ -59,6 +59,8 @@ The NavigationLink is the URI that addresses the relationship itself.
 
 //TODO: Fill this in as we discover common type categories.
 
+<!-- TODO: Add a definition for resource (anything in a model that can be addressed). -->
+
 ## 2.4 Annotations ##
 
 # 4. Notational Conventions #
@@ -69,7 +71,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 Some sections of this specification are illustrated with non-normative example OData request and response payloads. However, the text of this specification provides the definition of conformance.
 
-OData payloads are representable in multiple formats. Those formatgits are specified in separate documents. In this document, when an example is necessary, it will be given in the [JSON Light][OData JSON Light Format] format.
+OData payloads are representable in multiple formats. Those formatgits are specified in separate documents. In this document, when an example is necessary, it will be given in the [JSON][OData JSON Format] format.
 
 ## 4.2. Interpreting Examples ##
 
@@ -140,48 +142,49 @@ Services MUST fail any request that contains actions or functions that it does n
 
 Vocabularies provide the ability to annotate metadata as well as instance data, and define a powerful extensibility point for OData.
 
-Metadata annotations can be used to define additional characteristics or capabilities of a metadata element, such as a service, entity type, property, function, action, parameter, or association. For example, a metadata annotation may define ranges of valid values for a particular field, or required query operators for a particular entity set.
+Metadata annotations can be used to define additional characteristics or capabilities of a metadata element, such as a service, entity type, property, function, action or parameter. For example, a metadata annotation may define ranges of valid values for a particular field.
 
-Instance annotations can be used to define additional information associated with a particular result, entity or property; for example whether a particular property is read-only for a particular instance.
+Instance annotations can be used to define additional information associated with a particular result, entity or property; for example whether a property is read-only for a particular instance.
 
-Annotations that apply across instances SHOULD be specified within the metadata. Where the same annotation is defined at both the metadata and instance level, the instance-annotation overrides whatever defaults have been specified at the metadata level.
+Annotations that apply across instances SHOULD be specified within the metadata. Where the same annotation is defined at both the metadata and instance level, the instance-level annotation overrides the annotation specified at the metadata level.
 
-Metadata and instance annotations defined outside of the OData specification SHOULD NOT be required to be understood in order to correctly interact with an OData Service or correctly interpret an OData payload.
+A service SHOULD NOT require a client to interpret annotations it uses.
 
-### 6.5. Header Field Extensibility ###
+## 6.5. Header Field Extensibility
 
-OData defines semantics around certain HTTP Header Fields that may be included in requests to, and responses from, the data service. Services advertising compliance with a particular version of the OData Specification MUST understand and comply with the header fields defined in that version of the specification, either by honoring the semantics of the header field or by failing the request.
+OData defines semantics around certain HTTP request and response headers. Services that support a version of OData MUST understand and comply with the headers defined by that version. Compliance means either honoring the semantics of the header field or failing the request.
 
-Individual services MAY define additional header fields specific to that particular service. Such header fields MUST NOT begin with "OData-" and, for maximum interoperability, SHOULD be optional when making requests to the service. Custom header fields MUST NOT be required to be understood by the client in order to accurately interpret the response.
+Individual services MAY define custom headers. These headers MUST NOT begin with `OData-`. Custom headers SHOULD be optional when making requests to the service. A service MUST NOT require a client to understand custom headers to accurately interpret the response.
 
 # 7. Interaction Semantics #
 
 ## 7.1. Metadata ##
 
-An OData Service is a self-describing service that exposes metadata defining the available EntitySets, Associations, EntityTypes, and Operations.
+An OData service is a self-describing service that exposes metadata defining the entity sets, relationships, entity types, and operations.
 
 ### 7.1.1. Service Document ###
 
-The root URI of the service (the "Service Root") MUST return a Service Document describing a set of root EntitySets and associated URLs which can be queried from the service.
+The root URI of the service (the *Service Root*) MUST return a *Service Document* describing a set of root entity sets and associated URLs which can be queried from the service.
 
-The format of the Service Document is dependent upon the format selected. For Atom, the Service Document is an AtomPub Service Document (as specified in [RFC5023]). 
+The format of the Service Document is dependent upon the format selected. For example, in Atom the Service Document is an AtomPub Service Document (as specified in [RFC5023]). 
 
 ### 7.1.2. Metadata Document ###
 
-An OData Metadata Document is a representation of the [data model](#DataModel) that describes the data and operations exposed by an OData service. 
+An OData *Metadata Document* is a representation of the [data model](#DataModel) that describes the data and operations exposed by an OData service.
 
-[OData:CSDL](odatacsdldefinition) describes an XML representation for OData Metadata Documents and provides an XSD to validate its syntax rules. The media type of the XML representation of an OData Metadata Document is 'application/xml'      
+[OData:CSDL](odatacsdldefinition) describes an XML representation for OData Metadata Documents and provides an XSD to validate their contents. The media type of the XML representation of an OData Metadata Document is 'application/xml'.
 
-As of OData version 3.0, OData services MUST expose a Metadata Document which defines all data exposed by the service.  The URI of the document MUST be the root URI of the service with "/$metadata" appended. 
+OData services MUST expose a Metadata Document which defines all data exposed by the service.  The *Metadata Document URI* SHOULD be the root URI of the service with "/$metadata" appended. To retrieve this document a client issues a GET request to the Metadata Document URI.
 
-Retrieval of a Metadata Document by a client MUST be done by issuing a HTTP GET request to the document's URI.  If the request doesn't specify a format preference (via Accept header or [$format](#FormatSystemQueryOption)) then the XML representation MUST be returned.
+If a request for metadata does not specify a format preference (via Accept header or [$format](#FormatSystemQueryOption)) then the XML representation MUST be returned.
 
 ## 7.2. Requesting Data ##
+
 OData services support requesting data through the use of HTTP GET requests.
 
-The path of the URL specifies the target of the request (for example; the EntitySet, Entity Instance, Navigation Property, Scalar Property, or Operation). Additional query operators, such as filter, sort, page, and projection operations are specified through query string parameters.
+The path of the URL specifies the target of the request (for example; the collection of entities, entity, navigation property, scalar property, or operation). Additional query operators, such as filter, sort, page, and projection operations are specified through query options.
 
-The format of the returned data is dependent upon the request and the format specified by the client, either in the accept header or using the [$format](#FormatSystemQueryOption) query string option.
+The format of the returned data is dependent upon the request and the format specified by the client, either in the Accept header or using the [$format](#FormatSystemQueryOption) query option.
 
 This section describes the types of data requests defined by OData. For complete details on the syntax for building requests, see [[OData URI Conventions](ODataURIConventions)].
 

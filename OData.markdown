@@ -2,12 +2,12 @@
 
 # 1. Overview #
 
-The OData Protocol is an application-level protocol for interacting with data via RESTful web services. The protocol supports the description of data models and editing and querying of data according to those models. It provides facilities for:
+The OData Protocol is an application-level protocol for interacting with data via RESTful web services. The protocol supports the description of data models and the editing and querying of data according to those models. It provides facilities for:
 
-- Metadata: A machine-readable description of the data model exposed by a particular data provider.
-- Data: Sets of data entities and the relationships between them.
-- Querying: Requesting that the server perform a set of filtering and other transformations to its data, then return the results.
-- Editing: Creating, editing, and deleting data.
+- Metadata: a machine-readable description of the data model exposed by a particular data provider.
+- Data: sets of data entities and the relationships between them.
+- Querying: requesting that the server perform a set of filtering and other transformations to its data, then return the results.
+- Editing: creating, editing, and deleting data.
 
 The OData Protocol is different from other REST-based web service approaches in that it provides a uniform way to describe both the data and the data model. This improves semantic interoperability between systems and allows an ecosystem to emerge.
 
@@ -20,28 +20,39 @@ Towards that end, the OData Protocol follows these design principles:
 
 # 2. Data Model #
 
-This section provides a high-level description of the Entity Data Model (EDM); the abstract data model that MUST be used to describe the data exposed by an OData service. An [OData Metadata Document](*MetadataDocument) is a representation of a service's data model exposed for client consumption.  
+This section provides a high-level description of the Entity Data Model (EDM); the abstract data model that MUST be used to describe the data exposed by an OData service. An [OData Metadata Document](#MetadataDocument) is a representation of a service's data model exposed for client consumption.  
 
-The central concepts in the EDM are **entities** and **associations**. Entities are instances of **Entity Types** (e.g. Customer, Employee, etc.) which are nominal structured records with a key. Entity Types contain named primitive- or complex-valued properties. 
+The central concepts in the EDM are *entities*, *entity sets*, and *relationships*.
 
-**Complex Types** are nominal structured types also consisting of a list of properties but with no key, thus can only exist as a property of a containing Entity Type or as a temporary value. 
+*Entities* are instances of *entity types* (e.g. Customer, Employee, etc.). Entity types are nominal structured types with a key. Entities consist of named primitive- or complex-valued properties and may include relationships with other entities. Entities are the core identity types that make up the most important parts of most models.
 
-The **Entity Key** of an Entity Type is formed from a subset of primitive properties of the Entity Type. The Entity Key (e.g. CustomerId, OrderId, etc.) is a fundamental concept to uniquely identify instances of Entity Types (entities) and allows entities to participate in relationships. 
+*Entity sets* are named collections of entities (e.g. Customers is a set of Customer entities). Entity sets provide the primary entry points into your data model.
 
-Properties statically declared as part of the Entity Type's structural definition are called **declared properties** and those which are not are **dynamic properties**. Entity Types which allow dynamic properties are called Open Entity Types. If an instance of an Open Entity Type does not include a value for a dynamic property, the instance must be treated as if it included the property with a value of null. A dynamic property MUST NOT have the same name as a declared property.
+*Relationships* have a name and are used to navigate from one entity to one or more related entities. They are represented via *navigation properties*.
 
-Entities are grouped in named collections called **Entity Sets** (e.g. Customers is a set of Customer Entity Type instances).
+*Complex types* are keyless nominal structured types consisting of a set of properties. These are value types; they lack identity. Complex types are commonly used as property values in an entity or as parameters to operations.
 
-**Association Types** define the relationship between two Entity Types (e.g. Employee WorksFor Department). Instances of Association Types are grouped in **Association Sets**. **Navigation Properties** are special properties on Entity Types which are bound to a specific association and are used to refer to specific associations of an entity. Navigation Properties, like scalar properties, may be declared as part of the Entity Type's structural definition or may be dynamic properties of an Open Entity Type. 
- 
-Finally, all instance containers (Entity Sets and Association Sets) are grouped in an **Entity Container**.
+The *entity key* of an entity type is formed from a subset of primitive properties (e.g. CustomerId, OrderId + LineId, etc.) of the entity type. The entity key value uniquely identifies entities within an entity set and allows entities to participate in relationships. 
+
+Properties declared as part of the entity type's definition are called *declared properties*. Entity types which allow additional undeclared properties are called *open entity types*. These additional properties are called *dynamic properties*. A dynamic property MUST NOT have the same name as a declared property.
+
+Relationships are also modeled via associations. Each relationship definition corresponds to a single *association set*. All instances in a given association set have the same *association type*. An association type describes the cardinality and types of its endpoints.
+
+Finally, all instance containers (entity sets and association sets) are grouped in a named *entity container*. This container represents your domain model as a whole.
 
 //TODO: put primitive type table here in subsection
+
 //TODO: named streams
 
-//TODO: Do we really need association sets? Can we describe the core data model in terms of entities and navigations instead?  --Arlo
-
 //TODO: I think we need subsections here. This does a reasonable job of giving an overview. However, we need somewhere where we go into more details on each of the concepts. Unless we put it here, this stuff will end up in the format-specific documents. I've put some examples here as subsections, but don't think this is complete, nor do I think that everything here necessarily should be here.
+
+## 2.1 Definitions ##
+
+Structured elements are composed of other model elements. Structured elements are common in entity models as they are the typical means of representing entities in the OData service. The structured types are entity type, complex type, row type and association type.
+
+- Relatable types: entity type, collection of entity type
+
+//TODO: Fill this in as we discover common type categories.
 
 ## 2.1 Entities ##
 

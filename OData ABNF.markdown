@@ -2,7 +2,7 @@
 
 -- TODO: Add open properties to the ABNF
 
--- TODO: integrate the various formats into this (at least both Jsons, and possibly also Atom).
+-- TODO: integrate the various formats into this (at least both JSONs, and possibly also Atom).
 
 The following Augmented Backus–Naur Form (ABNF) details the construction rules for OData Uris that target OData services that follow the Uri Conventions specified in this document.
 
@@ -1114,9 +1114,9 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
 
 	geometryPolygon 			= 	; Format specific
 
-## Geospatial Primitives in Json Verbose or Json Light ##
+## Geospatial Primitives in JSON Verbose or JSON Light ##
 
--- TODO: Fill in with GeoJson
+-- TODO: Fill in with GeoJSON
 
 	geography 					= 	; Format specific
 

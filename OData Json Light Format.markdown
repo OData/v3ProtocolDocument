@@ -1,4 +1,4 @@
-# OData Json With Meatadata Format #
+# OData JSON With Meatadata Format #
 
 # Overview #
 

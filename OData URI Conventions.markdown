@@ -32,7 +32,7 @@ The resource path construction rules defined in this section are optional. OData
 
 The resource path section of a URI identifies the resource to be interacted with (such as Customers, a single Customer, Orders related to Customers in London, and so forth). The resource path enables any aspect of the data model (Collections of Entries, a single Entry, Properties, Links, Service Operations, and so on) exposed by an OData service to be addressed.
 
-### 4.1 Addressing Entities ###
+### 4.1 Addressing entities ###
 The basic rules for addressing a Collection (of Entities), a single Entity within a Collection, as well as a property of an Entity are covered in the 'resourcePath' syntax rule in Appendix A. 
 
 Below is a snippet from Appendix A:
@@ -48,11 +48,11 @@ Below is a snippet from Appendix A:
 
 Since OData has a uniform composable URI syntax and associated rules there are many ways to address a collection of entities, including, but not limited to:
 
-- Via an EntitySet (see rule: entitySetName)
+- Via an entity set (see rule: entitySetName)
 
 		For Example: http://services.odata.org/OData/OData.svc/Products
 
-- By invoking a Function that returns a collection of Entities (see rule: entityColFunctionCall)
+- By invoking a function that returns a collection of entities (see rule: entityColFunctionCall)
 
 		For Example: http://services.odata.org/OData/OData.svc/GetProductsByCategoryId(categoryId=2)
 
@@ -63,13 +63,13 @@ Since OData has a uniform composable URI syntax and associated rules there are m
 
 Likewise there are many ways to address a single Entity.
 
-Sometimes a single Entity can be accessed directly, for example by:
+Sometimes a single entity can be accessed directly, for example by:
 
 - Invoking a Function that returns a single Entity (see rule: entityFunctionCall)
 - Invoking an Action that returns a single Entity (see rule: actionCall)
 - Invoking a ServiceOperation that returns a single Entity (see rule: entityServiceOpCall)
  
-Often however a single Entity is accessed by composing more path segments to a resourcePath that identifies a Collection of Entities, for example by:
+Often however a single entity is accessed by composing more path segments to a resourcePath that identifies a Collection of Entities, for example by:
 
 - Using a entityKey to select a single Entity (see rules: collectionNavigation and keyPredicate)
 
@@ -154,13 +154,20 @@ The grammar for addressing and invoking Functions is defined by a number syntax 
 - The aliasAndValue syntax rule defines the grammar for providing function parameter values using Parameter Alias Syntax [OData:Core 7.4.2.3.2](OData). 
 - The parameterAndValue syntax rule defines the grammar for providing function parameter values using Parameter Name Syntax [OData:Core 7.4.2.3.2](OData).
 
-#### 4.3.3 Addressing Actions ####
+#### 4.3.3 Addressing actions ####
 The semantic rules for addressing and invoking Actions are defined in the [OData:Core](OData) document.
 The grammar for addressing and invoking Actions are defined by the following syntax grammar rules in Appendix A:
 
 - The actionCall syntax rule defines the grammar in the ResourcePath for addressing and invoking an Action directly from the Service Root.
 - The boundActionCall syntax rule defines the grammar in the ResourcePath for addressing and invoking an Action that is appended to a ResourcePath that identifies some resources that should be used as the binding parameter value when invoking the Action.
 - The boundOperation syntax rule (which encompasses the boundActionCall syntax rule), when used by the resourcePath syntax rule, illustrates how a boundActionCall can be appended to a ResourcePath.
+
+### 4.4 Addressing a property ###
+To address an entity property clients compose the property name, to the url of the entity, in a new url segment.
+If the property has a complex type value, properties of that value can be addressed by further property name composition.
+
+### 4.5 Addressing a property value ###
+To address the raw value of a property, client compose `/$value` to the property url.
 
 ## 5.0 Query Options ##
 The Query Options section of an OData URI specifies three types of information: System Query Options, Custom Query Options, and Operation (Function and ServiceOperation) Parameters. All OData services MUST follow the query string parsing and construction rules defined in this section and its subsections.

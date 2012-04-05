@@ -2,12 +2,14 @@
 
 # 1. Overview #
 
-The OData Protocol is an application-level protocol for interacting with data via RESTful web services. The protocol supports the description of data models and editing and querying of data according to those models. It provides facilities for:
+The OData Protocol is an application-level protocol for interacting with data via RESTful web services. The protocol supports the description of data models and the editing and querying of data according to those models. It provides facilities for:
 
-- Metadata: A machine-readable description of the data model exposed by a particular data provider.
-- Data: Sets of data entities and the relationships between them.
-- Querying: Requesting that the service perform a set of filtering and other transformations to its data, then return the results.
-- Editing: Creating, editing, and deleting data.
+- Metadata: a machine-readable description of the data model exposed by a particular data provider.
+- Data: sets of data entities and the relationships between them.
+- Querying: requesting that the server perform a set of filtering and other transformations to its data, then return the results.
+- Editing: creating, editing, and deleting data.
+- Operations: invoking custom logic
+- Vocabularies: attaching custom semantics
 
 The OData Protocol is different from other REST-based web service approaches in that it provides a uniform way to describe both the data and the data model. This improves semantic interoperability between systems and allows an ecosystem to emerge.
 
@@ -20,38 +22,44 @@ Towards that end, the OData Protocol follows these design principles:
 
 # 2. Data Model #
 
-This section provides a high-level description of the Entity Data Model (EDM); the abstract data model that MUST be used to describe the data exposed by an OData service. An [OData Metadata Document](*MetadataDocument) is a representation of a service's data model exposed for client consumption.  
+This section provides a high-level description of the Entity Data Model (EDM): the abstract data model that MUST be used to describe the data exposed by an OData service. An [OData Metadata Document](#MetadataDocument) is a representation of a service's data model exposed for client consumption.  
 
-The central concepts in the EDM are **entities** and **associations**. Entities are instances of **Entity Types** (e.g. Customer, Employee, etc.) which are nominal structured records with a key. Entity Types contain named primitive- or complex-valued properties. 
+The central concepts in the EDM are *entities*, *entity sets*, and *relationships*.
 
-**Complex Types** are nominal structured types also consisting of a list of properties but with no key, thus can only exist as a property of a containing Entity Type or as a temporary value. 
+*Entities* are instances of entity types (e.g. `Customer`, `Employee`, etc.). *Entity types* are nominal structured types with a key. Entities consist of named properties and may include relationships with other entities. Entities are the core identity types in a data model.
 
-The **Entity Key** of an Entity Type is formed from a subset of primitive properties of the Entity Type. The Entity Key (e.g. CustomerId, OrderId, etc.) is a fundamental concept to uniquely identify instances of Entity Types (entities) and allows entities to participate in relationships. 
+*Entity sets* are named collections of entities (e.g. `Customers` is a set of `Customer` entities). An entity can be a member of at most one entity set. Entity sets provide the primary entry points into your data model.
 
-Properties statically declared as part of the Entity Type's structural definition are called **declared properties** and those which are not are **dynamic properties**. Entity Types which allow dynamic properties are called Open Entity Types. If an instance of an Open Entity Type does not include a value for a dynamic property, the instance must be treated as if it included the property with a value of null. A dynamic property MUST NOT have the same name as a declared property.
+*Relationships* have a name and are used to navigate from an entity to related entities. Relationships are represented via *navigation properties*. Each relationship has a cardinality.
 
-Entities are grouped in named collections called **Entity Sets** (e.g. Customers is a set of Customer Entity Type instances).
+*Complex types* are keyless nominal structural types consisting of a set of properties. These are value types that lack identity. Complex types are commonly used as property values in an entity or as parameters to operations.
 
-**Association Types** define the relationship between two Entity Types (e.g. Employee WorksFor Department). Instances of Association Types are grouped in **Association Sets**. **Navigation Properties** are special properties on Entity Types which are bound to a specific association and are used to refer to specific associations of an entity. Navigation Properties, like scalar properties, may be declared as part of the Entity Type's structural definition or may be dynamic properties of an Open Entity Type. 
- 
-Finally, all instance containers (Entity Sets and Association Sets) are grouped in an **Entity Container**.
+The *entity key* of an entity type is formed from a subset of primitive properties (e.g. `CustomerId`, `OrderId, LineId`, etc.) of the entity type. The entity key value uniquely identifies an entity within a collection of entities.
 
-//TODO: put primitive type table here in subsection
-//TODO: named streams
+Properties declared as part of the entity type's definition are called *declared properties*. Entity types which allow additional undeclared properties are called *open entity types*. These additional properties are called *dynamic properties*. A dynamic property MUST NOT have the same name as a declared property.
 
-//TODO: Do we really need association sets? Can we describe the core data model in terms of entities and navigations instead?  --Arlo
+*Operations* allow the execution of custom logic on parts of a data model. *Functions* do not allow side effects and are composable. *Actions* allow side effects and are not composable. Actions and functions are global to the service and may be used as members of entities and collections of entities.
 
-//TODO: I think we need subsections here. This does a reasonable job of giving an overview. However, we need somewhere where we go into more details on each of the concepts. Unless we put it here, this stuff will end up in the format-specific documents. I've put some examples here as subsections, but don't think this is complete, nor do I think that everything here necessarily should be here.
+<!-- TODO: Add entity inheritance (succinct) -->
 
-## 2.1 Entities ##
+Finally, entity sets and operations are grouped in a named *entity container*. This container represents a service's model.
 
-## 2.2 NavigationProperties ##
+Refer to the [CSDL specification][OData CSDL Specification] for more information on the data model.
 
-Entities reference each other via NavigationProperties. A NavigationProperty represents one side of a relationship with cardinality 1:many, 1:1, or 1:[0,1]. The property's name defines the relationship. Its value is a reference to the related Entity or collection of Entities.
+## 2.1 Definitions ##
 
-A NavigationProperty can be seen as a Property on its source Entity. It can also be seen as a relationship. The NavigationLink is the URI that addresses the relationship itself.
+<!-- TODO: This section needs work. -->
 
-## 2.3 EntitySets and collections of Entities ##
+
+Structural elements are composed of other model elements. Structural elements are common in entity models as they are the typical means of representing entities in the OData service. The structural types are: entity type, complex type, row type and association type.
+
+The NavigationLink is the URI that addresses the relationship itself.
+
+- Relatable types: entity type, collection of entity type
+
+//TODO: Fill this in as we discover common type categories.
+
+<!-- TODO: Add a definition for resource (anything in a model that can be addressed). -->
 
 ## 2.4 Annotations ##
 
@@ -59,15 +67,15 @@ A NavigationProperty can be seen as a Property on its source Entity. It can also
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[RFC2119](http://tools.ietf.org/html/rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")].
 
-## 4.1. Json Example Payloads ##
+## 4.1. JSON Example Payloads ##
 
 Some sections of this specification are illustrated with non-normative example OData request and response payloads. However, the text of this specification provides the definition of conformance.
 
-OData payloads are representable in multiple formats. Those formats are specified in separate documents. In this document, when an example is necessary, it will be given in the Json Light format.
+OData payloads are representable in multiple formats. Those formatgits are specified in separate documents. In this document, when an example is necessary, it will be given in the [JSON][OData JSON Format] format.
 
-## 4.2. CSDL Schema ##
+## 4.2. Interpreting Examples ##
 
-Some sections of this specification are illustrated with fragments of a non-normative RELAX NG Compact schema [[RNC](http://tools.ietf.org/html/rfc5023#ref-RNC "RELAX NG Compact Syntax")]. However, the text of this specification provides the definition of conformance. Complete schemas appear in Appendix B.
+All code examples with the exception of the XSD and the BNF are non-normative.
 
 # 5. Versioning#
 
@@ -79,17 +87,26 @@ OData clients MAY use the DataServiceVersion header on a request to specify the 
 
 If the DataServiceVersion header is present, the service MUST interpret the request according to the rules defined in the specified version of the protocol, or fail the request with a 4xx response code. If not specified, the service MUST assume the request is generated using the maximum version of the protocol that the service understands.
 
-The OData client MAY also use the MinDataServiceVersion and MaxDataServiceVersion headers. The service MUST generate a response compatible with a version greater than or equal to the specified MinDataServiceVersion and less than or equal to the specified MaxDataServiceVersion, and SHOULD generate a response formatted according to the maximum version supported by the service that is less than or equal to the specified MaxDataServiceVersion. If MaxDataServiceVersion is not specified, then the service SHOULD return a response formatted according to the latest version of the format supported by the service.
+The OData client SHOULD also use the MinDataServiceVersion and MaxDataServiceVersion headers. 
+
+
+// TODO: arlo has an idea that involved defining a range of acceptable response versions etc.
+
+If specified the service MUST generate a response with a version greater than or equal to the specified MinDataServiceVersion.
+
+The service MUST generate a response with a version less than or equal to the specified MaxDataServiceVersion. If MaxDataServiceVersion is not specified, then the service SHOULD interpret the request as having a MaxDataServiceVersion equal to the maximum version supported by the service.
+
+The service SHOULD respond with the maximum version supported by the service that is less than or equal to the specified MaxDataServiceVersion. 
 
 If the MinDataService header is not specified by the client, it is assumed by the service to be version 1.0.
 
 DataServiceVersion, MinDataServiceVersion, and MaxDataServiceVersion header fields MUST be of the following form:  
-
-   **majorversionnumber + "." + minorversionnumber**. 
+	
+	majorversionnumber + "." + minorversionnumber 
 
 This version of the specification defines the following valid data service version values: "1.0", "2.0", and "3.0", corresponding to OData versions 1.0, 2.0, and 3.0, respectively.
 
-The service MUST include a DataServiceVersion header to specify the version of the format according to which the response is generated. If the service is unable to generate a response that is within the specified version range it MUST fail the request with a 4xx response code and a description of the error using the error format defined in [todo].
+The service MUST include a DataServiceVersion header to specify the version of the format according to which the response is generated. If the service is unable to generate a response that is within the specified version range it MUST fail the request with a 4xx response code and a description of the error using the error format defined by the requested response format.
 
 # 6. Extensibility #
 
@@ -97,25 +114,27 @@ The OData protocol supports both user- and version-driven extensibility through 
 
 ## 6.1. Query Option Extensibility ##
 
-Query Options within the Request URL can control how a particular request is processed by the service. 
+Query options within the request URL can control how a particular request is processed by the service. 
 
 OData-defined system query options are prefixed with "$". Services MAY support additional query options not defined in the OData specification, but they MUST NOT begin with the "$" character.
 
-OData Services SHOULD NOT require any query options to be specified in a request, and MUST fail any request that contains query options that it does not understand. 
-
-*REVIEWER: Alex: is this too strong - for example WCF Data Services would be forced to fail a request with $format in the url, even though an intermediary might make it unnecessary to correctly understand it?*
+OData services SHOULD NOT require any query options to be specified in a request, and SHOULD fail any request that contains query options that it does not understand. 
 
 ## 6.2. Payload Extensibility ##
 
 OData supports extensibility in the payload, according to the specific format.
 
-Regardless of the format, additional content MAY be present only if it need not be understood by the receiver in order to correctly interpret the payload. Thus, clients and services MAY safely ignore any content not specifically defined in the version of the payload specified by the DataServiceVersion header.
+Regardless of the format, additional content MUST NOT be present if it needs to be understood by the receiver in order to correctly interpret the payload. Thus, clients and services MAY safely ignore any content not specifically defined in the version of the payload specified by the DataServiceVersion header.
 
 ### 6.3. Action/Function Extensibility ###
 
-Actions and Functions extend the set of operations that can be performed on or with a service or resource. Actions MAY have side-effects and be used, for example, to extend CUD operations, invoke custom operations, etc. Functions MUST NOT have side-effects, and can generally be invoked directly on a service or resource or composed within, for example, a predicate.
+Actions and functions extend the set of operations that can be performed on or with a service or resource. Actions MAY have side-effects. For example actions may be used to extend CUD operations or to invoke custom operations. Functions MUST NOT have side-effects. Functions can be invoked:
 
-Services MAY support additional actions and functions not defined in the OData specification. Such functions MUST be qualified with a namespace other than one of the OData namespaces specified in [todo]. 
+- directly from the service root
+- from an url that addresses a resource
+- inside a predicate to a `$filter` or `$orderby` system query option.
+
+Fully qualified action and function names include a namespace prefix. The `odata` and `geo` namespaces are reserved for the use of this specification. 
 
 Services MUST fail any request that contains actions or functions that it does not understand.
 
@@ -123,90 +142,89 @@ Services MUST fail any request that contains actions or functions that it does n
 
 Vocabularies provide the ability to annotate metadata as well as instance data, and define a powerful extensibility point for OData.
 
-Metadata annotations can be used to define additional characteristics or capabilities of a metadata element, such as a service, entity type, property, function, action, parameter, or association. For example, a metadata annotation may define ranges of valid values for a particular field, or required query operators for a particular entity set.
+Metadata annotations can be used to define additional characteristics or capabilities of a metadata element, such as a service, entity type, property, function, action or parameter. For example, a metadata annotation may define ranges of valid values for a particular field.
 
-Instance annotations can be used to define additional information associated with a particular result, entity or property; for example whether a particular property is read-only for a particular instance.
+Instance annotations can be used to define additional information associated with a particular result, entity or property; for example whether a property is read-only for a particular instance.
 
-Annotations that apply across instances SHOULD be specified within the metadata. Where the same annotation is defined at both the metadata and instance level, the instance-annotation overrides whatever defaults have been specified at the metadata level.
+Annotations that apply across instances SHOULD be specified within the metadata. Where the same annotation is defined at both the metadata and instance level, the instance-level annotation overrides the annotation specified at the metadata level.
 
-Metadata and instance annotations defined outside of the OData specification SHOULD NOT be required to be understood in order to correctly interact with an OData Service or correctly interpret an OData payload.
+A service SHOULD NOT require a client to interpret annotations it uses.
 
-### 6.5. Header Field Extensibility ###
+## 6.5. Header Field Extensibility
 
-OData defines semantics around certain HTTP Header Fields that may be included in requests to, and responses from, the data service. Services advertising compliance with a particular version of the OData Specification MUST understand and comply with the header fields defined in that version of the specification, either by honoring the semantics of the header field or by failing the request.
+OData defines semantics around certain HTTP request and response headers. Services that support a version of OData MUST understand and comply with the headers defined by that version. Compliance means either honoring the semantics of the header field or failing the request.
 
-Individual services MAY define additional header fields specific to that particular service. Such header fields MUST NOT begin with "OData-" and, for maximum interoperability, SHOULD be optional when making requests to the service. Custom header fields MUST NOT be required to be understood by the client in order to accurately interpret the response.
+Individual services MAY define custom headers. These headers MUST NOT begin with `OData-`. Custom headers SHOULD be optional when making requests to the service. A service MUST NOT require a client to understand custom headers to accurately interpret the response.
 
 # 7. Interaction Semantics #
 
 ## 7.1. Metadata ##
 
-An OData Service is a self-describing service that exposes metadata defining the available EntitySets, Associations, EntityTypes, and Operations.
+An OData service is a self-describing service that exposes metadata defining the entity sets, relationships, entity types, and operations.
 
 ### 7.1.1. Service Document ###
 
-The root URI of the service (the "Service Root") MUST return a Service Document describing a set of root EntitySets and associated URLs which can be queried from the service.
+The root URI of the service (the *Service Root*) MUST return a *Service Document* describing a set of root entity sets and associated URLs which can be queried from the service.
 
-The format of the Service Document is dependent upon the format selected. For Atom, the Service Document is an AtomPub Service Document (as specified in [RFC5023]). 
+The format of the Service Document is dependent upon the format selected. For example, in Atom the Service Document is an AtomPub Service Document (as specified in [RFC5023]). 
 
 ### 7.1.2. Metadata Document ###
 
-An OData Metadata Document is a representation of the [data model](#DataModel) that describes the data and operations exposed by an OData service. 
+An OData *Metadata Document* is a representation of the [data model](#DataModel) that describes the data and operations exposed by an OData service.
 
-[OData:CSDL](odatacsdldefinition) describes an XML representation for OData Metadata Documents and provides an XSD to validate its syntax rules. The media type of the XML representation of an OData Metadata Document is 'application/xml'      
+[OData:CSDL](odatacsdldefinition) describes an XML representation for OData Metadata Documents and provides an XSD to validate their contents. The media type of the XML representation of an OData Metadata Document is 'application/xml'.
 
-As of OData version 3.0, OData services MUST expose a Metadata Document which defines all data exposed by the service.  The URI of the document MUST be the root URI of the service with "/$metadata" appended. 
+OData services MUST expose a Metadata Document which defines all data exposed by the service.  The *Metadata Document URI* SHOULD be the root URI of the service with "/$metadata" appended. To retrieve this document a client issues a GET request to the Metadata Document URI.
 
-Retrieval of a Metadata Document by a client MUST be done by issuing a HTTP GET request to the document's URI.  If the request doesn't specify a format preference (via Accept header or [$format](#FormatSystemQueryOption)) then the XML representation MUST be returned.
+If a request for metadata does not specify a format preference (via Accept header or [$format](#FormatSystemQueryOption)) then the XML representation MUST be returned.
 
 ## 7.2. Requesting Data ##
+
 OData services support requesting data through the use of HTTP GET requests.
 
-The path of the URL specifies the target of the request (for example; the EntitySet, Entity Instance, Navigation Property, Scalar Property, or Operation). Additional query operators, such as filter, sort, page, and projection operations are specified through query string parameters.
+The path of the URL specifies the target of the request (for example; the collection of entities, entity, navigation property, scalar property, or operation). Additional query operators, such as filter, sort, page, and projection operations are specified through query options.
 
-The format of the returned data is dependent upon the request and the format specified by the client, either in the accept header or using the [$format](#FormatSystemQueryOption) query string option.
+The format of the returned data is dependent upon the request and the format specified by the client, either in the Accept header or using the [$format](#FormatSystemQueryOption) query option.
 
 This section describes the types of data requests defined by OData. For complete details on the syntax for building requests, see [[OData URI Conventions](ODataURIConventions)].
 
 ### 7.2.1. Requesting Individual Entities ###
 
-Clients may invoke an HTTP GET request in order to retrieve an individual entity.
+To retrieve an individual entity, a client makes a GET request.
 
-The URL for retrieving a particular entity instance may be returned in a response payload containing that instance (for example, as a self-link in an [Atom Payload](ODataAtomPayload)).
+The URL for retrieving an entity MAY be returned in a response payload containing that instance (for example, as a self-link in an [Atom Payload](ODataAtomPayload)).
 
 Conventions for constructing a URL to an individual entity using the entity's Key Value(s) are described in [OData URI Conventions](ODataURIConventions).
 
 ### 7.2.2. Requesting Individual Properties ###
 
-An individual property value may be requested by appending the property name to the URL path for a particular resource. 
+A server SHOULD support retrieving an individual property value. To retrieve a property, a client sends a GET request to the property URL. See the [OData:URL](OData URL Conventions) document for details.
 
 For example:
 
     http://services.odata.org/OData/OData.svc/Products(1)/Name
 
-The format of the returned property value is dependent upon the requested format.
-
 #### 7.2.2.1. Requesting a Property's Raw Value using `$value` ####
 
-The raw value of a primitive typed property may be retrieved without any property wrapping or additional metadata by appending "/$value" to the URL path specifying the individual property.
+A server SHOULD support retrieving the raw value of a primitive type property. To retrieve this value, a client sends a GET request to the property value URL. See the [OData:URL](OData URL Conventions) document for details.
 
 For example:
 
-    http://services.odata.org/OData/OData.svc/Products(1)/Name/$value 
-
-By default, the raw value of any Simple Type property (except those of type Edm.Binary) SHOULD be represented using the text/plain media type and MUST be serialized as specified in <ref todo...>. 
+    http://services.odata.org/OData/OData.svc/Products(1)/Name/$value
 
 The raw value of an Edm.Binary property MUST be serialized as an unencoded byte stream.
+
+The raw value of other properties SHOULD be represented using the text/plain media type. See [OData:ABNF](OData ABNF) for details.
 
 A $value request for a property that is NULL SHOULD result in a "404 Not Found" response. 
 
 ### 7.2.3. Querying Collections ###
 
-OData services support querying sets of entities, such as the EntitySets enumerated in the Service Document and navigation links exposed by the service. 
+OData services support querying collections of entities. 
 
-The target collection is specified through a URI, and query operations such as filter, sort, paging, and projection are specified as System Query Options provided as query string parameters. The names of all System Query Options are prefixed with a "$" character.
+The target collection is specified through a URL, and query operations such as filter, sort, paging, and projection are specified as System Query Options provided as query options. The names of all System Query Options are prefixed with a "$" character.
 
-An OData service may support some or all of the System Query Options defined. If a data service does not support a System Query Option, it must reject any requests which contain the unsupported option.
+An OData service may support some or all of the System Query Options defined. If a data service does not support a System Query Option, it MUST fail any request that contains the unsupported option.
 
 #### 7.2.3.1. The `$filter` System Query Option ####
 
@@ -218,7 +236,7 @@ For example:
 
 Returns all Products whose Price is less than $10.00.
 
-The value of the $filter option is a boolean expression as defined in [[OData URI Conventions](ODataURIConventions)].
+The value of the `$filter` option is a boolean expression as defined in [[OData URL Conventions](OData URL Conventions)].
 
 ##### 7.2.3.1.1. Built-in Filter Operations #####
 
@@ -318,7 +336,7 @@ OData supports a set of built-in filter operations, as described in this section
 
 ##### 7.2.3.1.2. Built-in Query Functions #####
 
-OData supports a set of built-in functions that can be used within filter operations. The following table lists the available functions. For a full description of the syntax used when building requests, see [OData URI Conventions](OData_URI_Conventions).
+OData supports a set of built-in functions that can be used within `$filter` operations. The following table lists the available functions. For a full description of the syntax used when building requests, see [OData URL Conventions](OData URL Conventions).
 
 Note: No ISNULL or COALESCE operators are defined. Instead, there is a null literal which can be used in comparisons.
  
@@ -448,9 +466,33 @@ Note: No ISNULL or COALESCE operators are defined. Instead, there is a null lite
 
 ##### 7.2.3.n The `$expand` System Query Option #####
 
-The presence of the $expand system query option indicates that entities associated with the EntityType instance or EntitySet, identified by the resource path section of the URI, MUST be represented inline instead of as Deferred Content.
+The presence of the `$expand` system query option indicates that entities related to the entity, or collection of entities, identified by the resource path section of the URL MUST be represented inline.
 
-What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that applies to the Expand System Query Option: 
+The value of the `$expand` query option MUST be a comma seperated list of navigation property paths.
+
+The service MUST include any actions or functions that are bound to the associated entities that are introduced via an expandClause, unless a `$select` system query option is also included in the request and that `$select` requests that the actions/functions be omitted.
+
+For a full description of the syntax used when building requests, see [OData URI Conventions](OData_URI_Conventions).
+
+Examples
+
+	http://host/service.svc/Customers?$expand=Orders
+
+For each customer entity within the Customers entity set, the value of all associated Orders should be represented inline.
+
+	http://host/service.svc/Orders?$expand=OrderLines/Product,Customer
+
+For each Order within the Orders entity set, the following should be represented inline:
+
+- The Order lines associated to the Orders identified by the resource path section of the URI and the products associated to each Order line.
+- The customer associated with each Order returned.
+
+	http://host/service.svc/Customers?$expand=SampleModel.VipCustomer/InHouseStaff
+
+For each Customer entity in the Customers entity set, the value of all associated InHouseStaff are represented inline if the entity is of type VipCustomer or a subtype of that. For entities that are not of type VipCustomer, or any of its subtypes, that entity is returned with no inline representation for the expanded NavigationProperty.
+
+<-- move to uriconventions -->
+What follows is a snippet from [OData:ABNF][OData ABNF], that applies to the Expand System Query Option: 
 
 	expand						= 	"$expand=" expandClause 
 
@@ -459,37 +501,43 @@ What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that
 	expandItem      			= 	[ qualifiedEntityTypeName "/" ] navigationPropertyName 
 									*([ "/" qualifiedEntityTypeName ] "/" navigationPropertyName)  
 
-Each expandItem MUST be evaluated relative to the EntityType of request, which is EntityType of the resource(s) identified by the ResourcePath part of the URI.
+Each expandItem MUST be evaluated relative to the entity type of the request, which is the entity type of the resource(s) identified by the resource path part of the URL.
 
-To expand a NavigationProperty defined on a derived type first a cast MUST be introduced using the qualifiedEntityTypeName of the required derived type. The leftmost navigationPropertyName segment MUST identify a Navigation Property defined on the EntityType of the request or an EntityType derived from the EntityType of the request. Subsequent navigationPropertyName segments MUST identify Navigation Properties defined on the EntityType returned by the previous NavigationProperty or the EntityType introduced in the previous cast.
+A type cast using the qualifiedEntityTypeName to a type containing the property is required in order to expand a navigation property defined on a derived type.
 
-Examples
-
-	http://host/service.svc/Customers?$expand=Orders
-
-For each customer entity within the Customers EntitySet, the value of all associated Orders should be represented inline.
-
-	http://host/service.svc/Orders?$expand=OrderLines/Product,Customer
-
-For each Order within the Orders EntitySet, the following should be represented inline:
-
-- The Order lines associated to the Orders identified by the resource path section of the URI and the products associated to each Order line.
-- The customer associated with each Order returned.
-
-The OData 3.0 protocol supports specifying the namespace-qualified EntityType on which the NavigationProperty is defined as part of the expand statement.
-
-	http://host/service.svc/Customers?$expand=SampleModel.VipCustomer/InHouseStaff
-
-For each Customer entity in the Customers EntitySet, the value of all associated InHouseStaff MUST be represented inline if the entity is of type VipCustomer or a subtype of that. For entity instances that are not of type VipCustomer, or any of its subtypes, that entity instance MUST be returned with no inline representation for the expanded NavigationProperty.
-
-The service MUST include any actions or functions that are bound to the associated entities that are introduced via an expandClause, unless a select system query option is also included in the request and that $select requests that the actions/functions be omitted.
+The leftmost navigationPropertyName segment MUST identify a Navigation Property defined on the EntityType of the request or an EntityType derived from the EntityType of the request. Subsequent navigationPropertyName segments MUST identify Navigation Properties defined on the EntityType returned by the previous NavigationProperty or the EntityType introduced in the previous cast.
 
 Redundant expandClause rules on the same data service URI MAY be considered valid, but MUST NOT alter the meaning of the URI.
 
+<-- end move to url conventions -->
+
 ##### 7.2.3.2 The `$select` System Query Option #####
 
-The `$select` system query option allows clients to requests a limited set of information for each Entity or ComplexType identified by the ResourcePath and other System Query Options like $filter, $top, $skip etc. When present $select instructs the service to return only the Properties, Open Properties, Related Properties, Actions and Functions explicitly requested by the client, however services MAY choose to return more information.
+The `$select` system query option requests that the service return only the properties, open properties, related properties, actions and functions explicitly requested by the client. The service MUST return the specified content, and MAY choose to return additional information.
 
+The value of the $select query option is a comma separated list of property paths, qualified action names,  qualified function names, or the star operator (*), or the star operator prefixed with the name of the entity container in order to specify all operations within the container. 
+
+For example, the following request returns just the Rating and ReleaseDate for the matching Products: 
+
+	http://services.odata.org/OData/OData.svc/Products?$select=Rating,ReleaseDate
+
+It is also possible to request all properties, using a star request:
+
+	http://services.odata.org/OData/OData.svc/Products?$select=*
+
+A star request SHOULD NOT introduce actions or functions not otherwise requested.
+
+Properties of related entities may be specified by providing a property path in the select list. In order to select properties from related entities, the appropriate navigation property MUST be specified through the `$expand` query option:
+
+	http://services.odata.org/OData/OData.svc/Products?$select=*,Category/Name&$expand=Category
+
+It is also possible to request all actions and functions available for each returned entity:
+
+	http://services.odata.org/OData/OData.svc/Products?$select=DemoService.*
+
+For AtomPub formatted responses, the value of a selectClause applies only to the properties returned within the m:properties element. For example, if a property of an entity type is mapped with the Customizable Feeds attribute KeepInContent=false, then that property MUST always be included in the response according to its customizable feed mapping.
+
+<--move to conventions-->
 What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that applies to the Select System Query Option: 
 
 	select 						=	"$select=" selectClause
@@ -513,7 +561,7 @@ In this URI the "Rating,ReleaseDate" selectClause MUST be interpreted relative t
 
 Each selectItem in the selectClause indicates that the response MUST include the Properties, Open Properties, Related Properties, Actions and Functions identified by that selectClause. 
 
-The simplest selectItem requests a single Property defined on the EntityType of the resources identified by the resource path section of the URI, for example this URI asks the service to return just the Rating and ReleaseDate for the matching Products: 
+The simplest selectClause explicitly requests properties defined on the entity type of the resources identified by the resource path section of the URI, for example this URI requests just the Rating and ReleaseDate for the matching Products: 
 
 	http://services.odata.org/OData/OData.svc/Products?$select=Rating,ReleaseDate
 
@@ -554,14 +602,17 @@ If an action or function is requested in a selectItem using a qualifiedActionNam
 When multiple selectItems exist in a selectClause, then the total set of property, open property, navigation property, actions and functions to be returned is equal to the union of the set of those identified by each selectItem.
 
 Redundant selectClause rules on the same URI MAY be considered valid, but MUST NOT alter the meaning of the URI.
-
-For AtomPub formatted responses: The value of a selectClause applies only to the properties returned within the m:properties element. For example, if a property of an entity type is mapped with the Customizable Feeds attribute KeepInContent=false, then that property MUST always be included in the response according to its customizable feed mapping.
+<--end copy to uri conventions-->
 
 #### 7.2.3.3 The `$orderby` System Query Option ####
 
 The `$orderby` System Query option specifies the order in which entities are returned from the service.
 
-The value of the `$orderby` System Query option specifies a comma separated list of property names to sort by. The property name may include the suffix "asc" for ascending or "desc" for descending, separated from the property name by one or more spaces.
+The value of the `$orderby` System Query option contains a comma separated list of property navigation paths to sort by, where each property navigation path terminates on a primitive property.
+
+A type cast using the qualified entity type name is required to order by a property defined on a derived type.
+
+The property name may include the suffix "asc" for ascending or "desc" for descending, separated from the property name by one or more spaces. If "asc" or "desc" is not specified, the default is to order by the specified property in ascending order.
 
 For example:
 
@@ -569,15 +620,15 @@ For example:
 
 #### 7.2.3.4. The `$top` System Query Option ####
 
-The  `$top` System Query Option specifies that only the first n records should be returned, where n is a non-negative integer value specified in by `$top` query option.
+The `$top` System Query Option specifies that only the first n records should be returned, where n is a non-negative integer value specified in by `$top` query option.
 
 For example:
 
     http://services.odata.org/OData/OData.svc/Products?$top=5
 
-Would return only the first five Products in the Products EntitySet.
+Would return only the first five Products in the Products entity set.
 
-If no `$order` query option is specified in the request, the service MUST impose a stable ordering across requests that include `$top`.
+If no unique ordering is imposed through an `$orderby` query option, the service MUST impose a stable ordering across requests that include `$top`.
 
 #### 7.2.3.5. The `$skip` System Query Option ####
 
@@ -587,17 +638,17 @@ For example:
 
     http://services.odata.org/OData/OData.svc/Products?$skip=5
 
-Would return Products starting with the 6th Product in the Products EntitySet.
+Would return Products starting with the 6th Product in the Products entity set.
 
-Where $top and $skip are used together, the $skip is applied before the $top, regardless of the order in which they appear in the request.
+Where `$top` and `$skip` are used together, the `$skip` is applied before the `$top`, regardless of the order in which they appear in the request.
 
 For example:
 
     http://services.odata.org/OData/OData.svc/Products?$top=5&$skip=2
 
-Would return the first five Products, starting with the 2nd Product in the Products EntitySet.
+Would return the third through seventh Products in the Products entity set.
 
-If no `$orderby` query option is specified in the request, the service MUST impose a stable ordering across requests that include `$skip`.
+If no unique ordering is imposed through an `$orderby` query option, the service MUST impose a stable ordering across requests that include `$skip`.
 
 #### 7.2.3.6. The `$inlinecount` System Query Option ####
 
@@ -609,23 +660,20 @@ For example:
 
 Would return, along with the results, the total number of products in the set.
 
-An `$inlinecount` query option with a value of `none` (or not specified) hints that the service SHOULD NOT return a count, although it is still valid for the service to do so.
+An `$inlinecount` query option with a value of `none` (or not specified) hints that the service SHOULD NOT return a count.
 
 The service MUST return an HTTP Status code of 404 (Bad Request) if a value other than `allpages` or `none` is specified.
 
-`$inlinecount` ignores any `$top`, `$skip`, or `$expand` query options, but does include only those results matching any specified `$filter`.
+`$inlinecount` ignores any `$top`, `$skip`, or `$expand` query options, and returns the total count of results across all pages including only those results matching any specified `$filter`.
 
 How the count is returned is dependent upon the selected format.
 
 #### 7.2.3.7. The  `$format` System Query Option ####
 
-A data service URI with a `$format` system query option specifies that a response to the request SHOULD use the media type specified by the query option.
+A request with a `$format` system query option specifies that the response SHOULD use the media type specified by the query option.
 
-The syntax of the format system query option is defined in 'format' rule defined in Appendix A. 
+If the `$format` query option is present in a request, it SHOULD take precedence over the value(s) specified in the accept request header.
 
-The rules for interpreting the format rule are:
-
-- If the `$format` query option is present in a request URI, it SHOULD take precedence over the value(s) specified in the Accept request header.
 - If the value of the query option is "atom", then the media type used in the response MUST be "application/atom+xml", or "application/atomsvc+xml" for the [service document](#ServiceDocument).
 - If the value of the query option is "json", then the media type used in the response MUST be "application/json".
 - If the value of the query option is "xml", then the media type used in the response MUST be "application/xml".
@@ -636,7 +684,7 @@ For example:
 
 Is equivalent to a request with the "accept" header set to "application/json", so it requests the set of Order entities represented using the JSON media type, as specified in [RFC4627].
 
-The `$format` query option MAY be used in conjunction with RAW format (section 2.2.6.4) to specify which RAW format is returned.
+The `$format` query option MAY be used in conjunction with `$value` to specify which raw format is returned.
 
 	http://host/service.svc/Orders(1)/ShipCountry/$value/?$format=json
 

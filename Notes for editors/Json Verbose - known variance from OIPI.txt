@@ -2,7 +2,7 @@ I assume that the core document describes that there are multiple formats and ho
 
 
 
-Actions & functions: I removed anything that is common across all formats, leaving only the Json-specific stuff. This means that I removed the following:
+Actions & functions: I removed anything that is common across all formats, leaving only the JSON-specific stuff. This means that I removed the following:
 
  * Anything related to when an action / function is advertised (the format just says how; the core should say when).
  * Bound URLs.

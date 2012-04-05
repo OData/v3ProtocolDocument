@@ -344,6 +344,7 @@ Model elements are composed of other model elements and primitive types. CSDL de
 - `Edm.GeometryMultiLineString`
 - `Edm.GeometryMultiPolygon`
 - `Edm.GeometryCollection`
+- `Edm.Stream`
 
 # 3	Entity Model Wrapper Constructs[csdl3]
 
@@ -721,7 +722,7 @@ The `edm:PropertyRef` element provides an `edm:Key` with a reference to a single
 
 ## 6.4	The `edm:NavigationProperty` Element[csdl6.4]
 
-A navigation property allows navigation from an entity to one or more related entities.
+A navigation property allows navigation from an entity to related entities.
 
 In the following example, the Product entity type has a navigation property to a Category, which has a navigation link back to one or more products:
 

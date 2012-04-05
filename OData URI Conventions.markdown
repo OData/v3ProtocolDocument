@@ -8,7 +8,7 @@ The [OData:Atom] and [OData:JSON] documents specify the format of the resource r
 Servers are encouraged to follow the URI construction conventions defined in this specification when possible as  consistency promotes an ecosystem of reusable client components and libraries.
 
 ## 2.0 Uri Components ##
-A URI used by an OData service has at most three significant parts: the service root URI, resource path and query string options. Additional URI constructs (such as a fragment) MAY be present in a URI used by an OData service; however, this specification applies no further meaning to such additional constructs.
+A URI used by an OData service has at most three significant parts: the service root URI, resource path and query options. Additional URI constructs (such as a fragment) MAY be present in a URI used by an OData service; however, this specification applies no further meaning to such additional constructs.
 
 ![](http://odata.org/images/ODataUri_thumb.png)
 
@@ -106,7 +106,7 @@ These rules are recursive, so it is possible to address a single Entity via anot
 
 - By invoking an Action bound to a collection of Entities that returns a collection of Entities (see rule: boundOperation)
 
-Finally it is possible to compose path segments onto a resourcePath that identifies a Primivite, Complex instance, Collection of Primitives or Collection of Complex instances and bind an Action or Function that returns a Entity or Collections of Entities.
+Finally it is possible to compose path segments onto a resourcePath that identifies a Primitive, Complex instance, Collection of Primitives or Collection of Complex instances and bind an Action or Function that returns a Entity or Collections of Entities.
 
 #### 4.1.1 Canonical Uri ####
 For OData services conformant with the addressing conventions in this section, the canonical form of an absolute URI identifying a non contained Entity is formed by adding a single path segment to the service root URI. The path segment is made up of the name of the EntitySet associated with the Entity followed by the key predicate identifying the Entry within the Collection. 
@@ -115,7 +115,7 @@ For example the URIs [http://services.odata.org/OData/OData.svc/Categories(1)/Pr
 
 For contained Entities the canonical Uri begins with canonical Uri of the parent, with further path segments that:
 
-- Name and navigation throught the Containing NavigationProperty 
+- Name and navigate through the Containing NavigationProperty 
 - and, if the NavigationProperty returns a Collection, an EntityKey (see rule: entityKey) that uniquely identifies the entity in that collection.
 
 ### 4.2 Addressing Links between Entities ###
@@ -125,7 +125,7 @@ Links between Entries are addressable in OData just like Entries themselves are 
 
 	entityUri 		= 	; any uri that identifies a single entity
 						; examples include: an entitySet followed by a key or a function/serviceOperation that returns a single entity.
-	links 			= 	entityUri "$links" / navigationPropertyName   
+	links 			= 	entityUri "/$links/" navigationPropertyName   
 
 For example: [http://services.odata.org/OData/OData.svc/Category(1)/$links/Products](http://services.odata.org/OData/OData.svc/Category(1)/$links/Products) addresses the links between Category(1) and Products.
 
@@ -139,9 +139,7 @@ The grammar for addressing and invoking a ServiceOperation is define by 3 syntax
 - The resourcePath syntax rule defines the grammar for any additional composition of OData ResourcePath segments that rely on the results of calling the ServiceOperation.
 - The sopParameterNameAndValue syntax rule defines the grammar for specifying any parameters to the ServiceOperation in the query part of the request Uri.
 
-This example, illustrates a call to a ServiceOperation with subsequent resource path segments, that uses all three syntax rules:
-
-	[http://services.odata.org/OData/OData.svc/GetProductsByRating?rating=3&$filter=Price gt 20.0M](http://services.odata.org/OData/OData.svc/GetProductsByRating?rating=3&$filter=Price gt 20.0M)
+This example, illustrates a call to a ServiceOperation with subsequent resource path segments, that uses all three syntax rules: [http://services.odata.org/OData/OData.svc/GetProductsByRating?rating=3&$filter=Price gt 20.0M](http://services.odata.org/OData/OData.svc/GetProductsByRating?rating=3&$filter=Price gt 20.0M)
 
 This invokes the GetProductsByRating ServiceOperation, with the rating parameter value set to 3, and then subsequently filters Products returned by the  ServiceOperation call to include only those with a price greater than $20. 
 
@@ -164,7 +162,7 @@ The grammar for addressing and invoking Actions are defined by the following syn
 - The boundActionCall syntax rule defines the grammar in the ResourcePath for addressing and invoking an Action that is appended to a ResourcePath that identifies some resources that should be used as the binding parameter value when invoking the Action.
 - The boundOperation syntax rule (which encompasses the boundActionCall syntax rule), when used by the resourcePath syntax rule, illustrates how a boundActionCall can be appended to a ResourcePath.
 
-## 5.0 Query String Options ##
+## 5.0 Query Options ##
 The Query Options section of an OData URI specifies three types of information: System Query Options, Custom Query Options, and Operation (Function and ServiceOperation) Parameters. All OData services MUST follow the query string parsing and construction rules defined in this section and its subsections.
 
 ### 5.1 System Query Options ###
@@ -275,14 +273,14 @@ The following examples illustrate the use and semantics of each of the Arithmeti
 	http://services.odata.org/OData/OData.svc/Products?$filter=Rating mod 5 eq 0 (Requests all products with a Rating exactly divisable by 5).
 
 #### 5.1.2.3 Parenthesis Operator ####
-he Parenthesis Operator (or '( )') overrides the group an expression, so that Parenthesis Operator evaluates to the expression grouped inside the parenthesis. For example:
+he Parenthesis Operator (or '( )') controls the evaluation order of an expression, so that Parenthesis Operator evaluates to the expression grouped inside the parenthesis. For example:
 
 	http://services.odata.org/OData/OData.svc/Products?$filter=( 4 add 5 ) mod ( 4 sub 1 ) eq 0
 
 Requests all products, because 9 mod 3 is 0. 
 
 #### 5.1.2.4 Canonical Functions ####
-In addition to operators, a set of functions are also defined for use with the filter query string operator. The following table lists the available functions. Note: ISNULL or COALESCE operators are not defined. Instead, there is a null literal which can be used in comparisons.
+In addition to operators, a set of functions are also defined for use with the filter query option. The following table lists the available functions. Note: ISNULL or COALESCE operators are not defined. Instead, there is a null literal which can be used in comparisons.
 
 The syntax rules for all canonical functions are defined in Appendix A.
 
@@ -291,7 +289,7 @@ The substringof canonical function has this signature:
 
 	Edm.Boolean substringof(Edm.String, Edm.String)
 
-If implemented the substringof canonical function MUST return true if, and only if, the second parameter string value contains the first parameter string value.
+If implemented the substringof canonical function MUST return true if, and only if, the second parameter is a substring of the first parameter string value.
 The substringOfMethodCallExpr syntax rule defines how the substringof function is invoked.
 
 For example:
@@ -334,7 +332,7 @@ The length canonical function has this signature:
 	Edm.Int32 length(Edm.String)
 
 If implemented the length canonical function MUST return the number of characters in the parameter value.
-The lengthMethodCallExpr syntax rule defines how the startswith function is invoked.
+The lengthMethodCallExpr syntax rule defines how the length function is invoked.
 
 For example:
 
@@ -347,8 +345,8 @@ The length canonical function has this signature:
 
 	Edm.Int32 indexof(Edm.String, Edm.String)
 
-If implemented the indexof canonical function MUST return the zero based character position of the first occurance of the second parameter value in the first parameter value.
-The indexOfMethodCallExpr syntax rule defines how the startswith function is invoked.
+If implemented the indexof canonical function MUST return the zero based character position of the first occurrence of the second parameter value in the first parameter value.
+The indexOfMethodCallExpr syntax rule defines how the indexOf function is invoked.
 
 For example:
 
@@ -396,7 +394,7 @@ The tolower canonical function has this signature:
 
 	Edm.String tolower(Edm.String)
 
-If implemented the tolower canonical function MUST return the input parameter string value with all uppercase characters converted to lowercase.
+If implemented the tolower canonical function MUST return the input parameter string value with all uppercase characters converted to lowercase according to unicode rules.
 The toLowerMethodCallExpr syntax rule defines how the tolower function is invoked.
 
 For example:
@@ -410,7 +408,7 @@ The toupper canonical function has this signature:
 
 	Edm.String toupper(Edm.String)
 
-If implemented the toupper canonical function MUST return the input parameter string value with all lowercase characters converted to uppercase.
+If implemented the toupper canonical function MUST return the input parameter string value with all lowercase characters converted to uppercase according to unicode rules.
 The toUpperMethodCallExpr syntax rule defines how the tolower function is invoked.
 
 For example:
@@ -424,7 +422,7 @@ The trim canonical function has this signature:
 
 	Edm.String trim(Edm.String)
 
-If implemented the trim canonical function MUST return the input parameter string value with all leading and trailing whitespace characters removed.
+If implemented the trim canonical function MUST return the input parameter string value with all leading and trailing whitespace characters, according to unicode rules, removed.
 The trimMethodCallExpr syntax rule defines how the trim function is invoked.
 
 For example:
@@ -610,11 +608,11 @@ The isofMethodCallExpr syntax rule defines how the isof function is invoked.
 
 For example:
 
-	http://services.odata.org/Northwind/Northwind.svc/Orders?$filter=isof('NorthwindModel.BigOrder')
+	http://services.odata.org/Northwind/Northwind.svc/Orders?$filter=isof(NorthwindModel.BigOrder)
 
 Returns only orders that are also BigOrders.
 
- 	http://services.odata.org/Northwind/Northwind.svc/Orders?$filter=isof(Customer, 'NorthwindModel.MVPCustomer')
+ 	http://services.odata.org/Northwind/Northwind.svc/Orders?$filter=isof(Customer, NorthwindModel.MVPCustomer)
 
 Returns only orders that have a customer that is a MVPCustomer.
 

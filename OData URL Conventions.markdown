@@ -56,7 +56,7 @@ Since OData has a uniform composable URL syntax and associated rules there are m
 
 		For Example: http://services.odata.org/OData/OData.svc/GetProductsByCategoryId(categoryId=2)
 
-- By invoking an Action that returns a collection of Entities (see rule: actionCall)
+- By invoking an action that returns a collection of Entities (see rule: actionCall)
 - By invoking a service operation that returns a collection of Entities (see rule: entityColServiceOpCall)
 
 		For Example: http://services.odata.org/OData/OData.svc/ProductsByColor?color='red'
@@ -65,8 +65,8 @@ Likewise there are many ways to address a single entity.
 
 Sometimes a single entity can be accessed directly, for example by:
 
-- Invoking a Function that returns a single entity (see rule: entityFunctionCall)
-- Invoking an Action that returns a single entity (see rule: actionCall)
+- Invoking a function that returns a single entity (see rule: entityFunctionCall)
+- Invoking an action that returns a single entity (see rule: actionCall)
 - Invoking a service operation that returns a single entity (see rule: entityServiceOpCall)
  
 Often however a single entity is accessed by composing more path segments to a resourcePath that identifies a Collection of Entities, for example by:
@@ -75,8 +75,8 @@ Often however a single entity is accessed by composing more path segments to a r
 
 		For Example: http://services.odata.org/OData/OData.svc/Categories(1)
 
-- Invoking an Action bound to a collection of Entities that returns a singleentity (see rule: boundOperation)
-- Invoking an Function bound to a collection of Entities that returns a singleentity (see rule: boundOperation)
+- Invoking an action bound to a collection of Entities that returns a singleentity (see rule: boundOperation)
+- Invoking an function bound to a collection of Entities that returns a singleentity (see rule: boundOperation)
 
 		For Example: http://services.odata.org/OData/OData.svc/Products/MostExpensive
 
@@ -86,27 +86,27 @@ These rules are recursive, so it is possible to address a single entity via anot
 
 		For Example: http://services.odata.org/OData/OData.svc/Products(1)/Supplier
 
-- By invoking a Function bound to a single entity that returns a single entity (see rule: boundOperation)
+- By invoking a function bound to a single entity that returns a single entity (see rule: boundOperation)
 
 		For Example: http://services.odata.org/OData/OData.svc/Products(1)/MostRecentOrder
 
-- By invoking an Action bound to a single entity that returns a single entity (see rule: boundOperation)
+- By invoking an action bound to a single entity that returns a single entity (see rule: boundOperation)
 - By following a Navigation from a single entity to a related collection of Entities (see rule: entityColNavigationproperty)
 
 		For Example: http://services.odata.org/OData/OData.svc/Categories(1)/Products
 
-- By invoking a Function bound to a single entity that returns a collection of Entities (see rule: boundOperation)
+- By invoking a function bound to a single entity that returns a collection of Entities (see rule: boundOperation)
 
 		For Example: http://services.odata.org/OData/OData.svc/Categories(1)/TopTenProducts
 
-- By invoking an Action bound to a single entity that returns a collection of Entities (see rule: boundOperation)
-- By invoking a Function bound to a collection of Entities that returns a collection of Entities (see rule: boundOperation)
+- By invoking an action bound to a single entity that returns a collection of Entities (see rule: boundOperation)
+- By invoking a function bound to a collection of Entities that returns a collection of Entities (see rule: boundOperation)
 
 		For Example: http://services.odata.org/OData/OData.svc/Categories(1)/Products/AllOrders
 
-- By invoking an Action bound to a collection of Entities that returns a collection of Entities (see rule: boundOperation)
+- By invoking an action bound to a collection of Entities that returns a collection of Entities (see rule: boundOperation)
 
-Finally it is possible to compose path segments onto a resourcePath that identifies a Primitive, Complex instance, Collection of Primitives or Collection of Complex instances and bind an Action or Function that returns a entity or Collections of Entities.
+Finally it is possible to compose path segments onto a resourcePath that identifies a Primitive, Complex instance, Collection of Primitives or Collection of Complex instances and bind an action or function that returns a entity or Collections of Entities.
 
 #### 4.1.1 Canonical URL ####
 For OData services conformant with the addressing conventions in this section, the canonical form of an absolute URL identifying a non contained entity is formed by adding a single path segment to the service root URL. The path segment is made up of the name of the entitySet associated with the entity followed by the key predicate identifying the entity within the Collection. 
@@ -143,23 +143,23 @@ This example, illustrates a call to a service operation with subsequent resource
 
 This invokes the GetProductsByRating service operation, with the rating parameter value set to 3, and then subsequently filters Products returned by the service operation call to include only those with a price greater than $20. 
 
-#### 4.3.2 Addressing Functions ####
-The semantic rules for addressing and invoking Functions are defined in the [OData:Core](OData) document. 
-The grammar for addressing and invoking Functions is defined by a number syntax grammar rules in Appendix A, in particular:
+#### 4.3.2 Addressing functions ####
+The semantic rules for addressing and invoking functions are defined in the [OData:Core](OData) document. 
+The grammar for addressing and invoking functions is defined by a number syntax grammar rules in Appendix A, in particular:
 
 - The functionCall syntax rule defines the grammar in the ResourcePath for addressing and providing parameters for a function directly from the Service Root.
-- The boundFunctionCall syntax rule defines the grammar in the ResourcePath for addressing and providing parameters for a function that is appended to a ResourcePath that identifies some resources that should be used as the binding parameter value when invoking the Function.
+- The boundFunctionCall syntax rule defines the grammar in the ResourcePath for addressing and providing parameters for a function that is appended to a ResourcePath that identifies some resources that should be used as the binding parameter value when invoking the function.
 - The boundOperation syntax rule (which encompasses the boundFunctionCall syntax rule), when used by the resourcePath syntax rule, illustrates how a boundFunctionCall can be appended to a ResourcePath.
 - The functionExpr, boolFunctionExpr, boundFunctionExpr and boolBoundFunctionExpr syntax rules as used by the filter and orderby syntax rules define the grammar for invoking functions to help filter and order resources identified by the ResourcePath of the URL.
 - The aliasAndValue syntax rule defines the grammar for providing function parameter values using Parameter Alias Syntax [OData:Core 7.4.2.3.2](OData). 
 - The parameterAndValue syntax rule defines the grammar for providing function parameter values using Parameter Name Syntax [OData:Core 7.4.2.3.2](OData).
 
 #### 4.3.3 Addressing actions ####
-The semantic rules for addressing and invoking Actions are defined in the [OData:Core](OData) document.
-The grammar for addressing and invoking Actions are defined by the following syntax grammar rules in Appendix A:
+The semantic rules for addressing and invoking actions are defined in the [OData:Core](OData) document.
+The grammar for addressing and invoking actions are defined by the following syntax grammar rules in Appendix A:
 
-- The actionCall syntax rule defines the grammar in the ResourcePath for addressing and invoking an Action directly from the Service Root.
-- The boundActionCall syntax rule defines the grammar in the ResourcePath for addressing and invoking an Action that is appended to a ResourcePath that identifies some resources that should be used as the binding parameter value when invoking the Action.
+- The actionCall syntax rule defines the grammar in the ResourcePath for addressing and invoking an action directly from the Service Root.
+- The boundActionCall syntax rule defines the grammar in the ResourcePath for addressing and invoking an action that is appended to a ResourcePath that identifies some resources that should be used as the binding parameter value when invoking the action.
 - The boundOperation syntax rule (which encompasses the boundActionCall syntax rule), when used by the resourcePath syntax rule, illustrates how a boundActionCall can be appended to a ResourcePath.
 
 ### 4.4 Addressing a property ###
@@ -170,7 +170,7 @@ If the property has a complex type value, properties of that value can be addres
 To address the raw value of a property, client compose `/$value` to the property url.
 
 ## 5.0 Query Options ##
-The Query Options section of an OData URL specifies three types of information: System Query Options, Custom Query Options, and Operation (Function and service operation) Parameters. All OData services MUST follow the query string parsing and construction rules defined in this section and its subsections.
+The Query Options section of an OData URL specifies three types of information: System Query Options, Custom Query Options, and Operation (function and service operation) Parameters. All OData services MUST follow the query string parsing and construction rules defined in this section and its subsections.
 
 ### 5.1 System Query Options ###
 System Query Options are query string parameters a client may specify to control the amount and order of the data that an OData service returns for the resource identified by the URL. The names of all System Query Options are prefixed with a "$" character. 
@@ -286,7 +286,7 @@ he Parenthesis Operator (or '( )') controls the evaluation order of an expressio
 
 Requests all products, because 9 mod 3 is 0. 
 
-#### 5.1.2.4 Canonical Functions ####
+#### 5.1.2.4 Canonical functions ####
 In addition to operators, a set of functions are also defined for use with the filter query option. The following table lists the available functions. Note: ISNULL or COALESCE operators are not defined. Instead, there is a null literal which can be used in comparisons.
 
 The syntax rules for all canonical functions are defined in Appendix A.
@@ -696,7 +696,7 @@ The [format](#formatRule) syntax rule define the formal grammar of the $format q
 ## 5.2 Custom Query Options ##
 Custom query options provide an extensible mechanism for data service-specific information to be placed in a data service URL query string. A custom query option is any query option of the form shown by the rule "customQueryOption" in Appendix A: ABNF for OData URL Conventions. 
 
-Custom query options MUST NOT begin with a "$" character because the character is reserved for system query options. A custom query option MAY begin with the "@" character, however this doing  can result in custom query options that collide with Function Parameters values specified using Parameter Aliases.
+Custom query options MUST NOT begin with a "$" character because the character is reserved for system query options. A custom query option MAY begin with the "@" character, however this doing  can result in custom query options that collide with function Parameters values specified using Parameter Aliases.
 
 For example this URL addresses provide a 'secURLtytoken' via a custom query option:
 	http://service.odata.org/OData/OData.svc/Products?$orderby=Name&secURLtytoken=0412312321

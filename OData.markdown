@@ -190,33 +190,31 @@ This section describes the types of data requests defined by OData. For complete
 
 ### 7.2.1. Requesting Individual Entities ###
 
-Clients may invoke an HTTP GET request in order to retrieve an individual entity.
+To retrieve an individual entity, a client makes a GET request.
 
-The URL for retrieving a particular entity instance may be returned in a response payload containing that instance (for example, as a self-link in an [Atom Payload](ODataAtomPayload)).
+The URL for retrieving an entity MAY be returned in a response payload containing that instance (for example, as a self-link in an [Atom Payload](ODataAtomPayload)).
 
 Conventions for constructing a URL to an individual entity using the entity's Key Value(s) are described in [OData URI Conventions](ODataURIConventions).
 
 ### 7.2.2. Requesting Individual Properties ###
 
-An individual property value may be requested by appending the property name to the URL path for a particular resource. 
+A server SHOULD support retrieving an individual property value. To retrieve a property, a client sends a GET request to the property URL. See the [OData:URL](OData URL Conventions) document for details.
 
 For example:
 
     http://services.odata.org/OData/OData.svc/Products(1)/Name
 
-The format of the returned property value is dependent upon the requested format.
-
 #### 7.2.2.1. Requesting a Property's Raw Value using `$value` ####
 
-The raw value of a primitive typed property may be retrieved without any property wrapping or additional metadata by appending "/$value" to the URL path specifying the individual property.
+A server SHOULD support retrieving the raw value of a primitive type property. To retrieve this value, a client sends a GET request to the property value URL. See the [OData:URL](OData URL Conventions) document for details.
 
 For example:
 
-    http://services.odata.org/OData/OData.svc/Products(1)/Name/$value 
-
-By default, the raw value of any Simple Type property (except those of type Edm.Binary) SHOULD be represented using the text/plain media type and MUST be serialized as specified in <ref todo...>. 
+    http://services.odata.org/OData/OData.svc/Products(1)/Name/$value
 
 The raw value of an Edm.Binary property MUST be serialized as an unencoded byte stream.
+
+The raw value of other properties SHOULD be represented using the text/plain media type. See [OData:ABNF](OData ABNF) for details.
 
 A $value request for a property that is NULL SHOULD result in a "404 Not Found" response. 
 

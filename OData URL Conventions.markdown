@@ -468,7 +468,11 @@ For example:
 Returns all Employees who were born in 1971.
 
 ##### 5.1.2.4.13 years #####
-TODO: for Edm.Time
+The years canonical function has the following signature:
+
+	Edm.Int32 years(Edm.Time)
+
+If implemented the years the years canonical function MUST return the year component of the Time parameter value.
 
 ##### 5.1.2.4.14 month #####
 The month canonical function has the following signatures:
@@ -501,7 +505,11 @@ For example:
 Returns all Employees who were born on the 8th day of a month.
 
 ##### 5.1.2.4.16 days #####
-TODO: for Edm.Time
+The days canonical function has the following signature:
+
+	Edm.Int32 days(Edm.Time)
+
+If implemented the days canonical function MUST return the days component of the Time parameter value.
 
 ##### 5.1.2.4.17 hour #####
 The day canonical function has the following signatures:
@@ -519,7 +527,11 @@ For example:
 Returns all Employees who were born in the 4th hour of a day.
 
 ##### 5.1.2.4.18 hours #####
-TODO: for Edm.Time
+The hours canonical function has the following signature:
+
+	Edm.Int32 hours(Edm.Time)
+
+If implemented the hours canonical function MUST return the hours component of the Time parameter value.
 
 ##### 5.1.2.4.19 minute #####
 The minute canonical function has the following signatures:
@@ -537,7 +549,11 @@ For example:
 Returns all Employees who were born in the 40th minute of any hour on any day.
 
 ##### 5.1.2.4.20 minutes ######
-TODO: for Edm.Time
+The minutes canonical function has the following signature:
+
+	Edm.Int32 minutes(Edm.Time)
+
+If implemented the minutes canonical function MUST return the minutes component of the Time parameter value.
 
 ##### 5.1.2.4.21 second #####
 The second canonical function has the following signatures:
@@ -555,7 +571,11 @@ For example:
 Returns all Employees who were born in the 40th second of any minute of any hour on any day.
 
 ##### 5.1.2.4.22 seconds #####
-TODO: for Edm.Time
+The seconds canonical function has the following signature:
+
+	Edm.Int32 seconds(Edm.Time)
+
+If implemented the seconds canonical function MUST return the seconds component of the Time parameter value.
  
 ##### 5.1.2.4.23 round #####
 The round canonical function has the following signatures

@@ -41,7 +41,6 @@ Properties declared as part of the entity type's definition are called *declared
 *Operations* allow the execution of custom logic on parts of a data model. *Functions* do not allow side effects and are composable. *Actions* allow side effects and are not composable. Actions and functions are global to the service and may be used as members of entities and collections of entities.
 
 <!-- TODO: Add entity inheritance (succinct) -->
-<<<<<<< HEAD
 
 Finally, entity sets and operations are grouped in a named *entity container*. This container represents a service's model.
 
@@ -58,24 +57,6 @@ The NavigationLink is the URI that addresses the relationship itself.
 
 - Relatable types: entity type, collection of entity type
 
-=======
-
-Finally, entity sets and operations are grouped in a named *entity container*. This container represents a service's model.
-
-Refer to the [CSDL specification][OData CSDL Specification] for more information on the data model.
-
-## 2.1 Definitions ##
-
-<!-- TODO: This section needs work. -->
-
-
-Structural elements are composed of other model elements. Structural elements are common in entity models as they are the typical means of representing entities in the OData service. The structural types are: entity type, complex type, row type and association type.
-
-The NavigationLink is the URI that addresses the relationship itself.
-
-- Relatable types: entity type, collection of entity type
-
->>>>>>> 29458eaf9ad90b1a8913f0aed15065bf83ab356b
 //TODO: Fill this in as we discover common type categories.
 
 <!-- TODO: Add a definition for resource (anything in a model that can be addressed). -->
@@ -148,19 +129,11 @@ Regardless of the format, additional content MUST NOT be present if it needs to 
 ### 6.3. Action/Function Extensibility ###
 
 Actions and functions extend the set of operations that can be performed on or with a service or resource. Actions MAY have side-effects. For example actions may be used to extend CUD operations or to invoke custom operations. Functions MUST NOT have side-effects. Functions can be invoked:
-<<<<<<< HEAD
 
 - directly from the service root
 - from an url that addresses a resource
 - inside a predicate to a `$filter` or `$orderby` system query option.
 
-=======
-
-- directly from the service root
-- from an url that addresses a resource
-- inside a predicate to a `$filter` or `$orderby` system query option.
-
->>>>>>> 29458eaf9ad90b1a8913f0aed15065bf83ab356b
 Fully qualified action and function names include a namespace prefix. The `odata` and `geo` namespaces are reserved for the use of this specification. 
 
 Services MUST fail any request that contains actions or functions that it does not understand.

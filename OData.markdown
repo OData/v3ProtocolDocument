@@ -53,7 +53,7 @@ Refer to the [CSDL specification][OData CSDL Specification] for more information
 
 Structural elements are composed of other model elements. Structural elements are common in entity models as they are the typical means of representing entities in the OData service. The structural types are: entity type, complex type, row type and association type.
 
-The NavigationLink is the URI that addresses the relationship itself.
+The NavigationLink is the URL that addresses the relationship itself.
 
 - Relatable types: entity type, collection of entity type
 
@@ -164,7 +164,7 @@ An OData service is a self-describing service that exposes metadata defining the
 
 ### 7.1.1. Service Document ###
 
-The root URI of the service (the *Service Root*) MUST return a *Service Document* describing a set of root entity sets and associated URLs which can be queried from the service.
+The root URL of the service (the *Service Root*) MUST return a *Service Document* describing a set of root entity sets and associated URLs which can be queried from the service.
 
 The format of the Service Document is dependent upon the format selected. For example, in Atom the Service Document is an AtomPub Service Document (as specified in [RFC5023]). 
 
@@ -174,7 +174,7 @@ An OData *Metadata Document* is a representation of the [data model](#DataModel)
 
 [OData:CSDL](odatacsdldefinition) describes an XML representation for OData Metadata Documents and provides an XSD to validate their contents. The media type of the XML representation of an OData Metadata Document is 'application/xml'.
 
-OData services MUST expose a Metadata Document which defines all data exposed by the service.  The *Metadata Document URI* SHOULD be the root URI of the service with "/$metadata" appended. To retrieve this document a client issues a GET request to the Metadata Document URI.
+OData services MUST expose a Metadata Document which defines all data exposed by the service.  The *Metadata Document URL* SHOULD be the root URL of the service with "/$metadata" appended. To retrieve this document a client issues a GET request to the Metadata Document URL.
 
 If a request for metadata does not specify a format preference (via Accept header or [$format](#FormatSystemQueryOption)) then the XML representation MUST be returned.
 
@@ -186,7 +186,7 @@ The path of the URL specifies the target of the request (for example; the collec
 
 The format of the returned data is dependent upon the request and the format specified by the client, either in the Accept header or using the [$format](#FormatSystemQueryOption) query option.
 
-This section describes the types of data requests defined by OData. For complete details on the syntax for building requests, see [[OData URI Conventions](ODataURIConventions)].
+This section describes the types of data requests defined by OData. For complete details on the syntax for building requests, see [[OData URL Conventions](ODataURLConventions)].
 
 ### 7.2.1. Requesting Individual Entities ###
 
@@ -194,7 +194,7 @@ To retrieve an individual entity, a client makes a GET request.
 
 The URL for retrieving an entity MAY be returned in a response payload containing that instance (for example, as a self-link in an [Atom Payload](ODataAtomPayload)).
 
-Conventions for constructing a URL to an individual entity using the entity's Key Value(s) are described in [OData URI Conventions](ODataURIConventions).
+Conventions for constructing a URL to an individual entity using the entity's Key Value(s) are described in [OData URL Conventions](ODataURLConventions).
 
 ### 7.2.2. Requesting Individual Properties ###
 
@@ -240,7 +240,7 @@ The value of the `$filter` option is a boolean expression as defined in [[OData 
 
 ##### 7.2.3.1.1. Built-in Filter Operations #####
 
-OData supports a set of built-in filter operations, as described in this section. For a full description of the syntax used when building requests, see [OData URI Conventions](OData_URI_Conventions).
+OData supports a set of built-in filter operations, as described in this section. For a full description of the syntax used when building requests, see [OData URL Conventions](OData_URL_Conventions).
 
 <table border="1">
       <tr>
@@ -472,7 +472,7 @@ The value of the `$expand` query option MUST be a comma seperated list of naviga
 
 The service MUST include any actions or functions that are bound to the associated entities that are introduced via an expandClause, unless a `$select` system query option is also included in the request and that `$select` requests that the actions/functions be omitted.
 
-For a full description of the syntax used when building requests, see [OData URI Conventions](OData_URI_Conventions).
+For a full description of the syntax used when building requests, see [OData URL Conventions](OData_URL_Conventions).
 
 Examples
 
@@ -484,7 +484,7 @@ For each customer entity within the Customers entity set, the value of all assoc
 
 For each Order within the Orders entity set, the following should be represented inline:
 
-- The Order lines associated to the Orders identified by the resource path section of the URI and the products associated to each Order line.
+- The Order lines associated to the Orders identified by the resource path section of the URL and the products associated to each Order line.
 - The customer associated with each Order returned.
 
 	http://host/service.svc/Customers?$expand=SampleModel.VipCustomer/InHouseStaff
@@ -617,47 +617,47 @@ In all failure responses, the service MUST provide an accurate failure HTTP stat
 
 Many different parts of the model can be updated. Responses to update requests for all parts of the model share some common traits. Rather than repeating them for all responses, the common traits are identified here.
 
-On success, the response to any update request MUST be either 204 with an empty response body or 200 with a valid response body.
+Upon successful completion, the response to any update request MUST be either 204 with an empty response body or 200 with a valid response body.
 
-A non-empty body MUST contain the new, post-update, value for the identified resource. This MUST be formatted exactly as would the response for a GET to the same URL as was specified in the update request.
+A non-empty body MUST contain the updated value of the identified resource. This MUST be formatted exactly as would the response for a GET to the same URL as was specified in the update request.
 
 ### 7.3.1. Modifying Entities ###
 
-Entities are described in [Section 2.1](#entities). URI conventions for entities are described in [URI Conventions](uri_conventions).
+Entities are described in [Section 2.1](#entities). URL conventions for entities are described in [URL Conventions](URL_conventions).
 
 #### 7.3.2. Create an Entity ####
 
-To create an Entity in an entity set, send a POST request to that entity set's URL. The POST body MUST contain a single valid entity representation.
+To create an entity in a collection, send a POST request to that collection's URL. The POST body MUST contain a single valid entity representation.
 
-If the type being created is an OpenType, then additional values for properties beyond those specified in the metadata MAY be sent in the request body. The service MUST treat these as dynamic properties and add them to the created instance.
+To create an *open entity* (an instance of an open type), additional property values beyond those specified in the metadata MAY be sent in the request body. The service MUST treat these as dynamic properties and add them to the created instance.
 
-If the type being created is not an OpenType, then additional values for properties beyond those specified in the metadata SHOULD NOT be sent in the request body. The server MUST ignore any such values supplied.
+If the entity being created is not an open entity, additional property values beyond those specified in the metadata SHOULD NOT be sent in the request body. The server SHOULD ignore any such values supplied.
 
-On success, the response MUST be 201 and contain a Location header that expresses the edit URL of the created Entity. The response body MUST contain a representation of the new Entity. This MUST be formatted as would the response body for a GET request to the new Entity's edit URL.
+Upon successful completion, the response MUST be 201 and contain a `Location` header that contains the edit URL of the created entity. The response body MUST contain a representation of the new entity. This MUST be formatted as would the response body for a GET request to the new entity's edit URL.
 
-The update request MAY include a <ref>Prefer</ref> header to suggest what the service should return.
+The update request MAY include a <ref>`Prefer`</ref> header to suggest what the service should return.
 
 ##### 7.3.2.1. Link to Related Entities When Creating Entity #####
 
-A service that supports creating Entities SHOULD support linking those new Entities to existing Entities when they are created.
+A service SHOULD support linking new entities to existing entities upon creation.
 
-A request to create an Entity the MAY specify that the Entity should be automatically linked to other already-existing entities in the data service. To bind the new entity to one or more existing Entities, include the required <ref>binding information</ref> in the appropriate NavigationProperty in the request body.
+A request to create an entity MAY specify that the entity should be linked to existing entities. To bind the new entity to existing entities, include the required <ref>binding information</ref> in the appropriate navigation property in the request body.
 
 The representation for binding information is format specific.
 
-On success, the service MUST create the requested Entity and associate its NavigationProperty to the requested existing entity.
+On success, the service MUST create the requested entity and relate it to the requested existing entities.
 
-On failure, the service MUST NOT create the new Entity. In particular, it MUST NOT create an Entity in a partially-valid state (with the NavigationProperty not set).
+On failure, the service MUST NOT create the new entity. In particular, the service MUST never create an entity in a partially-valid state (with the navigation property unset).
 
 ##### 7.3.2.2. Create Related Entities When Creating Entity #####
 
-A service that supports creating Entities SHOULD support creating related Entities as part of the same request.
+A service that supports creating entities SHOULD support creating related entities as part of the same request.
 
-A request to create an Entity MAY specify related Entites that should also be created. The related entities MUST be represented using the <ref>inline representation of the NavigationProperty</ref>.
+A request to create an entity MAY specify related entities that should also be created. The related entities MUST be represented using the appropriate inline representation of the navigation property.
 
-On success, the service MUST create each Entity requested and associate them via the NavigationProperty.
+On success, the service MUST create each entity and relate them.
 
-On failure, the ervice MUST NOT create any of the Entities requested.
+On failure, the service MUST NOT create any of the entities.
 
 #### 7.3.3. Update an Entity ####
 
@@ -667,11 +667,15 @@ If the request is a PUT request, the service MUST replace all property values wi
 
 If the request is a PATCH or MERGE request, the service MUST replace exactly those property values that are specified in the request body. Missing properties, including dynamic properties, MUST NOT be altered. Exact semantics are defined in <ref>PATCH and MERGE</ref>.
 
-If the type being updated is an OpenType, then additional values for properties beyond those specified in the metadata MAY be sent in the request body. The service MUST treat these as dynamic properties and involve them in the update.
+If the request contains a value for a key property, the service MUST ignore that value when applying the update.
 
-If the type being updated is not an OpenType, then additional values for properties beyond those specified in the metadata SHOULD NOT be sent in the request body. The service MUST ignore any such values supplied.
+If the entity being updated is open, then additional values for properties beyond those specified in the metadata MAY be sent in the request body. The service MUST treat these as dynamic properties.
+
+If the entity being updated is not open, then additional values for properties beyond those specified in the metadata SHOULD NOT be sent in the request body. The service SHOULD ignore any such values supplied.
 
 On success, the response must be a valid [update response](#responsesforupdates).
+
+<!-- TODO: on failure, the data should remain unchanged - this needs to be pulled up to a common area -->
 
 #### 7.3.4. Delete an Entity ####
 
@@ -681,29 +685,39 @@ On success, the response MUST be 204 (No Content).
 
 #### 7.3.5. Modifying Relationships Between Entities ####
 
-Relationships between Entities are described by NavigationProperties. NavigationProperties are described in <ref>[Section ??](#navigationproperties)</ref>. URI conventions for NavigationProperties are described in [URI Conventions](uri_conventions).
+Relationships between entities are represented by navigation properties. Navigation properties are described in <ref>[Section ??](#navigationproperties)</ref>. URL conventions for navigation properties are described in [URL Conventions](URL_conventions).
 
 ##### 7.3.5.1. Create a New Link Between Two Existing Entities in a One to Many NavigationProperty #####
 
-To add an existing Entity to another Entity's NavigationProperty, send a POST request to the URI for that NavigationProperty's links collection. The request body MUST contain a URI that identifies the Entity to be added.
+To relate an existing entity to another entity, send a POST request to the URL for the appropriate navigation property's links collection. The request body MUST contain a URL that identifies the entity to be added.
 
-The body MUST be formatted as for Edm.SimpleType Property that contains a single link.
-
-On success, the response MUST be 204 and contain an empty body.
-
-##### 7.3.5.2. Remove a Link Between Two Entities in a One to Many NavigationProperty #####
-
-To remove an Entity from another Entity's NavigationProperty, send a DELETE request to a URI that represents the single link between those two Entities.
+The body MUST be formatted as a single link. See the appropriate format document for details.
 
 On success, the response MUST be 204 and contain an empty body.
 
-##### 7.3.5.3. Change the Relation in a One to One NavigationProperty #####
+<!-- TODO: This is an update operation; see above for additional common behavior. -->
 
-If the NavigationProperty is nullable, then a change MAY be perfomed by first removing the existing relationship and then adding the new one. Use the approach described for adding and removing links in one to many NavigationProperties.
+<!-- TODO: add to common section: A `Prefer` header may be used to alter the response. -->
 
-Alternatively, a relationship MAY be updated as part of an update to the source Entity. Update the entity; the NavigationProperty MUST include the required binding information for the new target Entity. This binding information MUST be formatted as for a deferred NavigationProperty in a response.
+##### 7.3.5.2. Remove a Relationship Between Two Entities
+
+To remove a relationship to a related entity, send a `DELETE` request to a URL that represents the link to the related entity.
+
+<!-- TODO: Add a section in the common requirements that indicates that a request or batch request must not modify data such that integrity constraints are violated. -->
+
+The `DELETE` request MUST follow the requirements for integrity constraints above.
+
+On success, the response MUST be 204 and contain an empty body.
+
+##### 7.3.5.3. Change the Relation in a One to One Navigation Property #####
+
+If the navigation property is nullable, then a change MAY be perfomed by first removing the existing relationship and then adding the new one. Use the approach described for adding and removing links.
+
+Alternatively, a relationship MAY be updated as part of an update to the source entity by including the required binding information for the new target entity. This binding information MUST be formatted as for a deferred navigation property in a response.
 
 ### 7.3.6 Managing Binary Resources ###
+
+<!-- TODO: Replace URL with URL -->
 
 Binary resources are one of the primitive types that can be used in the definition of a Property. However, they are complex enough that there are special rules for manipulating them.
 
@@ -719,13 +733,13 @@ The representation for the data part is however that data would normally be tran
 
 The metadata is always represented as a standard Entity. All MLE Entities have a certain set of common properties. They may have additional metadata properties. See <ref>MLE Metadata</ref> for details.
 
-Because a MLE has two parts, it has multiple URIs. These URIs are defined as follows:
+Because a MLE has two parts, it has multiple URLs. These URLs are defined as follows:
 
-* **Entity URI**. The edit URI that may be used to modify the metadata part of the MLE.
-* **Edit-Media URI**. The URI which may be used to modify the data part of the MLE. This URI is contained in the MLE metadata, if the data is modifyable.
-* **Source URI**. The URI which may be used to request the data part of the MLE. This URI is contained in the MLE metadata.
+- **Entity URL**. The edit URL that may be used to modify the metadata part of the MLE.
+- **Edit-Media URL**. The URL which may be used to modify the data part of the MLE. This URL is contained in the MLE metadata, if the data is modifyable.
+- **Source URL**. The URL which may be used to request the data part of the MLE. This URL is contained in the MLE metadata.
 
-The edit URI for the Entity represents the metadata Entity. This metadata entity is manipulated as per a normal Entity.
+The edit URL for the Entity represents the metadata Entity. This metadata entity is manipulated as per a normal Entity.
 
 A MLE MUST NOT exist with only one of data and metadata. Any time the service creates or destroys one part it MUST create or destroy the other part in the same request. This invariant MUST be maintained even when an error occurs while handling such a request.
 
@@ -733,7 +747,7 @@ A MLE MUST NOT exist with only one of data and metadata. Any time the service cr
 
 To create a MLE, send a POST request to the MLE metadata's EntitySet. The request body MUST contain the representation of the data for the resource, not the representation for the metadata.
 
-The service MUST respond with the representation for the metadata. All MLE metadata entities include a property which contains the data URI for that resource.
+The service MUST respond with the representation for the metadata. All MLE metadata entities include a property which contains the data URL for that resource.
 
 ##### 7.3.6.1.2. Reference a Media Resource Modeled as a MLE #####
 
@@ -749,13 +763,13 @@ Named Resource Streams allow an Entity to have a Property that refers directly t
 
 The metadata for a Named Resource Stream is determined by the service. The client is not able to modify the metadata.
 
-If the stream is editable, the metadata will include an edit URI.
+If the stream is editable, the metadata will include an edit URL.
 
 Named streams are not deletable or directly creatable by the client. The service owns their lifetime. The client MAY request to set the stream data to empty (0 bytes).
 
 #### 7.3.6.2.1 Edit Resource Data ######
 
-To change the data for a named stream, the client MUST send a PUT request to the edit URI.
+To change the data for a named stream, the client MUST send a PUT request to the edit URL.
 
 If the stream metadata includes an ETag value, the client SHOULD include an If-Match header with the ETag value.
 
@@ -765,11 +779,11 @@ The body of the request MUST be the binary data that will be the new value for t
 
 ### 7.3.7. Managing Values and Properties Directly ###
 
-Values and Properties can be explicitly addressed with URIs. This allows them to be individually modified. See <ref>Uri conventions</ref> for details on addressing.
+Values and properties can be explicitly addressed with URLs. This allows them to be individually modified. See <ref>URL conventions</ref> for details on addressing.
 
-#### 7.3.7.1. Update a PrimitiveProperty ####
+#### 7.3.7.1. Update a Primitive Property ####
 
-To update a value, the client MAY send a PUT, MERGE, or PATCH request to an edit URL for a SimpleProperty. The message body MUST contain the desired new value, formatted as a <ref>SimpleTypeProperty</ref>.
+To update a value, the client MAY send a PUT, MERGE, or PATCH request to an edit URL for a primitive property. The message body MUST contain the new value, formatted as a single property.
 
 Regardless of which verb is used, the service MUST replace the entire value with the value supplied in the request body.
 
@@ -779,17 +793,17 @@ On success, the response must be a valid [update response](#responsesforupdates)
 
 #### 7.3.7.2. Null a Value ####
 
-There are two ways to set a primitive value to NULL. The client may [Update a PrimitiveProperty](#), specifying a NULL value. Alternatively, the client MAY send a DELETE request with an empty message body to an edit URI for that value.
+There are two ways to set a primitive value to NULL. The client may [Update a PrimitiveProperty](#), specifying a NULL value. Alternatively, the client MAY send a DELETE request with an empty message body to the property URL.
 
 The service SHOULD consider a DELETE request to a non-nullable value to be malformed.
 
-The same rules apply whether this is the value of a regular property or the value of a dynamic property. A missing dynamic property is defined to be the same as a dynamic property with value NULL. Therefore, all dynamical properties are implicitly nullable.
+The same rules apply whether this is the value of a regular property or the value of a dynamic property. A missing dynamic property is defined to be the same as a dynamic property with value NULL. All dynamic properties are nullable.
 
 On success, the service MUST respond with 204 and an empty body.
 
 #### 7.3.7.3. Update a ComplexType ####
 
-To update an complex type, send a PUT, PATCH, or MERGE request to that value's edit URI. The request body MUST contain a single valid representation for that type.
+To update a complex type, send a PUT, PATCH, or MERGE request to that property's URL. The request body MUST contain a single valid representation for that type.
 
 If the request is a PUT request, the service MUST replace all property values with those specified in the request body. Missing properties MUST be set to their default values.
 
@@ -799,7 +813,7 @@ On success, the response must be a valid [update response](#responsesforupdates)
 
 #### 7.3.7.4. Update a CollectionProperty ####
 
-To update a value, the client MAY send a PUT request to an edit URI for a CollectionProperty. The message body MUST contain the desired new value, formatted as a <ref>CollectionProperty</ref>.
+To update a value, send a PUT request to the collection property's URL. The message body MUST contain the desired new value, formatted as a <ref>CollectionProperty</ref>.
 
 The service MUST replace the entire value with the value supplied in the request body.
 
@@ -807,9 +821,11 @@ On success, the response must be a valid [update response](#responsesforupdates)
 
 ## 7.4. Operations ##
 
-Operations (ServiceOperations, Actions and Functions) are represented as FunctionImport elements under an EntityContainer element. 
+Services MAY support custom operations. Operations (actions, functions and legacy service operations) are represented as FunctionImport elements. 
 
 The following rules apply to all FunctionImport elements:
+
+<!-- TODO: Remove the rules here that are already covered in CSDL. -->
 
 - MUST have a 'Name' attribute set to a valid EDM identifier.
 - MUST either omit a ReturnType (in the case of void operations) or specify a ReturnType either by including a 'ReturnType' attribute set to a valid TypeReference or by including a child 'ReturnType' element. 
@@ -823,6 +839,8 @@ The following rules apply to all FunctionImport elements:
 
 ### EntitySetPathExpression ###
 
+<!-- TODO: Move into CSDL spec -->
+
 Functions or Actions that return an Entity or Entities MAY return results from an EntitySet that is dependent upon the EntitySet of one of the parameter values used to invoke the Operation.
 
 When such a dependency exists an EntitySetPathExpression is used. An EntitySetPathExpression MUST begin with the name of a parameter to the Operation, and optionally includes a series NavigationProperties (and occasional type casts) as a succinct way to describe the series of EntitySet transitions. 
@@ -835,31 +853,31 @@ For example this EntitySetPathExpression: "p1/Orders/Customer" can only be evalu
 
 ### Common Rules for Binding Operations ###
 
-Some Operations (Actions and Functions but not ServiceOperations) support binding if the 'IsBindable' attribute is set to 'true'. When Binding is supported the first parameter of an Operation is the 'Binding Parameter'. 
+Actions and functions MAY be bound to an entity or a collection of entities. The first parameter of a bound operation is the *binding parameter*. 
 
-In OData version 3.0, binding parameters MUST be of a Type that is either an EntityType or a collection of EntityType.
+<!-- TODO: Scan for "version 3.0" -->
 
-Any URL that can identify a 'Binding Parameter' of the correct type MAY be used as the foundation of a URL to invoke an Operation that supports Binding using the resource identified by that URL as the 'Binding Parameter Value'.
+Any URL that can identify a binding parameter of the correct type MAY be used as the foundation of a URL to invoke an operation that supports binding using the resource identified by that URL as the *binding parameter value*.
 
-For example, the Function
+For example, the function
 
 	<FunctionImport Name="MostRecentOrder" ReturnType="SampleModel.Order" EntitySet="Orders" IsBindable="true" IsSideEffecting="false" m:IsAlwaysBindable="true">
 		<Parameter Name="customer" Type="SampleModel.Customer" Mode="In" />
 	</FunctionImport>`
 
-can be bound to any url that identifies a SampleModel.Customer, two examples might be:
+can be bound to any url that identifies a `SampleModel.Customer`, two examples might be:
 
-`GET http://server/Customers(6)/MostRecentOrder() HTTP/1.1`
+`GET http://server/Customers(6)/MostRecentOrder()`
 
-Which invokes the MostRecentOrder Function with the 'customer' or binding parameter value being the resource identified by http://server/Customers(6)/.
+Which invokes the `MostRecentOrder` function with the 'customer' or binding parameter value being the entity identified by http://server/Customers(6)/.
 
-`GET http://server/Contacts(23123)/Company/MostRecentOrder() HTTP/1.1`
+`GET http://server/Contacts(23123)/Company/MostRecentOrder()`
 
-Which again invokes the MostRecentOrder function, this time with the 'customer' or binding parameter value being the resource identified by http://server/Contacts(23123)/Company/. 
+Which again invokes the `MostRecentOrder` function, this time with the 'customer' or binding parameter value being the entity identified by http://server/Contacts(23123)/Company/. 
 
 ### 7.4.1. Actions ####
 
-Actions are operations exposed by an OData server that have side effects when invoked and optionally return some data.
+Actions are operations exposed by an OData server that MAY have side effects when invoked and optionally return some data.
 
 #### 7.4.1.1. Declaring Actions in Metadata ####
 
@@ -868,10 +886,12 @@ A service that supports Actions SHOULD declare them in $metadata. Actions that a
 In addition to the [Common Rules for FunctionImports](#commonrulesforfunctionimports) the following rules apply for FunctionImport elements that represent Actions:
 
 - Actions MUST NOT specify the 'm:HttpMethod' attribute as this is reserved for ServiceOperations.
-- Actions MUST be side effecting, indicated by either omitting or setting the 'IsSideEffecting' attribute to 'true'.
+- Actions MAY be side effecting, indicated by either omitting or setting the 'IsSideEffecting' attribute to 'true'.
 - Actions MUST NOT be composable, indicated by either omitiing or setting the 'IsComposable' attribute to 'false'.
 
-For example this FunctionImport represents an Action that Creates an Order for a customer using the specified quantity and discountCode, which can be bound to any resource path that represents a Customer entity:
+<!-- TODO: Remove any redundancyhere with CSDL. -->
+
+For example this FunctionImport represents an Action that Creates an Order for a customer using the specified quantity and discountCode. This action can be bound to any resource path that represents a Customer entity:
 
 	<FunctionImport Name="CreateOrder" IsBindable="true" IsSideEffecting="true" 
 					m:IsAlwaysBindable="true">
@@ -882,44 +902,24 @@ For example this FunctionImport represents an Action that Creates an Order for a
 
 #### 7.4.1.2. Advertising Currently Available Actions ####
 
-The existing OData Formats (application/atom+xml and application/json;odata=verbose) require all Actions that are currently available for the current entity or current collection of entities be advertized inside any representation of the entity or collection entities returned from the service.
+OData application/atom+xml and application/json;odata=verbose formats require all actions that are available for the current entity or current collection of entities to be advertised inside any representation of the entity or collection entities returned from the service.
 
-It may be resource intensive to determine whether an Action is currently available on a particular Entity or EntitySet. If this calculation would be too expensive, a service SHOULD advertize the Action as if it is available. The service MAY fail later if the client attempts to invoke the Action and it is found to be not available.
+A service SHOULD advertise only those actions that are available for a given entity or collection of entities. The service MAY advertise all actions for a given entity or collection of entities. The service MAY fail later if the client attempts to invoke the action and it is found to be not available.
 
-The following information MUST be included when an Action is advertized: 
+The following information MUST be included when an action is advertised: 
 
 - A 'Target Url' that MUST identify the resource that accepts requests to invoke the Action.
 - A 'Metadata Url' that MUST identify the FunctionImport that declares the Action. This Url can be either relative or absolute, but when relative it MUST be assumed to be relative to the $metadata Url of the current service.
-- A 'Title' that MUST contain a human readable description of the Action.
+- A 'Title' that SHOULD contain a human readable description of the Action.
 
-Example: Given this client request:
+Example: Given a GET request to /service.svc/Customers('ALFKI')
 
-	GET /service.svc/Customers('ALFKI') HTTP/1.1
-	Host: host
-	Accept: application/json
-	DataServiceVersion: 1.0
-	MaxDataServiceVersion: 3.0
-
-The service might respond with a Customer entity that advertises a binding of the `SampleEntities.CreateOrder` Action to itself:
-
-	HTTP/1.1 200 OK
-	Date: Fri, 12 Dec 2008 17:17:11 GMT
-	Content-Type: application/json
-	Content-Length: nnn
-	ETag: W/"X'000000000000FA01'"
-	DataServiceVersion: 3.0
+The service might respond with a Customer entity that advertises a binding of the `SampleEntities.CreateOrder` action to itself:
 
 	{"d":
 	 { 
 	   "__metadata": { 
-	       "uri": "Customers(\'ALFKI\')", 
-	       "type": "SampleModel.Customer",
-	       "etag": "W/\"X\'000000000000FA01\'\"" 
-	       "properties" : {
-	           "Orders" : {
-	              "__associationuri" : "Customers(\'ALFKI\')/SampleModel.Customer/$links/Orders",
-	           }
-	       },
+	       ...,
 	       "actions" : {
 	           "SampleEntities.CreateOrder" : [{
 	               "title" : "Create Order",
@@ -929,8 +929,7 @@ The service might respond with a Customer entity that advertises a binding of th
 	   },  
 	   "CustomerID": "ALFKI", 
 	   "CompanyName": "Alfreds Futterkiste", 
-	   "Version": "AAAAAAAA+gE=",
-	   "Orders":  { "__deferred": { "uri": "Customers(\'ALFKI\')/SampleModel.Customer/Orders" } }
+	   ...
 	 }
 	}
 
@@ -942,17 +941,19 @@ An efficient format that assumes client knowledge of metadata SHOULD NOT adverti
 
 To invoke an Action a client MUST make a POST request to the 'Target Url' of the Action. 
 
-If the Action supports binding the binding parameter value MUST be encoded in the 'Target Url'. Background: In OData version 3 only parameters of an EntityType or collection of EntityType are permitted to be binding parameters, and there is no way to specify these types of parameter values in the request body, hence the binding parameters can only be specified in the 'Target Url'.
+If the Action supports binding the binding parameter value MUST be encoded in the 'Target Url'. It is not possible to specify an entity or a collection of entities as a parameter value in the request body.
 
-If the invoke request contains any non-binding parameter values, the Content-Type of the request MUST be 'application/json', and the parameter values MUST be encoded in a single JSON object in the request body. 
+If the invoke request contains any non-binding parameter values, the `Content-Type` of the request MUST be `'application/json'`, and the parameter values MUST be encoded in a single JSON object in the request body. 
 
-Each non-binding parameter value specified MUST be encoded as a separate 'name/value' pair in a single JSON object that comprises the body of the request. Where the name is the name of the Parameter and the value is the Parameter value which is an instance of the type specified by the parameter in JSON format. Any parameter values not specified in the JSON object MUST be assumed to be null.
+Each non-binding parameter value specified MUST be encoded as a separate 'name/value' pair in a single JSON object that comprises the body of the request. The name is the name of the parameter. The value is the parameter value which is an instance of the type specified by the parameter in JSON format. Any parameter values not specified in the JSON object MUST be assumed to be null.
 
-If the Action returns results the client SHOULD use content type negotiation to request the results in the desired format, otherwise the default content type will be used.
+If the action returns results the client SHOULD use content type negotiation to request the results in the desired format, otherwise the default content type will be used.
 
-If a client only wants an Action invoke request to be processed when the binding parameter value, an Entity or collection of Entities, is unmodified, the client SHOULD include the 'If-Match' header with the latest known ETag value for the Entity or collection of Entities. When present, a service MUST attempt to verify that the ETag found in the 'If-Match' header is current before processing the request. If the ETag cannot be verified or is found to be out of date the service response MUST be '412 Precondition Failed'. 
+<!-- TODO: Add etags to common update section and just refer to it from here.
 
-On success, the response SHOULD be '200 OK' for Actions with a return type or '204 No Content' for Action without a return type. 
+If a client only wants an action to be processed when the binding parameter value, an entity or collection of entities, is unmodified, the client SHOULD include the `'If-Match'` header with the latest known ETag value for the Entity or collection of Entities. When present, a service MUST attempt to verify that the ETag found in the 'If-Match' header is current before processing the request. If the ETag cannot be verified or is found to be out of date the service response MUST be '412 Precondition Failed'. 
+ -->
+On success, the response SHOULD be 200 for actions with a return type or 204 for action without a return type. The client can change the behavior using the `Prefer` header.
 
 Example: This request invokes the `SampleEntities.CreateOrder` action using `/Customers('ALFKI') `as the customer (or binding parameter): 
 
@@ -996,7 +997,7 @@ This is an example of an Function called MostRecent that returns the 'MostRecent
 
 #### 7.4.2.2. Advertising currently available Functions ####
 
-Services are allowed to choose whether to advertize Functions that can be bound to the current entity or current collection of entities inside representations of the entity or collection entities returned from the Server. 
+Services are allowed to choose whether to advertise Functions that can be bound to the current entity or current collection of entities inside representations of the entity or collection entities returned from the Server. 
 
 If the service chooses to advertise a Function the following information MUST be included: 
 
@@ -1029,57 +1030,57 @@ The service might respond with a collection of Orders that advertising the `Samp
 		},
 		"d": [
 	         {
-	            "__metadata": { "uri": "Orders(1)",
+	            "__metadata": { "URL": "Orders(1)",
 	                            "type": "SampleModel.Order",
 	                            "properties" : {
 	                              "Customer" : {
-	                                "__associationuri" : "Orders(1)/SampleModel.Order/$links/Customer",
+	                                "__associationURL" : "Orders(1)/SampleModel.Order/$links/Customer",
 	                              },
 	                              "OrderLines" : {
-	                                "__associationuri" : "Orders(1)/SampleModel.Order/$links/OrderLines",
+	                                "__associationURL" : "Orders(1)/SampleModel.Order/$links/OrderLines",
 	                              }
 	                            } 	
 	                          },
 	            "OrderID": 1,
 	            "ShippedDate": "\/Date(872467200000)\/",
-	            "Customer":   { "__deferred": { "uri": "Orders(1)/SampleModel.Order/Customer" } }
-	            "OrderLines": { "__deferred": { "uri": "Orders(1)/SampleModel.Order/OrderLines"} }
+	            "Customer":   { "__deferred": { "URL": "Orders(1)/SampleModel.Order/Customer" } }
+	            "OrderLines": { "__deferred": { "URL": "Orders(1)/SampleModel.Order/OrderLines"} }
 	         },
 	         {
-	            "__metadata": { "uri": "Orders(2)",
+	            "__metadata": { "URL": "Orders(2)",
 	                            "type": "SampleModel.Order",
 	                            "properties" : {
 	                              "Customer" : {
-	                                "__associationuri" : "Orders(2)/SampleModel.Order/$links/Customer",
+	                                "__associationURL" : "Orders(2)/SampleModel.Order/$links/Customer",
 	                              },
 	                              "OrderLines" : {
-	                                "__associationuri" : "Orders(2)/SampleModel.Order/$links/OrderLines",
+	                                "__associationURL" : "Orders(2)/SampleModel.Order/$links/OrderLines",
 	                              }
 	                            } 
 	
 	                          },
 	            "OrderID": 2,
 	            "ShippedDate": "\/Date(875836800000)\/",
-	            "Customer":   { "__deferred": { "uri": "Orders(2)/SampleModel.Order/Customer"} }
-	            "OrderLines": { "__deferred": { "uri": "Orders(2)/SampleModel.Order/OrderLines"} }
+	            "Customer":   { "__deferred": { "URL": "Orders(2)/SampleModel.Order/Customer"} }
+	            "OrderLines": { "__deferred": { "URL": "Orders(2)/SampleModel.Order/OrderLines"} }
 	
 	         }
 	]}
  
  
-When the resource retrieved represents a collection, the 'Target Url' of any Functions advertized MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
+When the resource retrieved represents a collection, the 'Target Url' of any Functions advertised MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
 
-An efficient format that assumes client knowledge of metadata SHOULD NOT advertize Functions whose availability ('IsAlwaysBindable' is set to 'true') and the target url can be established via metadata.
+An efficient format that assumes client knowledge of metadata SHOULD NOT advertise Functions whose availability ('IsAlwaysBindable' is set to 'true') and the target url can be established via metadata.
 
 #### 7.4.2.3. Invoking a Function ####
 
 To invoke a Function directly a client MUST issue a GET request to a Url that identifies the Function and that specifies any parameter values required by the Function. 
 
-It is also possible to invoke a Function indirectly using GET, PUT, POST, PATCH or DELETE requests by formulating a Uri that identifies a Function and its parameters and then appending further path segments to create a Request Uri that identifies resources related to the results of the Function.
+It is also possible to invoke a Function indirectly using GET, PUT, POST, PATCH or DELETE requests by formulating a URL that identifies a Function and its parameters and then appending further path segments to create a Request URL that identifies resources related to the results of the Function.
 
-Parameter Values passed to Functions MUST be specified either as a Uri Literal (for Primitive Types) or as a JSON formatted OData object (for ComplexTypes or Collections of Primitive Types or ComplexTypes). 
+Parameter Values passed to Functions MUST be specified either as a URL Literal (for Primitive Types) or as a JSON formatted OData object (for ComplexTypes or Collections of Primitive Types or ComplexTypes). 
 
-Functions calls MAY be present in the Request Uri Path or the Request Uri Query inside either the $filter or $orderby Query Options. 
+Functions calls MAY be present in the Request URL Path or the Request URL Query inside either the $filter or $orderby Query Options. 
 
 ##### 7.4.2.3.1. Inline Parameter Syntax #####
 
@@ -1101,13 +1102,13 @@ And this request:
 
 Filters `Customers` to those in the `Western` sales region, calculated for each Customer in the Collection by passing the Customer's City as the `p1` parameter value to the `NS.GetSalesRegion` function. 
 
-Parameters values MAY be provided to Functions in the Request Uri path using inline syntax for primitive parameter types only, all other parameter types MUST be provided externally. 
+Parameters values MAY be provided to Functions in the Request URL path using inline syntax for primitive parameter types only, all other parameter types MUST be provided externally. 
 
 ##### 7.4.2.3.2. Parameter Alias Syntax #####
 
 Another way to pass parameter values is by using Parameter Alias Syntax.
 
-To use Parameter Alias Syntax, whereever a Function is called, parameter aliases MUST be specified inside parenthesis, i.e. `()`, appended directly to the Function name, and actual parameter values MUST be specified as Query options in the Query part of the Request Uri. The Query option name is the Name of the Parameter Alias, and the Query option value is the Value of any parameter that refers to this Parameter Alias.
+To use Parameter Alias Syntax, whereever a Function is called, parameter aliases MUST be specified inside parenthesis, i.e. `()`, appended directly to the Function name, and actual parameter values MUST be specified as Query options in the Query part of the Request URL. The Query option name is the Name of the Parameter Alias, and the Query option value is the Value of any parameter that refers to this Parameter Alias.
 
 The parameter aliases MUST be constructed by concatenating Name/Value pairs for each parameter separated by `,`'s, where the Name/Value pairs are in the format `Name=Value` and where `Name` is the Name of the parameter to the Function and `Value` is a Parameter Alias. Parameter aliases MUST begin with `@`. 
 
@@ -1121,13 +1122,13 @@ Parameter Alias Syntax has a number of advantages over Inline syntax:
 - Parameter Values MAY be non-primitive
 - A single Parameter Alias (and thus Parameter Value) MAY be bound to multiple Function calls, which can shorten urls significantly, especially when dealing with large Geospatial or structural parameter values.
 
-If a Parameter Alias referenced by a Function call is not given a value in the Query part of the Request Uri, the value MUST be assumed to be null.
+If a Parameter Alias referenced by a Function call is not given a value in the Query part of the Request URL, the value MUST be assumed to be null.
 
 ##### 7.4.2.3.3. Parameter Name Syntax #####
 
-The OData protocol allows parameter values for the last Function call in a Request Uri Path to be specified by appending Name/Value pairs, representing each parameter Name and Value for that Function, as query strings to the Query part of the Request Uri. 
+The OData protocol allows parameter values for the last Function call in a Request URL Path to be specified by appending Name/Value pairs, representing each parameter Name and Value for that Function, as query strings to the Query part of the Request URL. 
 
-This is useful because it means clients, in particular rudimentary clients, MAY invoke advertized Functions without parsing the advertized Target Url (as would be required to either inject parameter values using [Inline Parameter Syntax] or identify Parameter Aliases so that Parameter Values can be provided using [Parameter Alias Syntax]). 
+This is useful because it means clients, in particular rudimentary clients, MAY invoke advertised Functions without parsing the advertised Target Url (as would be required to either inject parameter values using [Inline Parameter Syntax] or identify Parameter Aliases so that Parameter Values can be provided using [Parameter Alias Syntax]). 
 
 This means that all of these requests are equivalent:
 
@@ -1135,7 +1136,7 @@ This means that all of these requests are equivalent:
 	GET http://server/service.svc/Entities(6)/NS.Foo(p1=@p1,p2=@p2)/NavigationProperty?@p1=3&@p2="hello" HTTP/1.1
 	GET http://server/service.svc/Entities(6)/NS.Foo/NavigationProperty?p1=3&p2="hello" HTTP/1.1
 
-Notice though that only the third request can be built without complicated Parsing logic when `http://server/service.svc/Entities(6)/NS.Foo/NavigationProperty` is advertized as the [Target Url] of an available Function to a client which has knowledge of signature for `NS.Foo`.  
+Notice though that only the third request can be built without complicated Parsing logic when `http://server/service.svc/Entities(6)/NS.Foo/NavigationProperty` is advertised as the [Target Url] of an available Function to a client which has knowledge of signature for `NS.Foo`.  
 
 #### 7.4.2.4. Function overload resolution ####
 
@@ -1164,7 +1165,7 @@ In addition to the [Common Rules for FunctionImports] the following rules apply 
 
 #### 7.4.3.2. Invoking a Service Operation ####
 
-To invoke a ServiceOperation the Request Uri used MUST begin with the Uri of the Service Document, followed by a path segment containing the Name or Namespace Qualified Name of the ServiceOperation and optionally parentheses.
+To invoke a ServiceOperation the Request URL used MUST begin with the URL of the Service Document, followed by a path segment containing the Name or Namespace Qualified Name of the ServiceOperation and optionally parentheses.
 
 For example:
 
@@ -1174,9 +1175,9 @@ The HttpMethod (either GET or POST) used to invoke the ServiceOperation MUST mat
 
 Even when the Service Operation when POST is required to invoke the ServiceOperation the Body of the Invoke Request SHOULD be empty. 
 
-Any Parameter Values MUST be encoded into the Query part of the Request Uri, as individual Query string Name/Value pairs, where the Name is the Parameter Name and the Value is a UriLiteral representing the parameter value.
+Any Parameter Values MUST be encoded into the Query part of the Request URL, as individual Query string Name/Value pairs, where the Name is the Parameter Name and the Value is a URLLiteral representing the parameter value.
 
-NOTE: Because all Service Operation parameters must be primitive all Service Operation Parameter can be represented as UriLiterals.
+NOTE: Because all Service Operation parameters must be primitive all Service Operation Parameter can be represented as URLLiterals.
 
 For example given this ServiceOperation:
 

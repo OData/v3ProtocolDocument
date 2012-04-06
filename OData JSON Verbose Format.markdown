@@ -25,10 +25,9 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ## 2.1 Normative References ##
 
--- TODO: fixx in the normative refs.
-
 - Normative reference to the OData core document
 - Normative reference to the ABNF for OData
+- Normative reference to the JSON specification
 
 ## 2.2 Informational Examples ##
 
@@ -127,11 +126,7 @@ Starting in the OData 3.0 protocol, the `actions` name/value pair MAY be include
 
 Starting in the OData 3.0 protocol, the `functions` name/value pair MAY be included in `__metadata`. The value is a JSON object that contains Function advertisement name/value pairs. See [Advertisement for a Function or Action](#advertisementforafunctionoraction) for details.
 
-The name MUST only identify functions that are bindable to the current EntityType. If overloads exist that cannot be bound to the current EntityType, 
-
--- TODO:
-
-**Don't know what to do here. The OIPI had a bug; Alex will answer and then I'll fix it**.
+The name MUST only identify functions that are bindable to the current EntityType. If overloads exist that cannot be bound to the current EntityType, the name SHOULD address a specific function overload.
 
 If all Function overloads can be bound to the current EntityType, the server SHOULD advertise a single Function Metadata URL that identifies all of the overloads.
 
@@ -141,11 +136,11 @@ A Property is represented as a name/value pair. The name is the Property's name.
 
 The value for a PrimitiveProperty, a ComplexTypeProperty, or a CollectionProperty is the Property's value. It MUST be formatted appropriately for its type.
 
--- TODO: verify. Is this correct for collection types? Does a collection value contain the same object & metadata?
+-- TODO: MUSTHAVE verify. Is this correct for collection types? Does a collection value contain the same object & metadata?
 
 ### 4.2.1 Representing a NamedResourceStreamProperty ###
 
--- TODO: write this.
+-- TODO: MUSTHAVE write NamedResourceStreamProperty.
 
 ### 4.2.2 Representing a NavigationProperty ###
 
@@ -350,7 +345,7 @@ This section describes additional payload semantics that only apply to response 
 
 
 
--- TODO: write this. Talk about the d object, etc.
+-- TODO: MUSTHAVE write 6.1 Response body. Talk about the d object, etc.
 
 
 
@@ -395,7 +390,7 @@ Functions are advertised in the metadata for a set of Entities. The metadata obj
 
 The function metadata URL MUST identify only functions that are bindable to the current feed definition. If overloads exist that cannot be bound to the current feed definition, 
 
--- TODO:
+-- TODO: MUSTHAVE Find other reference to this same content and copy (functions bound to multiple entities)
 
 **Don't know what to do here. There's a bug in the OIPI. Alex will fix, then I'll incorporate his fix here.**
 
@@ -418,16 +413,16 @@ The outer JSON object MAY contain additional name/value pairs. One such example 
 
 ## 6.5 Errors ##
 
--- TODO: write this.
+-- TODO: MUSTHAVE 6.5 Errorswrite this.
 
 ## 6.6 Next Links ##
 
--- TODO: write this.
+-- TODO: MUSTHAVE 6.6 Next Links write this.
 
 ## 6.7 Inline Count ##
 
--- TODO: write this.
+-- TODO: MUSTHAVE Inline Count write this.
 
 ## 6.8 Service Document ##
 
--- TODO: write this.
+-- TODO: MUSTHAVE Service Document write this.

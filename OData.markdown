@@ -40,7 +40,7 @@ Properties declared as part of the entity type's definition are called *declared
 
 *Operations* allow the execution of custom logic on parts of a data model. *Functions* do not allow side effects and are composable. *Actions* allow side effects and are not composable. Actions and functions are global to the service and may be used as members of entities and collections of entities.
 
-<!-- TODO: Add entity inheritance (succinct) -->
+<!-- TODO: MUSTHAVE Add entity inheritance (succinct) -->
 
 Finally, entity sets and operations are grouped in a named *entity container*. This container represents a service's model.
 
@@ -48,7 +48,7 @@ Refer to the [CSDL specification][OData CSDL Specification] for more information
 
 ## 2.1 Definitions ##
 
-<!-- TODO: This section needs work. -->
+<!-- TODO: MUSTHAVE The Definitions section needs work or to be eliminated. -->
 
 
 Structural elements are composed of other model elements. Structural elements are common in entity models as they are the typical means of representing entities in the OData service. The structural types are: entity type, complex type, row type and association type.
@@ -57,9 +57,7 @@ The NavigationLink is the URL that addresses the relationship itself.
 
 - Relatable types: entity type, collection of entity type
 
-//TODO: Fill this in as we discover common type categories.
-
-<!-- TODO: Add a definition for resource (anything in a model that can be addressed). -->
+<!-- TODO: MUSTHAVE Add a definition for resource (anything in a model that can be addressed). -->
 
 ## 2.4 Annotations ##
 
@@ -90,7 +88,7 @@ If the DataServiceVersion header is present, the service MUST interpret the requ
 The OData client SHOULD also use the MinDataServiceVersion and MaxDataServiceVersion headers. 
 
 
-// TODO: arlo has an idea that involved defining a range of acceptable response versions etc.
+// TODO: NICETOHAVE arlo has an idea that involved defining a range of acceptable response versions etc.
 
 If specified the service MUST generate a response with a version greater than or equal to the specified MinDataServiceVersion.
 
@@ -675,8 +673,6 @@ If the entity being updated is not open, then additional values for properties b
 
 On success, the response must be a valid [update response](#responsesforupdates).
 
-<!-- TODO: on failure, the data should remain unchanged - this needs to be pulled up to a common area -->
-
 #### 7.3.4. Delete an Entity ####
 
 To delete an existing entity, send a DELETE request to that entity's edit URL. The request body SHOULD be empty.
@@ -695,15 +691,13 @@ The body MUST be formatted as a single link. See the appropriate format document
 
 On success, the response MUST be 204 and contain an empty body.
 
-<!-- TODO: This is an update operation; see above for additional common behavior. -->
-
-<!-- TODO: add to common section: A `Prefer` header may be used to alter the response. -->
+<!-- TODO: NICETOHAVE This is an update operation; see above for additional common behavior. (Are there any other areas where we need a similar clause?) -->
 
 ##### 7.3.5.2. Remove a Relationship Between Two Entities
 
 To remove a relationship to a related entity, send a `DELETE` request to a URL that represents the link to the related entity.
 
-<!-- TODO: Add a section in the common requirements that indicates that a request or batch request must not modify data such that integrity constraints are violated. -->
+<!-- TODO: MUSTHAVE Add a section in the common requirements that indicates that a request or batch request must not modify data such that integrity constraints are violated. -->
 
 The `DELETE` request MUST follow the requirements for integrity constraints above.
 
@@ -716,8 +710,6 @@ If the navigation property is nullable, then a change MAY be perfomed by first r
 Alternatively, a relationship MAY be updated as part of an update to the source entity by including the required binding information for the new target entity. This binding information MUST be formatted as for a deferred navigation property in a response.
 
 ### 7.3.6 Managing Binary Resources ###
-
-<!-- TODO: Replace URL with URL -->
 
 Binary resources are one of the primitive types that can be used in the definition of a Property. However, they are complex enough that there are special rules for manipulating them.
 
@@ -825,7 +817,7 @@ Services MAY support custom operations. Operations (actions, functions and legac
 
 The following rules apply to all FunctionImport elements:
 
-<!-- TODO: Remove the rules here that are already covered in CSDL. -->
+<!-- TODO: MUSTHAVE Remove the rules here that are already covered in CSDL. -->
 
 - MUST have a 'Name' attribute set to a valid EDM identifier.
 - MUST either omit a ReturnType (in the case of void operations) or specify a ReturnType either by including a 'ReturnType' attribute set to a valid TypeReference or by including a child 'ReturnType' element. 
@@ -835,11 +827,11 @@ The following rules apply to all FunctionImport elements:
 - MAY have an 'IsBindable' attribute set to either 'true' or 'false'. When 'IsBindable' is set to 'true' the FunctionImport MUST have at least one child Parameter element, and the first child Parameter element MUST have a type that is either an EntityType or a collection of EntityTypes. When omitted 'IsBindable' MUST be assumed to have a value of 'false'.
 - MAY have an 'm:IsAlwaysBindable' attribute set to either 'true' of 'false'. When omitted 'm:IsAlwaysBindable' MUST be assumed to have a value of 'false'. When 'IsAlwaysBindable' is 'true', 'IsBindable' MUST also be set to 'true'.
 - MUST have an 'EntitySet' attribute set to either the name of an EntitySet or to an EntitySetPath expression if the 'ReturnType' of the FunctionImport is either an EntityType or a Collection of an EntityType.
-- TODO: overload rules (i.e. unordered combination of parameter names & types must be unique).
+- TODO: MUSTHAVE overload rules (i.e. unordered combination of parameter names & types must be unique).
 
 ### EntitySetPathExpression ###
 
-<!-- TODO: Move into CSDL spec -->
+<!-- TODO: NICETOHAVE Move into CSDL spec -->
 
 Functions or Actions that return an Entity or Entities MAY return results from an EntitySet that is dependent upon the EntitySet of one of the parameter values used to invoke the Operation.
 
@@ -855,7 +847,7 @@ For example this EntitySetPathExpression: "p1/Orders/Customer" can only be evalu
 
 Actions and functions MAY be bound to an entity or a collection of entities. The first parameter of a bound operation is the *binding parameter*. 
 
-<!-- TODO: Scan for "version 3.0" -->
+<!-- TODO: MUSTHAVE Scan for "version 3.0" -->
 
 Any URL that can identify a binding parameter of the correct type MAY be used as the foundation of a URL to invoke an operation that supports binding using the resource identified by that URL as the *binding parameter value*.
 
@@ -889,7 +881,7 @@ In addition to the [Common Rules for FunctionImports](#commonrulesforfunctionimp
 - Actions MAY be side effecting, indicated by either omitting or setting the 'IsSideEffecting' attribute to 'true'.
 - Actions MUST NOT be composable, indicated by either omitiing or setting the 'IsComposable' attribute to 'false'.
 
-<!-- TODO: Remove any redundancyhere with CSDL. -->
+<!-- TODO: MUSTHAVE Remove any redundant attributes here with CSDL. -->
 
 For example this FunctionImport represents an Action that Creates an Order for a customer using the specified quantity and discountCode. This action can be bound to any resource path that represents a Customer entity:
 
@@ -949,7 +941,7 @@ Each non-binding parameter value specified MUST be encoded as a separate 'name/v
 
 If the action returns results the client SHOULD use content type negotiation to request the results in the desired format, otherwise the default content type will be used.
 
-<!-- TODO: Add etags to common update section and just refer to it from here.
+<!-- TODO: MUSTHAVE Add etags to common update section and just refer to it from here.
 
 If a client only wants an action to be processed when the binding parameter value, an entity or collection of entities, is unmodified, the client SHOULD include the `'If-Match'` header with the latest known ETag value for the Entity or collection of Entities. When present, a service MUST attempt to verify that the ETag found in the 'If-Match' header is current before processing the request. If the ETag cannot be verified or is found to be out of date the service response MUST be '412 Precondition Failed'. 
  -->

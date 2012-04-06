@@ -643,8 +643,8 @@ Returns only orders that are also BigOrders.
 
 Returns only orders that have a customer that is a MVPCustomer.
 
-##### 5.1.2.4.27 cast #####
-TODO: figure out how to actually do a cast!
+##### 5.1.2.4.27 Cast #####
+TODO: MUSTHAVE figure out how to actually do a cast!
 
 #### 5.1.2.5 Operator Precedence ####
 OData Servers MUST use the following operator precedence for supported operators when evaluating $filter and $orderby expressions:

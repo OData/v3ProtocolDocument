@@ -7,6 +7,8 @@ Keywords: odata, csdl
 <!-- TODO: Verify that all primitive types are declared with Edm. prefix. -->
 <!-- TODO: Verify that MSFT fwlinks should be replaced. -->
 <!-- TODO: Verify all links point to the right place. -->
+<!-- TODO: Verify that all coloned things are formatted as code. -->
+<!-- TODO: Add a statement that indicates what types can be used in an EDM model. -->
 
 # Appendix A: Formal Description of Common Schema Definition Language (CSDL)[top]
 
@@ -190,6 +192,8 @@ Elements and attributes that define the entity model exposed by the OData Servic
 
 Prior versions of CSDL used the following namespaces for EDM:
 
+
+<!-- TODO: Try to find the valid versions of CSDL for OData -->
 - http://schemas.microsoft.com/ado/2006/04/edm
 - http://schemas.microsoft.com/ado/2007/05/edm
 - http://schemas.microsoft.com/ado/2008/01/edm
@@ -211,6 +215,7 @@ A typical entity model for an OData service contains one or more model elements.
 
 ## 2.1	Nominal Elements[csdl2.1]
 
+<!-- TODO: A nominal element has a name. The name MUST be a <simpleIdentifier>. In combination with a <namespace>... -->
 Model elements can be nominal in nature. A nominal element has a name of the type [`<simpleIdentifier>`][csdl18] that in combination with a [`<namespace>`][csdl18] produces a fully qualified name of the form [`<namespaceQualifiedIdentifier>`][csdl18]. The [`<namespaceQualifiedIdentifier>`][csdl18] MUST be unique as it facilitates references to the element from other parts of the model.
 
 When referring to nominal elements, the reference can use either of the following:
@@ -218,10 +223,12 @@ When referring to nominal elements, the reference can use either of the followin
 - Fully qualified name
 - Alias qualified name
 
+<!-- TODO: This is only true of Edm. -->
 If the nominal element is unambiguous, the reference can simply use the name of the element.
 
 Consider the following example:
 
+<!-- TODO: Don't use "odata" in the namespace. -->
 	<Schema
 	 xmlns=http://schemas.microsoft.com/ado/2006/04/edm
 	 xmlns:m=http://schemas.microsoft.com/ado/2007/08/dataservices/metadata
@@ -236,8 +243,10 @@ The various ways of referring to the nominal element are:
 - References in any namespace can specify an alias and use an alias qualified name, for example, `odata.Address`
 - References in org.odata can simply use the name, for example, `Address`
 
+<!-- TODO: Structural -->
 ## 2.2	Structured Elements[csdl2.2]
 
+<!-- TODO: Structural types are composed of other types. -->
 Structured elements are composed of other model elements. Structured elements are common in entity models as they are the typical means of representing entities in the OData service. [Entity types][csdl6] and [complex types][csdl7] are both structured elements. [Row types][csdl9.4] are less common but are also structured elements.
 
 A [structural property][csdl5] is a property that has one of the following types:
@@ -269,45 +278,17 @@ For example:
 
 ## 2.4	Vocabulary Annotations[csdl2.4]
 
+<!-- TODO: Many parts of the model... -->
+<!-- TODO: Pull out addressable metadata... perhaps reuse definition in Annotations Target -->
 Many model elements can be annotated with additional information with the [`edm:TypeAnnotation`][csdl15.2] and [`edm:ValueAnnotation`][csdl15.4] elements.
 
 A model element MUST NOT specify more than one type annotation or value annotation for a given type term or value term.
 
 Vocabulary annotations may be specified as a child of the model element or as a child of an [`edm:Annotations`][csdl15.1] element that targets the model element.
 
-Refer to the [XML schema][csdl19] for details on which model elements support vocabulary annotations.
+Refer to [Vocabulary Annotations][csdl15] for details on which model elements support vocabulary annotations.
 
-## 2.5	Custom Annotations[csdl2.5]
-
-CSDL allows custom annotations to be attached to many model elements. This allows CSDL to be extended with markup to help various runtimes.
-
-For instance, the following custom annotation attributes indicate that the entity container supports lazy loading:
-
-	<EntityContainer Name="ModelContainer" annotation:LazyLoadingEnabled="true">
-	 ...
-	</EntityContainer> 
-
-In the following example, the entity type has two access control entries specified with custom annotation elements:
-
-	<EntityType Name="Content">
-	 ...
-	 <RS:Security>
-	  <RS:ACE Principal="S-0-123-1321" Rights="+R+W"/>
-	  <RS:ACE Principal="S-0-123-2321" Rights="-R-W"/>
-	 </RS:Security>
-	</EntityType>
-
-Custom annotations can appear in attribute form or element form. Custom annotations MUST NOT use a namespace that is on the list of reserved namespaces for CSDL. This includes the following namespaces:
-
-- http://schemas.microsoft.com/ado/2007/06/edmx
-- http://schemas.microsoft.com/ado/2007/08/dataservices/metadata
-- http://schemas.microsoft.com/ado/2009/11/edm
-- http://schemas.microsoft.com/ado/2008/09/edm
-- http://schemas.microsoft.com/ado/2008/01/edm
-- http://schemas.microsoft.com/ado/2007/05/edm
-- http://schemas.microsoft.com/ado/2006/04/edm
-
-Refer to the [XML schema][csdl19] for details on which elements support custom annotations.
+<!-- TODO: Fix numbering -->
 
 ## 2.6	Primitive Types[csdl2.6]
 
@@ -354,7 +335,7 @@ An Entity Model Wrapper serves as the aggregation root for the schemas that desc
 
 An OData service exposes a single entity model. A CSDL description of the entity model can be requested from `$metadata`.
 
-The document returned by `$metadata` MUST contain a single root edmx:Edmx element. This element MUST contain a single direct child [`edmx:DataServices`][csdl3.2] element. The data services element contains a description of the entity model(s) exposed by the OData service.
+The document returned by `$metadata` MUST contain a single root `edmx:Edmx` element. This element MUST contain a single direct child [`edmx:DataServices`][csdl3.2] element. The data services element contains a description of the entity model(s) exposed by the OData service.
 
 In addition to the data services element, `Edmx` may have zero or more [`edmx:Reference`][csdl3.3] elements and zero or more [`edmx:AnnotationsReference`][csdl3.4] elements. Reference elements specify the location of schemas referenced by the OData service. Annotations reference elements specify the location of [annotations][csdl15] to be applied to the OData service.
 
@@ -568,7 +549,7 @@ For a decimal property the value of this attribute specifies the maximum number 
 
 ### 5.3.5	The `edm:Scale` Attribute[csdl5.3.5]
 
-A decimal `edm:Property` MAY define a [`<nonNegativeIntegral>`][csdl19] value for the `edm:Scale` attribute. The value of this attribute specifies the maximum number of digits allowed to the right of the decimal point in the value of the property on a type instance.
+A decimal `edm:Property` MAY define a [`<nonNegativeIntegral>`][csdl19] value for the `edm:Scale` attribute. The value of this attribute specifies the maximum number of digits allowed to the right of the decimal point.
 
 The value of the `edm:Scale` attribute MUST be less than or equal to the value of the [`edm:Precision`][csdl5.3.4] attribute.
 

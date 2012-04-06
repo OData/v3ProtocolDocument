@@ -220,11 +220,11 @@ A $value request for a property that is NULL SHOULD result in a "404 Not Found" 
 
 ### 7.2.3. Querying Collections ###
 
-OData services support querying sets of entities, such as the EntitySets enumerated in the Service Document and navigation links exposed by the service. 
+OData services support querying collections of entities. 
 
-The target collection is specified through a URI, and query operations such as filter, sort, paging, and projection are specified as System Query Options provided as query string parameters. The names of all System Query Options are prefixed with a "$" character.
+The target collection is specified through a URL, and query operations such as filter, sort, paging, and projection are specified as System Query Options provided as query options. The names of all System Query Options are prefixed with a "$" character.
 
-An OData service may support some or all of the System Query Options defined. If a data service does not support a System Query Option, it must reject any requests which contain the unsupported option.
+An OData service may support some or all of the System Query Options defined. If a data service does not support a System Query Option, it MUST fail any request that contains the unsupported option.
 
 #### 7.2.3.1. The `$filter` System Query Option ####
 
@@ -236,7 +236,7 @@ For example:
 
 Returns all Products whose Price is less than $10.00.
 
-The value of the $filter option is a boolean expression as defined in [[OData URI Conventions](ODataURIConventions)].
+The value of the `$filter` option is a boolean expression as defined in [[OData URL Conventions](OData URL Conventions)].
 
 ##### 7.2.3.1.1. Built-in Filter Operations #####
 
@@ -336,7 +336,7 @@ OData supports a set of built-in filter operations, as described in this section
 
 ##### 7.2.3.1.2. Built-in Query Functions #####
 
-OData supports a set of built-in functions that can be used within filter operations. The following table lists the available functions. For a full description of the syntax used when building requests, see [OData URI Conventions](OData_URI_Conventions).
+OData supports a set of built-in functions that can be used within `$filter` operations. The following table lists the available functions. For a full description of the syntax used when building requests, see [OData URL Conventions](OData URL Conventions).
 
 Note: No ISNULL or COALESCE operators are defined. Instead, there is a null literal which can be used in comparisons.
  
@@ -466,9 +466,33 @@ Note: No ISNULL or COALESCE operators are defined. Instead, there is a null lite
 
 ##### 7.2.3.n The `$expand` System Query Option #####
 
-The presence of the $expand system query option indicates that entities associated with the EntityType instance or EntitySet, identified by the resource path section of the URI, MUST be represented inline instead of as Deferred Content.
+The presence of the `$expand` system query option indicates that entities related to the entity, or collection of entities, identified by the resource path section of the URL MUST be represented inline.
 
-What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that applies to the Expand System Query Option: 
+The value of the `$expand` query option MUST be a comma seperated list of navigation property paths.
+
+The service MUST include any actions or functions that are bound to the associated entities that are introduced via an expandClause, unless a `$select` system query option is also included in the request and that `$select` requests that the actions/functions be omitted.
+
+For a full description of the syntax used when building requests, see [OData URI Conventions](OData_URI_Conventions).
+
+Examples
+
+	http://host/service.svc/Customers?$expand=Orders
+
+For each customer entity within the Customers entity set, the value of all associated Orders should be represented inline.
+
+	http://host/service.svc/Orders?$expand=OrderLines/Product,Customer
+
+For each Order within the Orders entity set, the following should be represented inline:
+
+- The Order lines associated to the Orders identified by the resource path section of the URI and the products associated to each Order line.
+- The customer associated with each Order returned.
+
+	http://host/service.svc/Customers?$expand=SampleModel.VipCustomer/InHouseStaff
+
+For each Customer entity in the Customers entity set, the value of all associated InHouseStaff are represented inline if the entity is of type VipCustomer or a subtype of that. For entities that are not of type VipCustomer, or any of its subtypes, that entity is returned with no inline representation for the expanded NavigationProperty.
+
+<-- move to uriconventions -->
+What follows is a snippet from [OData:ABNF][OData ABNF], that applies to the Expand System Query Option: 
 
 	expand						= 	"$expand=" expandClause 
 
@@ -477,37 +501,43 @@ What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that
 	expandItem      			= 	[ qualifiedEntityTypeName "/" ] navigationPropertyName 
 									*([ "/" qualifiedEntityTypeName ] "/" navigationPropertyName)  
 
-Each expandItem MUST be evaluated relative to the EntityType of request, which is EntityType of the resource(s) identified by the ResourcePath part of the URI.
+Each expandItem MUST be evaluated relative to the entity type of the request, which is the entity type of the resource(s) identified by the resource path part of the URL.
 
-To expand a NavigationProperty defined on a derived type first a cast MUST be introduced using the qualifiedEntityTypeName of the required derived type. The leftmost navigationPropertyName segment MUST identify a Navigation Property defined on the EntityType of the request or an EntityType derived from the EntityType of the request. Subsequent navigationPropertyName segments MUST identify Navigation Properties defined on the EntityType returned by the previous NavigationProperty or the EntityType introduced in the previous cast.
+A type cast using the qualifiedEntityTypeName to a type containing the property is required in order to expand a navigation property defined on a derived type.
 
-Examples
-
-	http://host/service.svc/Customers?$expand=Orders
-
-For each customer entity within the Customers EntitySet, the value of all associated Orders should be represented inline.
-
-	http://host/service.svc/Orders?$expand=OrderLines/Product,Customer
-
-For each Order within the Orders EntitySet, the following should be represented inline:
-
-- The Order lines associated to the Orders identified by the resource path section of the URI and the products associated to each Order line.
-- The customer associated with each Order returned.
-
-The OData 3.0 protocol supports specifying the namespace-qualified EntityType on which the NavigationProperty is defined as part of the expand statement.
-
-	http://host/service.svc/Customers?$expand=SampleModel.VipCustomer/InHouseStaff
-
-For each Customer entity in the Customers EntitySet, the value of all associated InHouseStaff MUST be represented inline if the entity is of type VipCustomer or a subtype of that. For entity instances that are not of type VipCustomer, or any of its subtypes, that entity instance MUST be returned with no inline representation for the expanded NavigationProperty.
-
-The service MUST include any actions or functions that are bound to the associated entities that are introduced via an expandClause, unless a select system query option is also included in the request and that $select requests that the actions/functions be omitted.
+The leftmost navigationPropertyName segment MUST identify a Navigation Property defined on the EntityType of the request or an EntityType derived from the EntityType of the request. Subsequent navigationPropertyName segments MUST identify Navigation Properties defined on the EntityType returned by the previous NavigationProperty or the EntityType introduced in the previous cast.
 
 Redundant expandClause rules on the same data service URI MAY be considered valid, but MUST NOT alter the meaning of the URI.
 
+<-- end move to url conventions -->
+
 ##### 7.2.3.2 The `$select` System Query Option #####
 
-The `$select` system query option allows clients to requests a limited set of information for each Entity or ComplexType identified by the ResourcePath and other System Query Options like $filter, $top, $skip etc. When present $select instructs the service to return only the Properties, Open Properties, Related Properties, Actions and Functions explicitly requested by the client, however services MAY choose to return more information.
+The `$select` system query option requests that the service return only the properties, open properties, related properties, actions and functions explicitly requested by the client. The service MUST return the specified content, and MAY choose to return additional information.
 
+The value of the $select query option is a comma separated list of property paths, qualified action names,  qualified function names, or the star operator (*), or the star operator prefixed with the name of the entity container in order to specify all operations within the container. 
+
+For example, the following request returns just the Rating and ReleaseDate for the matching Products: 
+
+	http://services.odata.org/OData/OData.svc/Products?$select=Rating,ReleaseDate
+
+It is also possible to request all properties, using a star request:
+
+	http://services.odata.org/OData/OData.svc/Products?$select=*
+
+A star request SHOULD NOT introduce actions or functions not otherwise requested.
+
+Properties of related entities may be specified by providing a property path in the select list. In order to select properties from related entities, the appropriate navigation property MUST be specified through the `$expand` query option:
+
+	http://services.odata.org/OData/OData.svc/Products?$select=*,Category/Name&$expand=Category
+
+It is also possible to request all actions and functions available for each returned entity:
+
+	http://services.odata.org/OData/OData.svc/Products?$select=DemoService.*
+
+For AtomPub formatted responses, the value of a selectClause applies only to the properties returned within the m:properties element. For example, if a property of an entity type is mapped with the Customizable Feeds attribute KeepInContent=false, then that property MUST always be included in the response according to its customizable feed mapping.
+
+<--move to conventions-->
 What follows is a snippet from Appendix A (ABNF for OData URI Conventions), that applies to the Select System Query Option: 
 
 	select 						=	"$select=" selectClause
@@ -531,7 +561,7 @@ In this URI the "Rating,ReleaseDate" selectClause MUST be interpreted relative t
 
 Each selectItem in the selectClause indicates that the response MUST include the Properties, Open Properties, Related Properties, Actions and Functions identified by that selectClause. 
 
-The simplest selectItem requests a single Property defined on the EntityType of the resources identified by the resource path section of the URI, for example this URI asks the service to return just the Rating and ReleaseDate for the matching Products: 
+The simplest selectClause explicitly requests properties defined on the entity type of the resources identified by the resource path section of the URI, for example this URI requests just the Rating and ReleaseDate for the matching Products: 
 
 	http://services.odata.org/OData/OData.svc/Products?$select=Rating,ReleaseDate
 
@@ -572,14 +602,17 @@ If an action or function is requested in a selectItem using a qualifiedActionNam
 When multiple selectItems exist in a selectClause, then the total set of property, open property, navigation property, actions and functions to be returned is equal to the union of the set of those identified by each selectItem.
 
 Redundant selectClause rules on the same URI MAY be considered valid, but MUST NOT alter the meaning of the URI.
-
-For AtomPub formatted responses: The value of a selectClause applies only to the properties returned within the m:properties element. For example, if a property of an entity type is mapped with the Customizable Feeds attribute KeepInContent=false, then that property MUST always be included in the response according to its customizable feed mapping.
+<--end copy to uri conventions-->
 
 #### 7.2.3.3 The `$orderby` System Query Option ####
 
 The `$orderby` System Query option specifies the order in which entities are returned from the service.
 
-The value of the `$orderby` System Query option specifies a comma separated list of property names to sort by. The property name may include the suffix "asc" for ascending or "desc" for descending, separated from the property name by one or more spaces.
+The value of the `$orderby` System Query option contains a comma separated list of property navigation paths to sort by, where each property navigation path terminates on a primitive property.
+
+A type cast using the qualified entity type name is required to order by a property defined on a derived type.
+
+The property name may include the suffix "asc" for ascending or "desc" for descending, separated from the property name by one or more spaces. If "asc" or "desc" is not specified, the default is to order by the specified property in ascending order.
 
 For example:
 
@@ -587,15 +620,15 @@ For example:
 
 #### 7.2.3.4. The `$top` System Query Option ####
 
-The  `$top` System Query Option specifies that only the first n records should be returned, where n is a non-negative integer value specified in by `$top` query option.
+The `$top` System Query Option specifies that only the first n records should be returned, where n is a non-negative integer value specified in by `$top` query option.
 
 For example:
 
     http://services.odata.org/OData/OData.svc/Products?$top=5
 
-Would return only the first five Products in the Products EntitySet.
+Would return only the first five Products in the Products entity set.
 
-If no `$order` query option is specified in the request, the service MUST impose a stable ordering across requests that include `$top`.
+If no unique ordering is imposed through an `$orderby` query option, the service MUST impose a stable ordering across requests that include `$top`.
 
 #### 7.2.3.5. The `$skip` System Query Option ####
 
@@ -605,17 +638,17 @@ For example:
 
     http://services.odata.org/OData/OData.svc/Products?$skip=5
 
-Would return Products starting with the 6th Product in the Products EntitySet.
+Would return Products starting with the 6th Product in the Products entity set.
 
-Where $top and $skip are used together, the $skip is applied before the $top, regardless of the order in which they appear in the request.
+Where `$top` and `$skip` are used together, the `$skip` is applied before the `$top`, regardless of the order in which they appear in the request.
 
 For example:
 
     http://services.odata.org/OData/OData.svc/Products?$top=5&$skip=2
 
-Would return the first five Products, starting with the 2nd Product in the Products EntitySet.
+Would return the third through seventh Products in the Products entity set.
 
-If no `$orderby` query option is specified in the request, the service MUST impose a stable ordering across requests that include `$skip`.
+If no unique ordering is imposed through an `$orderby` query option, the service MUST impose a stable ordering across requests that include `$skip`.
 
 #### 7.2.3.6. The `$inlinecount` System Query Option ####
 
@@ -627,23 +660,20 @@ For example:
 
 Would return, along with the results, the total number of products in the set.
 
-An `$inlinecount` query option with a value of `none` (or not specified) hints that the service SHOULD NOT return a count, although it is still valid for the service to do so.
+An `$inlinecount` query option with a value of `none` (or not specified) hints that the service SHOULD NOT return a count.
 
 The service MUST return an HTTP Status code of 404 (Bad Request) if a value other than `allpages` or `none` is specified.
 
-`$inlinecount` ignores any `$top`, `$skip`, or `$expand` query options, but does include only those results matching any specified `$filter`.
+`$inlinecount` ignores any `$top`, `$skip`, or `$expand` query options, and returns the total count of results across all pages including only those results matching any specified `$filter`.
 
 How the count is returned is dependent upon the selected format.
 
 #### 7.2.3.7. The  `$format` System Query Option ####
 
-A data service URI with a `$format` system query option specifies that a response to the request SHOULD use the media type specified by the query option.
+A request with a `$format` system query option specifies that the response SHOULD use the media type specified by the query option.
 
-The syntax of the format system query option is defined in 'format' rule defined in Appendix A. 
+If the `$format` query option is present in a request, it SHOULD take precedence over the value(s) specified in the accept request header.
 
-The rules for interpreting the format rule are:
-
-- If the `$format` query option is present in a request URI, it SHOULD take precedence over the value(s) specified in the Accept request header.
 - If the value of the query option is "atom", then the media type used in the response MUST be "application/atom+xml", or "application/atomsvc+xml" for the [service document](#ServiceDocument).
 - If the value of the query option is "json", then the media type used in the response MUST be "application/json".
 - If the value of the query option is "xml", then the media type used in the response MUST be "application/xml".
@@ -654,7 +684,7 @@ For example:
 
 Is equivalent to a request with the "accept" header set to "application/json", so it requests the set of Order entities represented using the JSON media type, as specified in [RFC4627].
 
-The `$format` query option MAY be used in conjunction with RAW format (section 2.2.6.4) to specify which RAW format is returned.
+The `$format` query option MAY be used in conjunction with `$value` to specify which raw format is returned.
 
 	http://host/service.svc/Orders(1)/ShipCountry/$value/?$format=json
 

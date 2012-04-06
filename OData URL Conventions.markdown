@@ -1,39 +1,39 @@
-# OData URI Conventions #
+# OData URL Conventions #
 
 ## 1.0 Introduction ##
-The Open Data Protocol (OData) enables the creation of REST-based data services, which allow resources, identified using Uniform Resource Identifiers (URIs) and defined in a data model, to be published and edited by Web clients using simple HTTP messages. This specification defines a set of recommended (but not required) rules for constructing URIs to identify the data and metadata exposed by an OData server as well as a set of reserved URI query string operators, which if accepted by an OData server, MUST be implemented as required by this document.
+The Open Data Protocol (OData) enables the creation of REST-based data services, which allow resources, identified using Uniform Resource Identifiers (URLs) and defined in a data model, to be published and edited by Web clients using simple HTTP messages. This specification defines a set of recommended (but not required) rules for constructing URLs to identify the data and metadata exposed by an OData server as well as a set of reserved URL query string operators, which if accepted by an OData server, MUST be implemented as required by this document.
 
-The [OData:Atom] and [OData:JSON] documents specify the format of the resource representations that are exchanged using OData and the [OData:Operations] document describes the actions that can be performed on the URIs (optionally constructed following the conventions defined in this document) embedded in those representations.
+The [OData:Atom] and [OData:JSON] documents specify the format of the resource representations that are exchanged using OData and the [OData:Operations] document describes the actions that can be performed on the URLs (optionally constructed following the conventions defined in this document) embedded in those representations.
 
-Servers are encouraged to follow the URI construction conventions defined in this specification when possible as  consistency promotes an ecosystem of reusable client components and libraries.
+Servers are encouraged to follow the URL construction conventions defined in this specification when possible as  consistency promotes an ecosystem of reusable client components and libraries.
 
-## 2.0 Uri Components ##
-A URI used by an OData service has at most three significant parts: the service root URI, resource path and query options. Additional URI constructs (such as a fragment) MAY be present in a URI used by an OData service; however, this specification applies no further meaning to such additional constructs.
+## 2.0 URL Components ##
+A URL used by an OData service has at most three significant parts: the *service root URL*, *resource path* and *query options*. Additional URL constructs (such as a fragment) MAY be present in a URL used by an OData service; however, this specification applies no further meaning to such additional constructs.
 
-![](http://odata.org/images/ODataUri_thumb.png)
+![](http://odata.org/images/ODataURL_thumb.png)
 
-The following are two example URIs broken down into their component parts:
+The following are two example URLs broken down into their component parts:
 
 	http://services.odata.org/OData/OData.svc 
   	\_______________________________________/
 				   | 
-			service root URI 
+			service root URL 
 
 	http://services.odata.org/OData/OData.svc/Category(1)/Products?$top=2&$orderby=name
 	\_______________________________________/ \__________________/ \__________________/
                    |                                |                    |
-             service root URI                  resource path        query options
+             service root URL                  resource path        query options
 
-## 3.0 Service Root URI ##
-The service root URI identifies the root of an OData service. The resource identified by this URI MUST be an AtomPub Service Document (as specified in [RFC5023]) and follow the OData conventions for AtomPub Service Documents (or an alternate representation of an Atom Service Document if a different format is requested). OData: JSON Format specifies such an alternate JSON-based representation of a service document. The service document is required to be returned from the root of an OData service to provide clients with a simple mechanism to enumerate all of the collections of resources available for the data service.
+## 3.0 Service Root URL ##
+The service root URL identifies the root of an OData service. The resource identified by this URL MUST be an AtomPub Service Document (as specified in [RFC5023]) and follow the OData conventions for AtomPub Service Documents (or an alternate representation of an Atom Service Document if a different format is requested). OData: JSON Format specifies such an alternate JSON-based representation of a service document. The service document is required to be returned from the root of an OData service to provide clients with a simple mechanism to enumerate all of the collections of resources available for the data service.
 
-## 4.0 Resource Path ##
-The resource path construction rules defined in this section are optional. OData servers are encouraged to follow the URI path construction rules (in addition to the required query string rules) as such consistency promotes a rich ecosystem of reusable client components and libraries.
+## 4.0 resource path ##
+The resource path construction rules defined in this section are optional. OData servers are encouraged to follow the URL path construction rules (in addition to the required query string rules) as such consistency promotes a rich ecosystem of reusable client components and libraries.
 
-The resource path section of a URI identifies the resource to be interacted with (such as Customers, a single Customer, Orders related to Customers in London, and so forth). The resource path enables any aspect of the data model (Collections of Entries, a single Entry, Properties, Links, Service Operations, and so on) exposed by an OData service to be addressed.
+The resource path section of a URL identifies the resource to be interacted with (such as Customers, a single Customer, Orders related to Customers in London, and so forth). The resource path enables any aspect of the data model (collections of entities, a single entity, properties, Links, service operations, and so on) exposed by an OData service to be addressed.
 
-### 4.1 Addressing Entities ###
-The basic rules for addressing a Collection (of Entities), a single Entity within a Collection, as well as a property of an Entity are covered in the 'resourcePath' syntax rule in Appendix A. 
+### 4.1 Addressing entities ###
+The basic rules for addressing a collection (of entities), a single entity within a collection, as well as a property of an entity are covered in the 'resourcePath' syntax rule in Appendix A. 
 
 Below is a snippet from Appendix A:
 
@@ -41,132 +41,139 @@ Below is a snippet from Appendix A:
 									( entityColServiceOpCall / entityColFunctionCall ) [ collectionNavigation ] /
 									( entityServiceOpCall	/ entityFunctionCall ) [ singleNavigation ] /
 									( complexColServiceOpCall / complexColFunctionCall ) [ boundOperation ] /
-									( complexServiceOpCall / complexFunctionCall ) [ boundOperation / complexPropertyPath ] /
+									( complexServiceOpCall / complexFunctionCall ) [ boundOperation / complexpropertyPath ] /
 									( primitiveColServiceOpCall / primitiveColFunctionCall ) [ boundOperation ] /
 									( primitiveServiceOpCall / primitiveFunctionCall ) [ boundOperation / value ] /
 									actionCall 
 
-Since OData has a uniform composable URI syntax and associated rules there are many ways to address a collection of entities, including, but not limited to:
+Since OData has a uniform composable URL syntax and associated rules there are many ways to address a collection of entities, including, but not limited to:
 
-- Via an EntitySet (see rule: entitySetName)
+- Via an entity set (see rule: entitySetName)
 
 		For Example: http://services.odata.org/OData/OData.svc/Products
 
-- By invoking a Function that returns a collection of Entities (see rule: entityColFunctionCall)
+- By invoking a function that returns a collection of entities (see rule: entityColFunctionCall)
 
 		For Example: http://services.odata.org/OData/OData.svc/GetProductsByCategoryId(categoryId=2)
 
-- By invoking an Action that returns a collection of Entities (see rule: actionCall)
-- By invoking a ServiceOperation that returns a collection of Entities (see rule: entityColServiceOpCall)
+- By invoking an action that returns a collection of Entities (see rule: actionCall)
+- By invoking a service operation that returns a collection of Entities (see rule: entityColServiceOpCall)
 
 		For Example: http://services.odata.org/OData/OData.svc/ProductsByColor?color='red'
 
-Likewise there are many ways to address a single Entity.
+Likewise there are many ways to address a single entity.
 
-Sometimes a single Entity can be accessed directly, for example by:
+Sometimes a single entity can be accessed directly, for example by:
 
-- Invoking a Function that returns a single Entity (see rule: entityFunctionCall)
-- Invoking an Action that returns a single Entity (see rule: actionCall)
-- Invoking a ServiceOperation that returns a single Entity (see rule: entityServiceOpCall)
+- Invoking a function that returns a single entity (see rule: entityFunctionCall)
+- Invoking an action that returns a single entity (see rule: actionCall)
+- Invoking a service operation that returns a single entity (see rule: entityServiceOpCall)
  
-Often however a single Entity is accessed by composing more path segments to a resourcePath that identifies a Collection of Entities, for example by:
+Often however a single entity is accessed by composing more path segments to a resourcePath that identifies a Collection of Entities, for example by:
 
-- Using a entityKey to select a single Entity (see rules: collectionNavigation and keyPredicate)
+- Using a entityKey to select a single entity (see rules: collectionNavigation and keyPredicate)
 
 		For Example: http://services.odata.org/OData/OData.svc/Categories(1)
 
-- Invoking an Action bound to a collection of Entities that returns a singleEntity (see rule: boundOperation)
-- Invoking an Function bound to a collection of Entities that returns a singleEntity (see rule: boundOperation)
+- Invoking an action bound to a collection of Entities that returns a singleentity (see rule: boundOperation)
+- Invoking an function bound to a collection of Entities that returns a singleentity (see rule: boundOperation)
 
 		For Example: http://services.odata.org/OData/OData.svc/Products/MostExpensive
 
-These rules are recursive, so it is possible to address a single Entity via another single Entity, a collection via a single Entity and even a collection via a collection, examples include, but are not limited to:
+These rules are recursive, so it is possible to address a single entity via another single entity, a collection via a single entity and even a collection via a collection, examples include, but are not limited to:
 
-- By following a Navigation from a single Entity to another related Entity (see rule: entityNavigationProperty)
+- By following a Navigation from a single entity to another related entity (see rule: entityNavigationproperty)
 
 		For Example: http://services.odata.org/OData/OData.svc/Products(1)/Supplier
 
-- By invoking a Function bound to a single Entity that returns a single Entity (see rule: boundOperation)
+- By invoking a function bound to a single entity that returns a single entity (see rule: boundOperation)
 
 		For Example: http://services.odata.org/OData/OData.svc/Products(1)/MostRecentOrder
 
-- By invoking an Action bound to a single Entity that returns a single Entity (see rule: boundOperation)
-- By following a Navigation from a single Entity to a related collection of Entities (see rule: entityColNavigationProperty)
+- By invoking an action bound to a single entity that returns a single entity (see rule: boundOperation)
+- By following a Navigation from a single entity to a related collection of Entities (see rule: entityColNavigationproperty)
 
 		For Example: http://services.odata.org/OData/OData.svc/Categories(1)/Products
 
-- By invoking a Function bound to a single Entity that returns a collection of Entities (see rule: boundOperation)
+- By invoking a function bound to a single entity that returns a collection of Entities (see rule: boundOperation)
 
 		For Example: http://services.odata.org/OData/OData.svc/Categories(1)/TopTenProducts
 
-- By invoking an Action bound to a single Entity that returns a collection of Entities (see rule: boundOperation)
-- By invoking a Function bound to a collection of Entities that returns a collection of Entities (see rule: boundOperation)
+- By invoking an action bound to a single entity that returns a collection of Entities (see rule: boundOperation)
+- By invoking a function bound to a collection of Entities that returns a collection of Entities (see rule: boundOperation)
 
 		For Example: http://services.odata.org/OData/OData.svc/Categories(1)/Products/AllOrders
 
-- By invoking an Action bound to a collection of Entities that returns a collection of Entities (see rule: boundOperation)
+- By invoking an action bound to a collection of Entities that returns a collection of Entities (see rule: boundOperation)
 
-Finally it is possible to compose path segments onto a resourcePath that identifies a Primitive, Complex instance, Collection of Primitives or Collection of Complex instances and bind an Action or Function that returns a Entity or Collections of Entities.
+Finally it is possible to compose path segments onto a resourcePath that identifies a Primitive, Complex instance, Collection of Primitives or Collection of Complex instances and bind an action or function that returns a entity or Collections of Entities.
 
-#### 4.1.1 Canonical Uri ####
-For OData services conformant with the addressing conventions in this section, the canonical form of an absolute URI identifying a non contained Entity is formed by adding a single path segment to the service root URI. The path segment is made up of the name of the EntitySet associated with the Entity followed by the key predicate identifying the Entry within the Collection. 
+#### 4.1.1 Canonical URL ####
+For OData services conformant with the addressing conventions in this section, the canonical form of an absolute URL identifying a non contained entity is formed by adding a single path segment to the service root URL. The path segment is made up of the name of the entitySet associated with the entity followed by the key predicate identifying the entity within the Collection. 
 
-For example the URIs [http://services.odata.org/OData/OData.svc/Categories(1)/Products(1)](http://services.odata.org/OData/OData.svc/Categories(1)/Products(1)) and [http://services.odata.org/OData/OData.svc/Products(1)](http://services.odata.org/OData/OData.svc/Products(1)) represent the same Entry, but the canonical URI for the Entry is [http://services.odata.org/OData/OData.svc/Products(1)](http://services.odata.org/OData/OData.svc/Products(1)).
+For example the URLs [http://services.odata.org/OData/OData.svc/Categories(1)/Products(1)](http://services.odata.org/OData/OData.svc/Categories(1)/Products(1)) and [http://services.odata.org/OData/OData.svc/Products(1)](http://services.odata.org/OData/OData.svc/Products(1)) represent the same entity, but the canonical URL for the entity is [http://services.odata.org/OData/OData.svc/Products(1)](http://services.odata.org/OData/OData.svc/Products(1)).
 
-For contained Entities the canonical Uri begins with canonical Uri of the parent, with further path segments that:
+For contained Entities the canonical URL begins with canonical URL of the parent, with further path segments that:
 
-- Name and navigate through the Containing NavigationProperty 
-- and, if the NavigationProperty returns a Collection, an EntityKey (see rule: entityKey) that uniquely identifies the entity in that collection.
+- Name and navigate through the Containing Navigationproperty 
+- and, if the Navigationproperty returns a Collection, an entityKey (see rule: entityKey) that uniquely identifies the entity in that collection.
 
 ### 4.2 Addressing Links between Entities ###
-Much like the use of links on Web pages, the data model used by OData services supports relationships as a first class construct. For example, an OData service could expose a Collection of Products Entries each of which are related to a Category Entry.
+Much like the use of links on Web pages, the data model used by OData services supports relationships as a first class construct. For example, an OData service could expose a Collection of Products entities each of which are related to a Category entity.
 
-Links between Entries are addressable in OData just like Entries themselves are (as described above). The basic rules for addressing relationships are shown in the following figure. By the following rule:
+Links between entities are addressable in OData just like entities themselves are (as described above). The basic rules for addressing relationships are shown in the following figure. By the following rule:
 
-	entityUri 		= 	; any uri that identifies a single entity
+	entityURL 		= 	; any URL that identifies a single entity
 						; examples include: an entitySet followed by a key or a function/serviceOperation that returns a single entity.
-	links 			= 	entityUri "/$links/" navigationPropertyName   
+	links 			= 	entityURL "/$links/" navigationpropertyName   
 
 For example: [http://services.odata.org/OData/OData.svc/Category(1)/$links/Products](http://services.odata.org/OData/OData.svc/Category(1)/$links/Products) addresses the links between Category(1) and Products.
 
-### 4.3 Addressing Operations ###
+### 4.3 Addressing operatoins ###
 
-#### 4.3.1 Addressing Service Operations ####
-The semantic rules for addressing and invoking a ServiceOperation are defined in the [OData:Core](OData) document. 
-The grammar for addressing and invoking a ServiceOperation is define by 3 syntax rules in Appendix A:
+#### 4.3.1 Addressing service operations ####
+The semantic rules for addressing and invoking a service operation are defined in the [OData:Core](OData) document. 
+The grammar for addressing and invoking a service operation is define by 3 syntax rules in Appendix A:
 
-- The serviceOperationCall syntax rule defines the grammar for the ResourcePath that addresses the ServiceOperation.
-- The resourcePath syntax rule defines the grammar for any additional composition of OData ResourcePath segments that rely on the results of calling the ServiceOperation.
-- The sopParameterNameAndValue syntax rule defines the grammar for specifying any parameters to the ServiceOperation in the query part of the request Uri.
+- The serviceOperationCall syntax rule defines the grammar for the ResourcePath that addresses the service operation.
+- The resourcePath syntax rule defines the grammar for any additional composition of OData ResourcePath segments that rely on the results of calling the service operation.
+- The sopParameterNameAndValue syntax rule defines the grammar for specifying any parameters to the service operation in the query part of the request URL.
 
-This example, illustrates a call to a ServiceOperation with subsequent resource path segments, that uses all three syntax rules: [http://services.odata.org/OData/OData.svc/GetProductsByRating?rating=3&$filter=Price gt 20.0M](http://services.odata.org/OData/OData.svc/GetProductsByRating?rating=3&$filter=Price gt 20.0M)
+This example, illustrates a call to a service operation with subsequent resource path segments, that uses all three syntax rules: [http://services.odata.org/OData/OData.svc/GetProductsByRating?rating=3&$filter=Price gt 20.0M](http://services.odata.org/OData/OData.svc/GetProductsByRating?rating=3&$filter=Price gt 20.0M)
 
-This invokes the GetProductsByRating ServiceOperation, with the rating parameter value set to 3, and then subsequently filters Products returned by the  ServiceOperation call to include only those with a price greater than $20. 
+This invokes the GetProductsByRating service operation, with the rating parameter value set to 3, and then subsequently filters Products returned by the service operation call to include only those with a price greater than $20. 
 
-#### 4.3.2 Addressing Functions ####
-The semantic rules for addressing and invoking Functions are defined in the [OData:Core](OData) document. 
-The grammar for addressing and invoking Functions is defined by a number syntax grammar rules in Appendix A, in particular:
+#### 4.3.2 Addressing functions ####
+The semantic rules for addressing and invoking functions are defined in the [OData:Core](OData) document. 
+The grammar for addressing and invoking functions is defined by a number syntax grammar rules in Appendix A, in particular:
 
 - The functionCall syntax rule defines the grammar in the ResourcePath for addressing and providing parameters for a function directly from the Service Root.
-- The boundFunctionCall syntax rule defines the grammar in the ResourcePath for addressing and providing parameters for a function that is appended to a ResourcePath that identifies some resources that should be used as the binding parameter value when invoking the Function.
+- The boundFunctionCall syntax rule defines the grammar in the ResourcePath for addressing and providing parameters for a function that is appended to a ResourcePath that identifies some resources that should be used as the binding parameter value when invoking the function.
 - The boundOperation syntax rule (which encompasses the boundFunctionCall syntax rule), when used by the resourcePath syntax rule, illustrates how a boundFunctionCall can be appended to a ResourcePath.
-- The functionExpr, boolFunctionExpr, boundFunctionExpr and boolBoundFunctionExpr syntax rules as used by the filter and orderby syntax rules define the grammar for invoking functions to help filter and order resources identified by the ResourcePath of the uri.
+- The functionExpr, boolFunctionExpr, boundFunctionExpr and boolBoundFunctionExpr syntax rules as used by the filter and orderby syntax rules define the grammar for invoking functions to help filter and order resources identified by the ResourcePath of the URL.
 - The aliasAndValue syntax rule defines the grammar for providing function parameter values using Parameter Alias Syntax [OData:Core 7.4.2.3.2](OData). 
 - The parameterAndValue syntax rule defines the grammar for providing function parameter values using Parameter Name Syntax [OData:Core 7.4.2.3.2](OData).
 
-#### 4.3.3 Addressing Actions ####
-The semantic rules for addressing and invoking Actions are defined in the [OData:Core](OData) document.
-The grammar for addressing and invoking Actions are defined by the following syntax grammar rules in Appendix A:
+#### 4.3.3 Addressing actions ####
+The semantic rules for addressing and invoking actions are defined in the [OData:Core](OData) document.
+The grammar for addressing and invoking actions are defined by the following syntax grammar rules in Appendix A:
 
-- The actionCall syntax rule defines the grammar in the ResourcePath for addressing and invoking an Action directly from the Service Root.
-- The boundActionCall syntax rule defines the grammar in the ResourcePath for addressing and invoking an Action that is appended to a ResourcePath that identifies some resources that should be used as the binding parameter value when invoking the Action.
+- The actionCall syntax rule defines the grammar in the ResourcePath for addressing and invoking an action directly from the Service Root.
+- The boundActionCall syntax rule defines the grammar in the ResourcePath for addressing and invoking an action that is appended to a ResourcePath that identifies some resources that should be used as the binding parameter value when invoking the action.
 - The boundOperation syntax rule (which encompasses the boundActionCall syntax rule), when used by the resourcePath syntax rule, illustrates how a boundActionCall can be appended to a ResourcePath.
 
+### 4.4 Addressing a property ###
+To address an entity property clients compose the property name, to the url of the entity, in a new url segment.
+If the property has a complex type value, properties of that value can be addressed by further property name composition.
+
+### 4.5 Addressing a property value ###
+To address the raw value of a property, client compose `/$value` to the property url.
+
 ## 5.0 Query Options ##
-The Query Options section of an OData URI specifies three types of information: System Query Options, Custom Query Options, and Operation (Function and ServiceOperation) Parameters. All OData services MUST follow the query string parsing and construction rules defined in this section and its subsections.
+The Query Options section of an OData URL specifies three types of information: System Query Options, Custom Query Options, and Operation (function and service operation) Parameters. All OData services MUST follow the query string parsing and construction rules defined in this section and its subsections.
 
 ### 5.1 System Query Options ###
-System Query Options are query string parameters a client may specify to control the amount and order of the data that an OData service returns for the resource identified by the URI. The names of all System Query Options are prefixed with a "$" character. 
+System Query Options are query string parameters a client may specify to control the amount and order of the data that an OData service returns for the resource identified by the URL. The names of all System Query Options are prefixed with a "$" character. 
 
 An OData service may support some or all of the System Query Options defined. If a data service does not support a System Query Option, it must reject any requests which contain the unsupported option.
 
@@ -175,7 +182,7 @@ The semantics of all System Query Options are defined in the [OData:Core](OData)
 The grammar and syntax rules the System Query Options are defined in  
 
 ### 5.1.2 Filter System Query Option ###
-The $filter system query option allows clients to filter the set of resources that are addressed by a request uri. 
+The $filter system query option allows clients to filter the set of resources that are addressed by a request URL. 
 $filter specifies conditions that MUST be met by a resource for it to be returned in the set of matching resources. 
 
 The semantics of $filter are covered in the [OData:core](OData) document.
@@ -279,7 +286,7 @@ he Parenthesis Operator (or '( )') controls the evaluation order of an expressio
 
 Requests all products, because 9 mod 3 is 0. 
 
-#### 5.1.2.4 Canonical Functions ####
+#### 5.1.2.4 Canonical functions ####
 In addition to operators, a set of functions are also defined for use with the filter query option. The following table lists the available functions. Note: ISNULL or COALESCE operators are not defined. Instead, there is a null literal which can be used in comparisons.
 
 The syntax rules for all canonical functions are defined in Appendix A.
@@ -650,7 +657,7 @@ The semantics of $expand are covered in the [OData:core](OData) document.
 The [expand](#expandRule) syntax rule defines the formal grammar of the $expand system query option.
 
 ### 5.1.4 Select System Query Option ###
-The $select system query option allows clients to requests a limited set of information for each Entity or ComplexType identified by the ResourcePath and other System Query Options like $filter, $top, $skip etc. 
+The $select system query option allows clients to requests a limited set of information for each entity or ComplexType identified by the ResourcePath and other System Query Options like $filter, $top, $skip etc. 
 The $select query option is often used in conjunction with the $expand query option, to first increase the scope of the resource graph returned ($expand) and then selectively prune that resource graph ($select).
 
 The semantics of $select are covered in the [OData:core](OData) document.
@@ -687,12 +694,12 @@ The semantics of $format is covered in the [OData:core](OData) document.
 The [format](#formatRule) syntax rule define the formal grammar of the $format query option. 
 
 ## 5.2 Custom Query Options ##
-Custom query options provide an extensible mechanism for data service-specific information to be placed in a data service URI query string. A custom query option is any query option of the form shown by the rule "customQueryOption" in Appendix A: ABNF for OData URI Conventions. 
+Custom query options provide an extensible mechanism for data service-specific information to be placed in a data service URL query string. A custom query option is any query option of the form shown by the rule "customQueryOption" in Appendix A: ABNF for OData URL Conventions. 
 
-Custom query options MUST NOT begin with a "$" character because the character is reserved for system query options. A custom query option MAY begin with the "@" character, however this doing  can result in custom query options that collide with Function Parameters values specified using Parameter Aliases.
+Custom query options MUST NOT begin with a "$" character because the character is reserved for system query options. A custom query option MAY begin with the "@" character, however this doing  can result in custom query options that collide with function Parameters values specified using Parameter Aliases.
 
-For example this URI addresses provide a 'securitytoken' via a custom query option:
-	http://service.odata.org/OData/OData.svc/Products?$orderby=Name&securitytoken=0412312321
+For example this URL addresses provide a 'secURLtytoken' via a custom query option:
+	http://service.odata.org/OData/OData.svc/Products?$orderby=Name&secURLtytoken=0412312321
 
-## 5.3 Uri Equivalence ##
-When determining if two URIs are equivalent, each URI SHOULD be normalized using the rules specified in [RFC3987](http://www.ietf.org/rfc/rfc3987.txt) and [RFC3986](http:// "http://www.ietf.org/rfc/rfc3986.txt") and then compared for equality using the equivalence rules specified in [HTTP/1.1](http://www.ietf.org/rfc/rfc2616.txt), Section 3.2.3.
+## 5.3 URL Equivalence ##
+When determining if two URLs are equivalent, each URL SHOULD be normalized using the rules specified in [RFC3987](http://www.ietf.org/rfc/rfc3987.txt) and [RFC3986](http:// "http://www.ietf.org/rfc/rfc3986.txt") and then compared for equality using the equivalence rules specified in [HTTP/1.1](http://www.ietf.org/rfc/rfc2616.txt), Section 3.2.3.

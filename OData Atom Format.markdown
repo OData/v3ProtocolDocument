@@ -14,6 +14,8 @@ An OData payload may represent:
 * a sequence of Entities  
 * a media resource  
 * a single instance of a mime type  
+* a single link to a related entity
+* a collection of links to related entities
 * a service document describing the collections (EntitySets) exposed by the service  
 * an xml document describing the entity model exposed by the service  
 * an error  
@@ -22,10 +24,15 @@ An OData payload may represent:
 
 For a description of batch requests and responses please see [OData:Batch](ODataBatchProcessingFormat).
 
-
 # 2. Notational Conventions #
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[RFC2119](http://tools.ietf.org/html/rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")].
+
+## 2.1 Normative References ##
+
+- Normative reference to ATOM
+- Normative reference to ATOMPUB
+- Normative reference to OData:Core
 
 # 3. xml:base Attribute #
 
@@ -392,7 +399,7 @@ The entry MAY contain additional `atom:category` elements with different scheme 
 ### 6.1.12.	Entity Content within an `atom:content` Element ###
 The `atom:content` element defines the content of the entry.
 
-#### 6.1.12.1. Streamed Entities As Media Link Entries using the `src` Attribute ####
+#### 6.1.12.1. Media Entities As Media Link Entries using the `src` Attribute ####
 The `atom:content` element MAY contain a `src` attribute, in which case the entry is a Media Link Entry, used to represent a Media Resource (for example, a photo). The value of the `src` attribute MUST be a URI that can be used to retrieve the content of the Media Resource.
 
 For Media Link Entries the `atom:content` element MUST be empty. In this case, Properties of the Media Resource (other than the stream) are represented by the [`metadata:properties`](#EntityPropertieswithinametadata:propertiesElement) element  as a sibling to, rather than a child of, the `atom:content` element. 
@@ -565,7 +572,7 @@ Functions are represented as `metadata:function` elements that appear as direct 
 ### 8.1.1. The `metadata:metadata` Attribute ###
 A `metadata:function` element MUST have a `metadata:metadata` attribute which specifies the container qualified name of the function import describing the function, preceded by a "#". For example, "#MyEntityContainer.MyFunctionName".
 
-The named function may have multiple overloads (multiple function imports) within the container. If the metadata:function cannot be used to invoke all overloads for the function, then it must further be distinguished by appending a comma separated list of parameter type names, enclosed in parenthesis (). For example, "#MyEntityContainer.MyFunctionName(Edm.Integer, Edm.String)".
+The named function may have multiple overloads (multiple function imports) within the container. If the metadata:function cannot be used to invoke all overloads for the function, then it must further be distinguished by appending a comma separated ordered list of parameter type names, enclosed in parenthesis (). For example, "#MyEntityContainer.MyFunctionName(Edm.Integer, Edm.String)".
 
 If the metadata cannot be retrieved by appending $metadata to the service root, then this name must additionally be prefixed by a URL that can be used to retrieve the metadata document containing the function import that describes the function.
 
@@ -719,7 +726,7 @@ The `atom:title` element within the app:collection contains the name of the Enti
 # 14. Links 
 Links represent the relationships between an entity and related entity(s). The link(s) available from a particular entity for a particular relationship can be retrieved from the service as a colleciton of URIs within a [`data:link`](#Linkswithinadata:linkselement) element.
 
-## 14.1 Links within a `data:links` Element ##
+## 14.1 Collection of Links as a `data:links` Element ##
 A `data:link` element represents the set of references from one entity to all related entities according to a particular relationship.
 
 The reference for each related entity is represented as a `data:uri` element that appears as a direct child of the `data:link` element.
@@ -739,7 +746,7 @@ might return the following XML response:
 		<uri>http://services.odata.org/OData/OData.svc/Products(6)</uri> 
 	</links>
 	
-## 14.1 Individual Links as `data:uri` Elements ##
+## 14.2 Link as `data:uri` Element ##
 Each related entity is represented as a `data:uri` element, which appears as a direct child of a [`data:link`](#linkswithinadata:linkselement) element.
 
 The content of the `data:uri` element is the URI of the related entity.

@@ -61,17 +61,26 @@ The NavigationLink is the URL that addresses the relationship itself.
 
 ## 2.4 Annotations ##
 
+# 3. Service Model #
+<todo...>
+
 # 4. Notational Conventions #
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[RFC2119](http://tools.ietf.org/html/rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")].
 
-## 4.1. JSON Example Payloads ##
+
+## 4.1 Normative References ##
+
+- Normative reference to [OData:URL Conventions]
+- Normative reference to the [OData:ABNF]
+
+## 4.2. JSON Example Payloads ##
 
 Some sections of this specification are illustrated with non-normative example OData request and response payloads. However, the text of this specification provides the definition of conformance.
 
 OData payloads are representable in multiple formats. Those formatgits are specified in separate documents. In this document, when an example is necessary, it will be given in the [JSON][OData JSON Format] format.
 
-## 4.2. Interpreting Examples ##
+## 4.3. Interpreting Examples ##
 
 All code examples with the exception of the XSD and the BNF are non-normative.
 
@@ -601,6 +610,17 @@ The `$format` query option MAY be used in conjunction with `$value` to specify w
 
 The raw value of the ShipCountry property of the matching Order using the JSON media type.
 
+### 7.2.4. Requesting the  `$count` of an Entity Collection ####
+
+To request only the count of an entity collection, the client appends /$count to the path of the request URL.
+
+For example:
+
+    http://services.odata.org/OData/OData.svc/Products/$count?$filter=Price lt 10.00
+
+Returns all count of all Products whose Price is less than $10.00.
+
+
 ## 7.3. Data Modification ##
 
 An OData service MAY support Create, Update, and Delete operations for some or all of the Entities that it exposes.
@@ -709,59 +729,49 @@ If the navigation property is nullable, then a change MAY be perfomed by first r
 
 Alternatively, a relationship MAY be updated as part of an update to the source entity by including the required binding information for the new target entity. This binding information MUST be formatted as for a deferred navigation property in a response.
 
-### 7.3.6 Managing Binary Resources ###
+### 7.3.6 Managing Media Entities ###
 
-Binary resources are one of the primitive types that can be used in the definition of a Property. However, they are complex enough that there are special rules for manipulating them.
+A `media entity` is an entity that represents an out-of-band stream, such as a photograph.
 
-There are two ways to represent binary values as streams; an entity that represents a binary value (for example, a photograph entity) may be represented as a Media Resource whose properties (for example, Title, Location, Resolution, etc.) are contained by a Media Link Entry (MLE). An entity that has one or more binary properties (for example, an Employee entity with a photo property) may be represented through a named stream property.
+<todo: in csdl, tie the m:hasstream property to the entity being a media entity>
 
-#### 7.3.6.1. Manage a Media Resource Using MLEs ####
+A media entity has a `source url` that can be used to read the media stream, and may have an `edit-media` URL that can be used to write to the media stream.
 
-A service MAY expose Media Resources using Media Link Entries. These are Entities which represent a single data BLOB. They behave very similarly to normal Entities, but they have a different representation for some operations.
+Because a media entity has both a media stream and standard entity properties special handling is required.
 
-MLE Entities have two parts: data and metadata. A given request body may refer to either of these parts, but not both.
+##### 7.3.6.1.1. Creating a Media Entity #####
 
-The representation for the data part is however that data would normally be transmitted in raw HTTP. For example, the data portion of an image resource would have a content type of image/png, with a request body that contains the image data.
+To create a media entity, send a POST request to the media entitie's entity set. The request body MUST contain the media value (for example, the photograph) in the appropriate media type.
 
-The metadata is always represented as a standard Entity. All MLE Entities have a certain set of common properties. They may have additional metadata properties. See <ref>MLE Metadata</ref> for details.
+On successful creation of the media, the service MUST respond with `201 Created` and a response body containing the newly created media entity.
 
-Because a MLE has two parts, it has multiple URLs. These URLs are defined as follows:
+#### 7.3.6.1.2 Editing a Media Entity Stream ######
 
-- **Entity URL**. The edit URL that may be used to modify the metadata part of the MLE.
-- **Edit-Media URL**. The URL which may be used to modify the data part of the MLE. This URL is contained in the MLE metadata, if the data is modifyable.
-- **Source URL**. The URL which may be used to request the data part of the MLE. This URL is contained in the MLE metadata.
+To change the data for a media entity stream, the client sends a PUT request to the edit URL of the media entity.
 
-The edit URL for the Entity represents the metadata Entity. This metadata entity is manipulated as per a normal Entity.
+If the entity includes an ETag value, the client SHOULD include an If-Match header with the ETag value.
 
-A MLE MUST NOT exist with only one of data and metadata. Any time the service creates or destroys one part it MUST create or destroy the other part in the same request. This invariant MUST be maintained even when an error occurs while handling such a request.
+The request MUST contain a Content-Type header, set to the correct value.
 
-##### 7.3.6.1.1. Create a MLE #####
+The body of the request MUST be the binary data that will be the new value for the stream.
 
-To create a MLE, send a POST request to the MLE metadata's EntitySet. The request body MUST contain the representation of the data for the resource, not the representation for the metadata.
+##### 7.3.6.1.3. Deleting a Media Entity #####
 
-The service MUST respond with the representation for the metadata. All MLE metadata entities include a property which contains the data URL for that resource.
+To delete a media entity, send a DELETE request to the entity's edit link as described in [Delete An Entity](#deleteanentity).
 
-##### 7.3.6.1.2. Reference a Media Resource Modeled as a MLE #####
+Deleting a media entity also deletes the media associated with the entity.
 
-To refer to a MLE Media Resource from an Entity, associate a NavigationProperty with that resource's metadata Entity. Manage this relationship as per any other Entity to Entity relationship.
+#### 7.3.6.2. Managing Named Stream Properties ####
 
-##### 7.3.6.1.3. Delete a MLE #####
+An entity may have one or `named stream properties`. Named stream properties are properties of type Edm.Stream.
 
-To delete a MLE, delete the MLE's metadata Entity, as described in [Delete An Entity](#deleteanentity).
+The values for named stream properties do not appear in the entity payload. Instead, the values are read or writen through URLs.
 
-#### 7.3.6.2. Managing Resources Using Named Streams ####
+Named streams are not deletable or directly creatable by the client. The service owns their lifetime. The client can request to set the stream data to empty (0 bytes).
 
-Named Resource Streams allow an Entity to have a Property that refers directly to a resource. Unlike with MLEs, there is no special Entity for the resource metadata. Instead, the metadata is simply the value of the Property.
+#### 7.3.6.2.1 Editing Named Stream Values ######
 
-The metadata for a Named Resource Stream is determined by the service. The client is not able to modify the metadata.
-
-If the stream is editable, the metadata will include an edit URL.
-
-Named streams are not deletable or directly creatable by the client. The service owns their lifetime. The client MAY request to set the stream data to empty (0 bytes).
-
-#### 7.3.6.2.1 Edit Resource Data ######
-
-To change the data for a named stream, the client MUST send a PUT request to the edit URL.
+To change the data for a named stream, the client sends a PUT request to the edit URL.
 
 If the stream metadata includes an ETag value, the client SHOULD include an If-Match header with the ETag value.
 

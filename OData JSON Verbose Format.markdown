@@ -368,7 +368,7 @@ An EntitySet or collection of Entities MUST be represented as a JSON object. Thi
 
 The `results` value MUST be a JSON array. Each element MUST be a correctly formatted Entity (see [Representing an Entity](#representinganentity)).
 
-The `__count` name/value pair represents the inlinecount. Its value MUST be an integer. See <ref>inlinecount</ref> for details on when it is required and when it is prohibited.
+The `__count` name/value pair represents the inlinecount. Its value MUST be an integer corresponding to the total count of members in the collection represented by the request. If present, this name/value pair MUST come before the `results` name/value pair. See <ref>`$inlinecount`</ref> for details on when it is required and when it is prohibited. 
 
 The `__next` name/value pair MAY be included. If provided, its value MUST be a string containing a URL. If provided, then the response MUST be interpreted as a partial result. The client MAY request this URL if it wishes to receive the next part of the collection or EntitySet.
 
@@ -438,18 +438,6 @@ The value for the `code` name/value pair MUST be a string. Its value MUST be a s
 The value for the `message` name/value pair MUST be an object. This object MUST have two name/value pairs, with names `lang` and `message`. The `message` name/value pair MUST contain a human-readable representation of the error. The `lang` name/value pair MUST contain the language code from <ref>[[RFC 4646]][]</ref> corresponding to the language in which the value for `message` is written.
 
 The value for the `innererror` name/value pair MUST be an object. The contents of this object are service-defined. Usually this object contains information that will help debug the service.
-
-## 6.6 Next Links ##
-
-A response MAY be a partial result. It will then use a <ref>next link (link to core doc)</ref> to tell the client how to request the next page of data.
-
-To represent an next link the response MUST include a name/value pair. The name MUST be `__next`. The value MUST be a string containing a URL that the client can use to request the next page of data.
-
-## 6.7 Inline Count ##
-
-A response MAY contain an inline count. See <ref>core doc `$inlinecount`</ref> for details.
-
-To represent an inline count the response MUST include a name/value pair. This pair MUST come before any link name/value pairs. The name MUST be `__count`. The value MUST be a number equal to the total number of links addressed by the request.
 
 ## 6.8 Service Document ##
 

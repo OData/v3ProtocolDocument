@@ -61,17 +61,26 @@ The NavigationLink is the URL that addresses the relationship itself.
 
 ## 2.4 Annotations ##
 
+# 3. Service Model #
+<todo...>
+
 # 4. Notational Conventions #
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[RFC2119](http://tools.ietf.org/html/rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")].
 
-## 4.1. JSON Example Payloads ##
+
+## 4.1 Normative References ##
+
+- Normative reference to [OData:URL Conventions]
+- Normative reference to the [OData:ABNF]
+
+## 4.2. JSON Example Payloads ##
 
 Some sections of this specification are illustrated with non-normative example OData request and response payloads. However, the text of this specification provides the definition of conformance.
 
 OData payloads are representable in multiple formats. Those formatgits are specified in separate documents. In this document, when an example is necessary, it will be given in the [JSON][OData JSON Format] format.
 
-## 4.2. Interpreting Examples ##
+## 4.3. Interpreting Examples ##
 
 All code examples with the exception of the XSD and the BNF are non-normative.
 
@@ -601,6 +610,18 @@ The `$format` query option MAY be used in conjunction with `$value` to specify w
 
 The raw value of the ShipCountry property of the matching Order using the JSON media type.
 
+### 7.2.4. Requesting the  `$count` of an Entity Collection ####
+
+To request only the count of an entity collection, the client appends /$count to the path of the request URL.
+
+On success, the server returns a 2xx status code with the response body containing the count of entities matching the request, formatted as a simple scalar integer value.
+
+For example:
+
+    http://services.odata.org/OData/OData.svc/Products/$count?$filter=Price lt 10.00
+
+Returns the count of all Products whose Price is less than $10.00.
+
 ## 7.3. Data Modification ##
 
 An OData service MAY support Create, Update, and Delete operations for some or all of the Entities that it exposes.
@@ -709,59 +730,49 @@ If the navigation property is nullable, then a change MAY be perfomed by first r
 
 Alternatively, a relationship MAY be updated as part of an update to the source entity by including the required binding information for the new target entity. This binding information MUST be formatted as for a deferred navigation property in a response.
 
-### 7.3.6 Managing Binary Resources ###
+### 7.3.6 Managing Media Entities ###
 
-Binary resources are one of the primitive types that can be used in the definition of a Property. However, they are complex enough that there are special rules for manipulating them.
+A `media entity` is an entity that represents an out-of-band stream, such as a photograph.
 
-There are two ways to represent binary values as streams; an entity that represents a binary value (for example, a photograph entity) may be represented as a Media Resource whose properties (for example, Title, Location, Resolution, etc.) are contained by a Media Link Entry (MLE). An entity that has one or more binary properties (for example, an Employee entity with a photo property) may be represented through a named stream property.
+<todo: in csdl, tie the m:hasstream property to the entity being a media entity>
 
-#### 7.3.6.1. Manage a Media Resource Using MLEs ####
+A media entity has a `source url` that can be used to read the media stream, and may have an `edit-media` URL that can be used to write to the media stream.
 
-A service MAY expose Media Resources using Media Link Entries. These are Entities which represent a single data BLOB. They behave very similarly to normal Entities, but they have a different representation for some operations.
+Because a media entity has both a media stream and standard entity properties special handling is required.
 
-MLE Entities have two parts: data and metadata. A given request body may refer to either of these parts, but not both.
+##### 7.3.6.1.1. Creating a Media Entity #####
 
-The representation for the data part is however that data would normally be transmitted in raw HTTP. For example, the data portion of an image resource would have a content type of image/png, with a request body that contains the image data.
+To create a media entity, send a POST request to the media entitie's entity set. The request body MUST contain the media value (for example, the photograph) in the appropriate media type.
 
-The metadata is always represented as a standard Entity. All MLE Entities have a certain set of common properties. They may have additional metadata properties. See <ref>MLE Metadata</ref> for details.
+On successful creation of the media, the service MUST respond with `201 Created` and a response body containing the newly created media entity.
 
-Because a MLE has two parts, it has multiple URLs. These URLs are defined as follows:
+#### 7.3.6.1.2 Editing a Media Entity Stream ######
 
-- **Entity URL**. The edit URL that may be used to modify the metadata part of the MLE.
-- **Edit-Media URL**. The URL which may be used to modify the data part of the MLE. This URL is contained in the MLE metadata, if the data is modifyable.
-- **Source URL**. The URL which may be used to request the data part of the MLE. This URL is contained in the MLE metadata.
+To change the data for a media entity stream, the client sends a PUT request to the edit URL of the media entity.
 
-The edit URL for the Entity represents the metadata Entity. This metadata entity is manipulated as per a normal Entity.
+If the entity includes an ETag value, the client SHOULD include an If-Match header with the ETag value.
 
-A MLE MUST NOT exist with only one of data and metadata. Any time the service creates or destroys one part it MUST create or destroy the other part in the same request. This invariant MUST be maintained even when an error occurs while handling such a request.
+The request MUST contain a Content-Type header, set to the correct value.
 
-##### 7.3.6.1.1. Create a MLE #####
+The body of the request MUST be the binary data that will be the new value for the stream.
 
-To create a MLE, send a POST request to the MLE metadata's EntitySet. The request body MUST contain the representation of the data for the resource, not the representation for the metadata.
+##### 7.3.6.1.3. Deleting a Media Entity #####
 
-The service MUST respond with the representation for the metadata. All MLE metadata entities include a property which contains the data URL for that resource.
+To delete a media entity, send a DELETE request to the entity's edit link as described in [Delete An Entity](#deleteanentity).
 
-##### 7.3.6.1.2. Reference a Media Resource Modeled as a MLE #####
+Deleting a media entity also deletes the media associated with the entity.
 
-To refer to a MLE Media Resource from an Entity, associate a NavigationProperty with that resource's metadata Entity. Manage this relationship as per any other Entity to Entity relationship.
+#### 7.3.6.2. Managing Named Stream Properties ####
 
-##### 7.3.6.1.3. Delete a MLE #####
+An entity may have one or `named stream properties`. Named stream properties are properties of type Edm.Stream.
 
-To delete a MLE, delete the MLE's metadata Entity, as described in [Delete An Entity](#deleteanentity).
+The values for named stream properties do not appear in the entity payload. Instead, the values are read or writen through URLs.
 
-#### 7.3.6.2. Managing Resources Using Named Streams ####
+Named streams are not deletable or directly creatable by the client. The service owns their lifetime. The client can request to set the stream data to empty (0 bytes).
 
-Named Resource Streams allow an Entity to have a Property that refers directly to a resource. Unlike with MLEs, there is no special Entity for the resource metadata. Instead, the metadata is simply the value of the Property.
+#### 7.3.6.2.1 Editing Named Stream Values ######
 
-The metadata for a Named Resource Stream is determined by the service. The client is not able to modify the metadata.
-
-If the stream is editable, the metadata will include an edit URL.
-
-Named streams are not deletable or directly creatable by the client. The service owns their lifetime. The client MAY request to set the stream data to empty (0 bytes).
-
-#### 7.3.6.2.1 Edit Resource Data ######
-
-To change the data for a named stream, the client MUST send a PUT request to the edit URL.
+To change the data for a named stream, the client sends a PUT request to the edit URL.
 
 If the stream metadata includes an ETag value, the client SHOULD include an If-Match header with the ETag value.
 
@@ -873,7 +884,7 @@ Actions are operations exposed by an OData server that MAY have side effects whe
 
 #### 7.4.1.1. Declaring Actions in Metadata ####
 
-A service that supports Actions SHOULD declare them in $metadata. Actions that are declared MUST be specified using a FunctionImport element, that indicates the signature (Name, ReturnType and Parameters) of the Action. 
+Actions SHOULD be declared in $metadata using a FunctionImport element that indicates the signature (Name, ReturnType and Parameters) of the Action. 
 
 In addition to the [Common Rules for FunctionImports](#commonrulesforfunctionimports) the following rules apply for FunctionImport elements that represent Actions:
 
@@ -904,7 +915,7 @@ The following information MUST be included when an action is advertised:
 - A 'Metadata Url' that MUST identify the FunctionImport that declares the Action. This Url can be either relative or absolute, but when relative it MUST be assumed to be relative to the $metadata Url of the current service.
 - A 'Title' that SHOULD contain a human readable description of the Action.
 
-Example: Given a GET request to /service.svc/Customers('ALFKI')
+Example: Given a GET request to http://server/Customers('ALFKI')
 
 The service might respond with a Customer entity that advertises a binding of the `SampleEntities.CreateOrder` action to itself:
 
@@ -945,124 +956,64 @@ If the action returns results the client SHOULD use content type negotiation to 
 
 If a client only wants an action to be processed when the binding parameter value, an entity or collection of entities, is unmodified, the client SHOULD include the `'If-Match'` header with the latest known ETag value for the Entity or collection of Entities. When present, a service MUST attempt to verify that the ETag found in the 'If-Match' header is current before processing the request. If the ETag cannot be verified or is found to be out of date the service response MUST be '412 Precondition Failed'. 
  -->
-On success, the response SHOULD be 200 for actions with a return type or 204 for action without a return type. The client can change the behavior using the `Prefer` header.
+On success, the response SHOULD be 200 for actions with a return type or 204 for action without a return type. The client can request whether any results from the action be returned using the `Prefer` header.
 
-Example: This request invokes the `SampleEntities.CreateOrder` action using `/Customers('ALFKI') `as the customer (or binding parameter): 
+Example: The following request invokes the `SampleEntities.CreateOrder` action using `/Customers('ALFKI') `as the customer (or binding parameter). The values `2` for the `quantity` parameter and `BLACKFRIDAY` for the `discountcode` parameter are passed in the body of the request: 
 
-       POST /Customers('ALFKI')/SampleEntities.CreateOrder HTTP/1.1
-       Host: host
-       Content-Type: application/json
-       DataServiceVersion: 3.0
-       MaxDataServiceVersion: 3.0
-       If-Match: ...ETag...
-       Content-Length: ####
+       POST http://server/Customers('ALFKI')/SampleEntities.CreateOrder
 
        {
           "quantity": 2,
           "discountCode": "BLACKFRIDAY"
        }
 
-HTTP Response:
-     HTTP/1.1 204 OK
-     Date: Fri, 11 Oct 2008 04:23:49 GMT
-
-
 ### 7.4.2. Functions ###
-Functions are operations exposed by an OData service which MAY have parameters and MUST return data and MUST have no observable side effects.  
+Functions are operations exposed by an OData service that MUST return data and MUST have no observable side effects.
 
 #### 7.4.2.1. Declaring Functions in Metadata ####
 
-A service that supports Functions SHOULD declare them in $metadata. Functions that are declared MUST be specified using a FunctionImport element, that indicates the signature (Name, ReturnType and Parameters) and semantics (composability, bindability and result entityset) of the Function. 
+Functions SHOULD be declared in $metadata. Function declarations indicate the signature (Name, ReturnType and Parameters) and semantics (composability, bindability and result entityset) of the Function. 
 
-In addition to the [Common Rules for FunctionImports](#commonrulesforfunctionimports) the following rules apply for FunctionImport elements that represent Functions:
+For Example:
+The following FunctionImport describes a Function called MostRecent that returns the 'MostRecent' Order within a collection of Orders:
 
-- Functions MUST NOT specify the 'm:HttpMethod' attribute as this is reserved for ServiceOperations.
-- Functions MUST NOT be side effecting, indicated by setting the 'IsSideEffecting' attribute to 'false'.
-- Functions MAY be composable, indicated by setting the 'IsComposable' attribute  to 'true'.
-
-This is an example of an Function called MostRecent that returns the 'MostRecent' Order from amongst a collection of Orders:
-
-	<FunctionImport Name="MostRecent" EntitySet="Orders" ReturnType="SampleModel.Order" IsBindable="true" IsSideEffecting="false"
-					m:IsAlwaysBindable="true">
-		<Parameter Name="orders" Type="Collection(SampleModel.Order)" Mode="In">
+	<FunctionImport Name="MostRecent" EntitySet="Orders" ReturnType="SampleModel.Order" 
+		IsBindable="true" IsSideEffecting="false" m:IsAlwaysBindable="true">
+		<Parameter Name="orders" Type="Collection(SampleModel.Order)" Mode="In"/>
 	</FunctionImport>
 
-#### 7.4.2.2. Advertising currently available Functions ####
+#### 7.4.2.2. Advertising Currently Available Functions within a Payload ####
 
-Services are allowed to choose whether to advertise Functions that can be bound to the current entity or current collection of entities inside representations of the entity or collection entities returned from the Server. 
+Functions may be bound to an entity or collection of entities. Services may choose whether to advertise functions within the entities or collections of entities returned from the Server. 
 
-If the service chooses to advertise a Function the following information MUST be included: 
-
-- A 'Target Url' that MUST identify the resource that accepts requests to invoke the Function.
-- A 'Metadata Url' that MUST identify the FunctionImport (and potentially overload) that declares the Function. This Url can be either relative or absolute, but when relative it MUST be assumed to be relative to the $metadata Url of the current service.
-- A 'Title' that MUST contain a human readable description of the Function.
-
-Example: Given this client request:
-
-	GET /service.svc/Orders HTTP/1.1
-	Host: host
-	Accept: application/json
-	DataServiceVersion: 1.0
-	MaxDataServiceVersion: 3.0
-
-The service might respond with a collection of Orders that advertising the `SampleEntities.MostRecent` Function bound to itself:
-
-	HTTP/1.1 200 OK
-	Date: Fri, 12 Dec 2008 17:17:11 GMT
-	Content-Type: application/json
-	Content-Length: nnn
-	DataServiceVersion: 3.0
+Example: Given a GET request to `http://server//Orders`, the service might respond with a collection of Orders that advertises the `SampleEntities.MostRecent` Function bound to the collection:
 
 	{
 		"__metadata": {
-			"functions": "SampleEntities.MostRecent" : [{
+			"functions": "SampleEntities.MostRecent" : [
+				{
 	               "title" : "Most Recent Order",
 	               "target" : "Orders/SampleEntities.MostRecent"
-	           }]
+	           	}
+			]
 		},
 		"d": [
 	         {
-	            "__metadata": { "URL": "Orders(1)",
-	                            "type": "SampleModel.Order",
-	                            "properties" : {
-	                              "Customer" : {
-	                                "__associationURL" : "Orders(1)/SampleModel.Order/$links/Customer",
-	                              },
-	                              "OrderLines" : {
-	                                "__associationURL" : "Orders(1)/SampleModel.Order/$links/OrderLines",
-	                              }
-	                            } 	
+	            "__metadata": { 
+								... 	
 	                          },
 	            "OrderID": 1,
 	            "ShippedDate": "\/Date(872467200000)\/",
-	            "Customer":   { "__deferred": { "URL": "Orders(1)/SampleModel.Order/Customer" } }
-	            "OrderLines": { "__deferred": { "URL": "Orders(1)/SampleModel.Order/OrderLines"} }
+				...
 	         },
-	         {
-	            "__metadata": { "URL": "Orders(2)",
-	                            "type": "SampleModel.Order",
-	                            "properties" : {
-	                              "Customer" : {
-	                                "__associationURL" : "Orders(2)/SampleModel.Order/$links/Customer",
-	                              },
-	                              "OrderLines" : {
-	                                "__associationURL" : "Orders(2)/SampleModel.Order/$links/OrderLines",
-	                              }
-	                            } 
-	
-	                          },
-	            "OrderID": 2,
-	            "ShippedDate": "\/Date(875836800000)\/",
-	            "Customer":   { "__deferred": { "URL": "Orders(2)/SampleModel.Order/Customer"} }
-	            "OrderLines": { "__deferred": { "URL": "Orders(2)/SampleModel.Order/OrderLines"} }
-	
-	         }
-	]}
+			 ...
+		]
+	}
  
  
 When the resource retrieved represents a collection, the 'Target Url' of any Functions advertised MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
 
-An efficient format that assumes client knowledge of metadata SHOULD NOT advertise Functions whose availability ('IsAlwaysBindable' is set to 'true') and the target url can be established via metadata.
+An efficient format that assumes client knowledge of metadata SHOULD NOT advertise Functions whose availability ('IsAlwaysBindable' is set to 'true') and whose target url can be established via metadata.
 
 #### 7.4.2.3. Invoking a Function ####
 
@@ -1080,39 +1031,33 @@ The simplest way to pass parameter values to a Function is using inline paramete
 
 To use Inline Parameter Syntax, where-ever a Function is called, parameter values MUST be specified inside the parenthesis, i.e. `()`, appended directly to the Function name. 
 
-The parameter values MUST be constructed by concatenating Name/Value pairs for each parameter separated by `,`'s, where the Name/Value pairs are in the format `Name=Value` and where `Name` is the Name of the parameter to the Function and `Value` is the parameter value.
+The parameter values MUST be specified as a comma separated list of Name/Value pairs in the format `Name=Value`, where `Name` is the Name of the parameter to the Function and `Value` is the parameter value.
 
 For example this request:
 
-	GET http://server/service.svc/NS.Foo(p1=3,p2="hello") HTTP/1.1
+	GET http://server/Sales.GetEmployeesByManager(ManagerID=3)
 
-Invokes a `NS.Foo` function which takes two parameters (`p1` of type Edm.Int32 and `p2` of type Edm.String), by passing `3` and `"hello"` as the values of `p1` and `p2` respectively.
+Invokes a `Sales.GetEmployeesByManager` function which takes a single `ManagerID` parameter.
 
 And this request:
 
-	GET http://server/service.svc/Customers?$filter=NS.GetSalesRegion(p1=$it/City) eq "Western" HTTP/1.1
+	GET http://server/Customers?$filter=Sales.GetSalesRegion(City=$it/City) eq "Western"
 
-Filters `Customers` to those in the `Western` sales region, calculated for each Customer in the Collection by passing the Customer's City as the `p1` parameter value to the `NS.GetSalesRegion` function. 
+Filters `Customers` to those in the `Western` sales region, calculated for each Customer in the Collection by passing the Customer's City as the `City` parameter value to the `Sales.GetSalesRegion` function. 
 
-Parameters values MAY be provided to Functions in the Request URL path using inline syntax for primitive parameter types only, all other parameter types MUST be provided externally. 
+Primitive parameters values may be provided to Functions in the Request URL path using inline syntax. All other parameter types MUST be provided externally. 
 
-##### 7.4.2.3.2. Parameter Alias Syntax #####
+##### 7.4.2.3.2. Parameter Aliases #####
 
-Another way to pass parameter values is by using Parameter Alias Syntax.
+Parameters may be specified by substituting a `parameter alias` in place of an inline parameter to a function call. Parameters aliases are names beginning with an ampersand (`@`).
 
-To use Parameter Alias Syntax, whereever a Function is called, parameter aliases MUST be specified inside parenthesis, i.e. `()`, appended directly to the Function name, and actual parameter values MUST be specified as Query options in the Query part of the Request URL. The Query option name is the Name of the Parameter Alias, and the Query option value is the Value of any parameter that refers to this Parameter Alias.
+Actual parameter values MUST be specified as Query options in the Query part of the Request URL. The Query option name is the Name of the Parameter Alias, and the Query option value is the value to be used for the specified Parameter Alias.
 
-The parameter aliases MUST be constructed by concatenating Name/Value pairs for each parameter separated by `,`'s, where the Name/Value pairs are in the format `Name=Value` and where `Name` is the Name of the parameter to the Function and `Value` is a Parameter Alias. Parameter aliases MUST begin with `@`. 
+For example:
 
-For example these requests are equivalent:
+	GET http://server/Sales.GetEmployeesByManager(ManagerID=@p1)?@p1=3
 
-	GET http://server/service.svc/NS.Foo(p1=3,p2="hello") HTTP/1.1
-	GET http://server/service.svc/NS.Foo(p1=@p1,p2=@p2)?@p1=3&@p2="hello" HTTP/1.1
-
-Parameter Alias Syntax has a number of advantages over Inline syntax:
-
-- Parameter Values MAY be non-primitive
-- A single Parameter Alias (and thus Parameter Value) MAY be bound to multiple Function calls, which can shorten urls significantly, especially when dealing with large Geospatial or structural parameter values.
+Parameter aliases allow the same parameter value to be used multiple times in a request and may be used to reference non-primitive values.
 
 If a Parameter Alias referenced by a Function call is not given a value in the Query part of the Request URL, the value MUST be assumed to be null.
 
@@ -1120,40 +1065,29 @@ If a Parameter Alias referenced by a Function call is not given a value in the Q
 
 The OData protocol allows parameter values for the last Function call in a Request URL Path to be specified by appending Name/Value pairs, representing each parameter Name and Value for that Function, as query strings to the Query part of the Request URL. 
 
-This is useful because it means clients, in particular rudimentary clients, MAY invoke advertised Functions without parsing the advertised Target Url (as would be required to either inject parameter values using [Inline Parameter Syntax] or identify Parameter Aliases so that Parameter Values can be provided using [Parameter Alias Syntax]). 
+This enables clients to invoke Functions without parsing the advertised Target Url. 
 
-This means that all of these requests are equivalent:
+For example:
 
-	GET http://server/service.svc/Entities(6)/NS.Foo(p1=3,p2="hello")/NavigationProperty HTTP/1.1
-	GET http://server/service.svc/Entities(6)/NS.Foo(p1=@p1,p2=@p2)/NavigationProperty?@p1=3&@p2="hello" HTTP/1.1
-	GET http://server/service.svc/Entities(6)/NS.Foo/NavigationProperty?p1=3&p2="hello" HTTP/1.1
-
-Notice though that only the third request can be built without complicated Parsing logic when `http://server/service.svc/Entities(6)/NS.Foo/NavigationProperty` is advertised as the [Target Url] of an available Function to a client which has knowledge of signature for `NS.Foo`.  
+	GET http://server/Sales.GetEmployeesByManager?ManagerID=3
 
 #### 7.4.2.4. Function overload resolution ####
 
 Functions overloads are supported in OData, meaning a service MAY expose multiple Functions with the same name that take a different set of parameters.
 
-When a function is invoked (using any of the three parameter syntaxes) the parameter names and parameter values are specified in the URL, and the parameter types can be deduced from each parameter value. The combination of the Function name, and the unordered parameter names and types is always sufficient to identify a particular Function overload. 
+When a function is invoked (using any of the three parameter syntaxes) the parameter names and parameter values are specified in the URL, and the parameter types can be deduced from each parameter value. The combination of the Function name and the unordered list of parameter types and names is always sufficient to identify a particular Function overload. 
 
-### 7.4.3. Service Operations ###
+### 7.4.3. Legacy Service Operations ###
 
 Service Operations are Operations like Actions and Functions. However use of Service Operations is now discouraged because they are legacy and have a number of disadvantages:
 
-- Service Operation Semantics are unclear - for example a Service Operation that is invoked with a GET MAY have side effects and a Service Operation that is invoked with a POST MAY have no side-effects.
 - Service Operations only support primitive parameter types.
+- Service Operations are not bindable.
 - Unlike Functions, composing Multiple Service Operations calls in the same request is not supported.
 
 #### 7.4.3.1. Declaring Service Operations in Metadata ####
 
-A service that supports Service Operations MUST declare them in $metadata using a FunctionImport element, that indicates the signature (Name, ReturnType and Parameters) and semantics (http verb and result entityset) of the Service Operation. 
-
-In addition to the [Common Rules for FunctionImports] the following rules apply for FunctionImport elements that represent Service Operations:
-
-- Service Operations MUST specify the 'm:HttpMethod' attribute, to indicate which HttpMethod (GET or POST) is required to invoke the Service Operation.
-- Service Operations MUST omit the 'IsComposable' attribute or set its value to 'false'.
-- Service Operations MUST omit the 'IsBindable' attribute or set its value to 'false'.
-- Service Operations MUST omit the 'm:IsAlwaysBindable' attribute or set its value to 'false'.
+Legacy Service Operations MUST declared in $metadata. Service Operation declarations indicate the signature (Name, ReturnType and Parameters) and semantics (http verb and result entityset) of the Service Operation. 
 
 #### 7.4.3.2. Invoking a Service Operation ####
 
@@ -1161,30 +1095,19 @@ To invoke a ServiceOperation the Request URL used MUST begin with the URL of the
 
 For example:
 
-	http://server/service.svc/ServiceOperation or http://server/service.svc/ServiceOperation()
+	http://server/service.svc/ServiceOperation 
+or 
+	http://server/service.svc/ServiceOperation()
 
-The HttpMethod (either GET or POST) used to invoke the ServiceOperation MUST match the HttpMethod specified by the 'm:HttpMethod' attribute on the FunctionImport that defines the ServiceOperation. 
+The HttpMethod (either GET or POST) used to invoke the ServiceOperation MUST match the HttpMethod specified by the FunctionImport that defines the ServiceOperation. 
 
-Even when the Service Operation when POST is required to invoke the ServiceOperation the Body of the Invoke Request SHOULD be empty. 
+The body of a request to invoke a Service Operation SHOULD be empty. 
 
 Any Parameter Values MUST be encoded into the Query part of the Request URL, as individual Query string Name/Value pairs, where the Name is the Parameter Name and the Value is a URLLiteral representing the parameter value.
 
-NOTE: Because all Service Operation parameters must be primitive all Service Operation Parameter can be represented as URLLiterals.
-
-For example given this ServiceOperation:
-
-	<FunctionImport Name="CreatePerson" EntitySet="People" ReturnType="NS.Person" m:HttpMethod="POST">
-		<Parameter Name="Firstname" Type="Edm.String" Mode="In" />
-		<Parameter Name="Surname" Type="Edm.String" Mode="In" />
-		<Parameter Name="DateOfBirth" Type="Edm.Datetime" Mode="In" />
-	</FunctionImport>
-
-This request:
+For example:
 
 	POST http://server/service.svc/CreatePerson?Firstname="John"&Surname="Smith"&DateOfBirth=datetime'1971-07-07T13:03:00' HTTP/1.1
-
-    DataServiceVersion: 3;
-	Accept: application/json;
  
 Invokes the `CreatePerson` ServiceOperation with the following Parameter values:
 
@@ -1194,21 +1117,11 @@ Invokes the `CreatePerson` ServiceOperation with the following Parameter values:
 
 If the ServiceOperation specifies a ReturnType it MAY be possible to compose further OData path and/or Query Options after the segment that identifies the ServiceOperation. 
 
-For example given this ServiceOperation:
+For example:
 
-	<FunctionImport Name="GetOrdersByDate" EntitySet="Orders" ReturnType="Collection(NS.Order)" m:HttpMethod="GET">
-		<Parameter Name="OrderDate" Type="Edm.Datetime" Mode="In" />
-	</FunctionImport>
-
-This request:
-
-	GET http://server/service.svc/GetOrdersByDate/$filter=Customer/Name eq 'ACME'&OrderDate=datetime'2012-07-07T01:03:00' HTTP/1.1
-
-    DataServiceVersion: 3;
-	Accept: application/json;
+	GET http://server/service.svc/GetOrdersByDate/$filter=Customer/Name eq 'ACME'&OrderDate=datetime'2012-07-07T01:03:00'
 
 Invokes the `GetOrdersByDate` ServiceOperation with the `OrderDate` parameter value of `datetime'2012-07-07T01:03:00` and then further filters the results so only the Orders for `ACME` on that date are returned.
-
 
 ------
 

@@ -341,16 +341,9 @@ This section describes additional payload semantics that only apply to response 
 
 ## 6.1 Response body ##
 
+All JSON Verbose responses are wrapped in a single object for security reasons.
 
-
-
-
--- TODO: MUSTHAVE write 6.1 Response body. Talk about the d object, etc.
-
-
-
-
-
+Each response body MUST be represented as a single JSON object. This object contains a single name/value pair. The name MUST be `d`. The value MUST be the correct representation for the data being returned.
 
 ## 6.2 MIME Type ##
 

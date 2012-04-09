@@ -25,7 +25,6 @@ Dealing with redirects (Mike)
   C:\git\specs\OData JSON Verbose Format.markdown (8 hits) (Arlo)
 	Line 139: -- TODO: MUSTHAVE verify. Is this correct for collection types? Does a collection value contain the same object & metadata?
 	Line 143: -- TODO: MUSTHAVE write NamedResourceStreamProperty.
-	Line 348: -- TODO: MUSTHAVE write 6.1 Response body. Talk about the d object, etc.
 
 
 

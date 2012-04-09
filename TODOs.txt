@@ -31,7 +31,6 @@ Dealing with redirects (Mike)
 	Line 416: -- TODO: MUSTHAVE 6.5 Errorswrite this.
 	Line 420: -- TODO: MUSTHAVE 6.6 Next Links write this.
 	Line 424: -- TODO: MUSTHAVE Inline Count write this.
-	Line 428: -- TODO: MUSTHAVE Service Document write this.
 
 
 

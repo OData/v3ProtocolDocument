@@ -425,4 +425,16 @@ The outer JSON object MAY contain additional name/value pairs. One such example 
 
 ## 6.8 Service Document ##
 
--- TODO: MUSTHAVE Service Document write this.
+The root URL of an OData service MUST identify a service document. This document is represented as show in the following example.
+
+	{
+		"EntitySets": [
+			"Customers",
+			"Orders",
+			"OrderDetails"
+		]
+	}
+	
+The service document MUST consist of a single JSON object. This object MUST have a single name/value pair. The name MUST be `EntitySets`. The value MUST be a JSON Array.
+
+There MUST be one element in this array for each entity set exposed by the service. Each element MUST be a JSON string with a value equal to the name of the entity set.

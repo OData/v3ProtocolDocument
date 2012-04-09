@@ -644,7 +644,14 @@ Returns only orders that are also BigOrders.
 Returns only orders that have a customer that is a MVPCustomer.
 
 ##### 5.1.2.4.27 Cast #####
-TODO: MUSTHAVE figure out how to actually do a cast!
+The cast canonical function has the following signatures:
+
+	Edm.Any cast(type)
+	Edm.Any cast(expression,type)
+	
+If implemented the single parameter cast canonical function MUST return the current instance cast to the type specified. 
+If implemented the two parameter cast canonical function MUST return the object referred to by the expression cast to the type specified.
+In either case if the cast fails the canonical function MUST return NULL.
 
 #### 5.1.2.5 Operator Precedence ####
 OData Servers MUST use the following operator precedence for supported operators when evaluating $filter and $orderby expressions:

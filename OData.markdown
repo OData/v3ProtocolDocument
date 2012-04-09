@@ -824,27 +824,22 @@ On success, the response must be a valid [update response](#responsesforupdates)
 
 ## 7.4. Operations ##
 
-Services MAY support custom operations. Operations (actions, functions and legacy service operations) are represented as FunctionImport elements. 
+Services MAY support custom operations. Operations (actions, functions and legacy service operations) are represented as FunctionImport.
 
-The following rules apply to all FunctionImport elements:
+### 7.4.1 Common rules for all operations ###
 
-<!-- TODO: MUSTHAVE Remove the rules here that are already covered in CSDL. -->
+All operations:
 
-- MUST have a 'Name' attribute set to a valid EDM identifier.
-- MUST either omit a ReturnType (in the case of void operations) or specify a ReturnType either by including a 'ReturnType' attribute set to a valid TypeReference or by including a child 'ReturnType' element. 
-- MAY have child Parameter elements.
-- MAY have an 'IsSideEffecting' attribute set to either 'true' or 'false'. When omitted 'IsSideEffecting' MUST be interpreted as 'true'. 
-- MAY have a 'm:HttpMethod' attribute set to value of either 'POST' or 'GET'. When omitted 'm:HttpMethod' MUST be interpreted as not specified.
-- MAY have an 'IsBindable' attribute set to either 'true' or 'false'. When 'IsBindable' is set to 'true' the FunctionImport MUST have at least one child Parameter element, and the first child Parameter element MUST have a type that is either an EntityType or a collection of EntityTypes. When omitted 'IsBindable' MUST be assumed to have a value of 'false'.
-- MAY have an 'm:IsAlwaysBindable' attribute set to either 'true' of 'false'. When omitted 'm:IsAlwaysBindable' MUST be assumed to have a value of 'false'. When 'IsAlwaysBindable' is 'true', 'IsBindable' MUST also be set to 'true'.
-- MUST have an 'EntitySet' attribute set to either the name of an EntitySet or to an EntitySetPath expression if the 'ReturnType' of the FunctionImport is either an EntityType or a Collection of an EntityType.
-- TODO: MUSTHAVE overload rules (i.e. unordered combination of parameter names & types must be unique).
+- MUST have a Name.
+- MAY specify at most one ReturnType.
+- MUST specify an EntitySet or EntitySetPathExpression for the results if the ReturnType is an entity or collection of entities.
+- MAY have Parameters.
+
+The [OData CSDL](OData CSDL Definition.html) specifies how syntactically this information, and information specific to each kind of operation is specified.
 
 ### EntitySetPathExpression ###
 
-<!-- TODO: NICETOHAVE Move into CSDL spec -->
-
-Functions or Actions that return an Entity or Entities MAY return results from an EntitySet that is dependent upon the EntitySet of one of the parameter values used to invoke the Operation.
+Functions or actions that return an Entity or Entities MAY return results from an EntitySet that is dependent upon the EntitySet of one of the parameter values used to invoke the Operation.
 
 When such a dependency exists an EntitySetPathExpression is used. An EntitySetPathExpression MUST begin with the name of a parameter to the Operation, and optionally includes a series NavigationProperties (and occasional type casts) as a succinct way to describe the series of EntitySet transitions. 
 
@@ -886,13 +881,18 @@ Actions are operations exposed by an OData server that MAY have side effects whe
 
 Actions SHOULD be declared in $metadata using a FunctionImport element that indicates the signature (Name, ReturnType and Parameters) of the Action. 
 
-In addition to the [Common Rules for FunctionImports](#commonrulesforfunctionimports) the following rules apply for FunctionImport elements that represent Actions:
+In addition to the [Common Rules for All Operations](#Common Rules for All Operations) the following rules apply for Actions:
 
-- Actions MUST NOT specify the 'm:HttpMethod' attribute as this is reserved for ServiceOperations.
-- Actions MAY be side effecting, indicated by either omitting or setting the 'IsSideEffecting' attribute to 'true'.
-- Actions MUST NOT be composable, indicated by either omitiing or setting the 'IsComposable' attribute to 'false'.
+- Actions MUST NOT specify the HttpMethod as this is reserved for ServiceOperations.
+- Actions MUST be marked as side effecting.
+- Actions MUST NOT be composable.
+- Actions MAY have parameters.
+- Actions with parameters MAY be marked as bindable.
+- Actions that are bindable MAY be marked as always bindable
+- Non-binding parameter types MUST be either primitive, complex or a collection of primitive or complex.
+- Binding parameter types MUST be either an entity or a collection of entities. 
 
-<!-- TODO: MUSTHAVE Remove any redundant attributes here with CSDL. -->
+The [OData CSDL](OData CSDL Definition.html) specifies how syntactically this information, and information specific to each kind of operation is specified.
 
 For example this FunctionImport represents an Action that Creates an Order for a customer using the specified quantity and discountCode. This action can be bound to any resource path that represents a Customer entity:
 
@@ -967,12 +967,30 @@ Example: The following request invokes the `SampleEntities.CreateOrder` action u
           "discountCode": "BLACKFRIDAY"
        }
 
+#### 7.4.1.4 Action Overload Resolution ####
+Actions support overloads, meaning a service MAY expose multiple actions with the same name that take a different set of parameters.
+
+The combination of the action name, the binding parameter type and the unordered list of non binding parameter names MUST be sufficient to uniquely identify a specific action overload. 
+
 ### 7.4.2. Functions ###
 Functions are operations exposed by an OData service that MUST return data and MUST have no observable side effects.
 
 #### 7.4.2.1. Declaring Functions in Metadata ####
 
 Functions SHOULD be declared in $metadata. Function declarations indicate the signature (Name, ReturnType and Parameters) and semantics (composability, bindability and result entityset) of the Function. 
+
+In addition to the [Common Rules for All Operations](#Common Rules for All Operations) the following rules apply for Functions:
+
+- Functions MUST NOT specify the HttpMethod as this is reserved for ServiceOperations.
+- Functions MUST be marked as non side effecting.
+- Functions MUST have a return type.
+- Functions MAY be marked as composable.
+- Functions with parameters MAY be marked as bindable.
+- Functions that are bindable MAY be marked as always bindable.
+- Non-binding parameter types MUST be either primitive, complex or a collection of primitive or complex.
+- Binding parameter types MUST be either an entity or a collection of entities.
+
+The [OData CSDL](OData CSDL Definition.html) specifies how syntactically this information, and information specific to each kind of operation is specified.
 
 For Example:
 The following FunctionImport describes a Function called MostRecent that returns the 'MostRecent' Order within a collection of Orders:
@@ -1088,6 +1106,15 @@ Service Operations are Operations like Actions and Functions. However use of Ser
 #### 7.4.3.1. Declaring Service Operations in Metadata ####
 
 Legacy Service Operations MUST declared in $metadata. Service Operation declarations indicate the signature (Name, ReturnType and Parameters) and semantics (http verb and result entityset) of the Service Operation. 
+
+In addition to the [Common Rules for All Operations](#Common Rules for All Operations) the following rules apply for Service Operations:
+
+- Service Operations MUST specify the HttpMethod as this is reserved for ServiceOperations.
+- Service Operations parameters MUST be primitive.
+- Service Operations MUST NOT be marked as bindable.
+- Service Operations MUST NOT be marked as always bindable.
+
+The [OData CSDL](OData CSDL Definition.html) specifies how syntactically this information, and information specific to each kind of operation is specified.
 
 #### 7.4.3.2. Invoking a Service Operation ####
 

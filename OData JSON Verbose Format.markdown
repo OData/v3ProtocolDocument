@@ -413,7 +413,31 @@ The outer JSON object MAY contain additional name/value pairs. One such example 
 
 ## 6.5 Errors ##
 
--- TODO: MUSTHAVE 6.5 Errorswrite this.
+Top-level errors in JSON Verbose responses MUST be represented as in the following example.
+
+	{
+		"error": {
+			"code": "A custom error code",
+			"message": {
+				"lang": "en-us",
+				"value": "A custom long message for the user."
+			},
+			"innererror": {
+				"trace": [...],
+				"context": {...}
+			}
+		}
+	}
+
+The error response MUST be a single JSON object. This object MUST have a single name/value pair. The name MUST be `error`. The value must be a JSON object.
+
+This object can have 2 or 3 name/value pairs. It MUST contain name/value pairs with the names `code` and `message`. In debug environments, it MAY contain a name/value pair with the name `innererror`. A production service MUST NOT ever respond with an error that includes an `innererror` name/value pair.
+
+The value for the `code` name/value pair MUST be a string. Its value MUST be a service-defined error code. This code serves as a sub-status for the HTTP error code specified in the response.
+
+The value for the `message` name/value pair MUST be an object. This object MUST have two name/value pairs, with names `lang` and `message`. The `message` name/value pair MUST contain a human-readable representation of the error. The `lang` name/value pair MUST contain the language code from <ref>[[RFC 4646]][]</ref> corresponding to the language in which the value for `message` is written.
+
+The value for the `innererror` name/value pair MUST be an object. The contents of this object are service-defined. Usually this object contains information that will help debug the service.
 
 ## 6.6 Next Links ##
 

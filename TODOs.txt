@@ -15,10 +15,8 @@ Handle all CSDL TODOs (Mark)
 Make sure every header is mentioned somewhere (Mike)
 Deal with EPM (Mike)
 Rewrite media resources section (Mike)
-Common section for PATCH and MERGE (Arlo)
 Add error information to Atom format doc (Mike)
 Add single property to Atom format doc (Mike)
-Add error information to JSON-V format doc (Arlo)
 Add single property to JSON-V format doc (Arlo)
 Review JSON-V actions (Alex)
 Check that everything talks about what the error codes are (multiple)
@@ -34,6 +32,10 @@ Dealing with redirects (Mike)
 	Line 420: -- TODO: MUSTHAVE 6.6 Next Links write this.
 	Line 424: -- TODO: MUSTHAVE Inline Count write this.
 	Line 428: -- TODO: MUSTHAVE Service Document write this.
+
+
+
+
   C:\git\specs\OData URL Conventions.markdown (1 hits) (Alex)
 	Line 647: TODO: MUSTHAVE figure out how to actually do a cast!
   C:\git\specs\OData.markdown (12 hits)

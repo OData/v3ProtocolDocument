@@ -844,16 +844,14 @@ On success, the response must be a valid [update response](#responsesforupdates)
 
 ## 7.4. Operations ##
 
-Services MAY support custom operations. Operations (actions, functions and legacy service operations) are represented as FunctionImport.
+Services MAY support custom operations. Operations (actions, functions and legacy service operations) are represented as FunctionImport elements in [OData CSDL](OData CSDL Definition.html).
 
 ### 7.4.1 Common rules for all operations ###
 
-All operations:
+All operations MUST follow the rules outlined in [OData CSDL](OData CSDL Definition.html), in addition operations:
 
-- MUST have a Name.
 - MAY specify at most one ReturnType.
-- MUST specify an EntitySet or EntitySetPathExpression for the results if the ReturnType is an entity or collection of entities.
-- MAY have Parameters.
+- MUST specify an EntitySet or EntitySetPathExpression for the results if the operation ReturnType is an entity or collection of entities.
 
 The [OData CSDL](OData CSDL Definition.html) specifies how syntactically this information, and information specific to each kind of operation is specified.
 
@@ -1005,6 +1003,7 @@ In addition to the [Common Rules for All Operations](#Common Rules for All Opera
 - Functions MUST be marked as non side effecting.
 - Functions MUST have a return type.
 - Functions MAY be marked as composable.
+- Functions MAY have parameters.
 - Functions with parameters MAY be marked as bindable.
 - Functions that are bindable MAY be marked as always bindable.
 - Non-binding parameter types MUST be either primitive, complex or a collection of primitive or complex.
@@ -1130,7 +1129,7 @@ Legacy Service Operations MUST declared in $metadata. Service Operation declarat
 In addition to the [Common Rules for All Operations](#Common Rules for All Operations) the following rules apply for Service Operations:
 
 - Service Operations MUST specify the HttpMethod as this is reserved for ServiceOperations.
-- Service Operations parameters MUST be primitive.
+- Service Operations MAY have parameters which MUST all be primitive.
 - Service Operations MUST NOT be marked as bindable.
 - Service Operations MUST NOT be marked as always bindable.
 

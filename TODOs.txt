@@ -28,7 +28,6 @@ Dealing with redirects (Mike)
 	Line 348: -- TODO: MUSTHAVE write 6.1 Response body. Talk about the d object, etc.
 	Line 393: -- TODO: MUSTHAVE Find other reference to this same content and copy (functions bound to multiple entities)
 	Line 416: -- TODO: MUSTHAVE 6.5 Errorswrite this.
-	Line 420: -- TODO: MUSTHAVE 6.6 Next Links write this.
 
 
 

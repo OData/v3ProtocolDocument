@@ -417,13 +417,15 @@ The outer JSON object MAY contain additional name/value pairs. One such example 
 
 ## 6.6 Next Links ##
 
--- TODO: MUSTHAVE 6.6 Next Links write this.
+A response MAY be a partial result. It will then use a <ref>next link (link to core doc)</ref> to tell the client how to request the next page of data.
+
+To represent an next link the response MUST include a name/value pair. The name MUST be `__next`. The value MUST be a string containing a URL that the client can use to request the next page of data.
 
 ## 6.7 Inline Count ##
 
 A response MAY contain an inline count. See <ref>core doc `$inlinecount`</ref> for details.
 
-To represent an inline count, the response MUST include a name/value pair. This pair MUST come before any link name/value pairs. The name MUST be `__count`. The value must be a number equal to the total number of links addressed by the request.
+To represent an inline count the response MUST include a name/value pair. This pair MUST come before any link name/value pairs. The name MUST be `__count`. The value MUST be a number equal to the total number of links addressed by the request.
 
 ## 6.8 Service Document ##
 

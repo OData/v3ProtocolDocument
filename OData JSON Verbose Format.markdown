@@ -170,7 +170,7 @@ A client MAY request that a NavigationProperty be expanded, using a combination 
 		}
 	}
 
-#### 4.2.2.2 Example Expanded NavigationProperty ####
+#### 4.2.2.2 Example Expanded Navigation Property ####
 
 	{
 		"CustomerID": "ALFKI",
@@ -193,56 +193,52 @@ A client MAY request that a NavigationProperty be expanded, using a combination 
 		}
 	}
 
-#### 4.2.2.3 Representing a Deferred NavigationProperty ####
+#### 4.2.2.3 Representing a Deferred Navigation Property ####
 
-A deferred NavigationProperty is represented as a name/value pair. The name MUST be the name of the property. The value must be a JSON object.
+A deferred navigation property is represented as a name/value pair. The name MUST be the name of the property. The value must be a JSON object.
 
 The value must contain a single name/value pair. This name MUST be `__deferred`. The inner value MUST be another JSON object.
 
 The inner JSON Object must contain a single name/value pair. The name must be `uri`. The value must be the URI for the NavigationProperty (this is not the NavigationLink URI).
 
-See [Example Deferred NavigationProperty](#exampledeferrednavigationproperty) for an example.
+See [Example Deferred Navigation Property](#exampledeferrednavigationproperty) for an example.
 
-#### 4.2.2.4 Representing an Expanded NavigationProperty ####
+#### 4.2.2.4 Representing an Expanded Navigation Property ####
 
-An expanded NavigationProperty is represented as a name/value pair. The name MUST be the name of the property.
+An expanded navigation property is represented as a name/value pair. The name MUST be the name of the property.
 
 The value MUST be the correct representation of the related Entity or EntitySet. See [Representing an Entity](#representinganentity), [Representing Multiple Entities in a Response](#representingmultipleentitiesinaresponse), or  [Representing Multiple Entities in a Request](#representingmultipleentitiesinarequest) for details.
 
 See [Example Expanded NavigationProperty](#exampleexpandednavigationproperty) for an example.
 
-## 4.3 Representing NavigationProperty Metadata ##
+## 4.3 Representing Navigation Property Metadata ##
 
-Metadata for a NavigationProperty is represented as a name/value pair.
+Metadata for a navigation property is represented as a name/value pair.
 
-The name MUST be the Property's name.
+The name MUST be the property's name.
 
 The value MUST be a JSON object containing a single name/value pair. The name must be `associationuri`. The value must be a string containing the NavigationLink URI for that property.
 
-See [Example Deferred NavigationProperty](#exampledeferrednavigationproperty) for an example.
+See [Example Deferred Navigation Property](#exampledeferrednavigationproperty) for an example.
 
 ## 4.4 Representing a Primitive Value ##
 
 The representation for primitives in JSON Verbose is specified in <ref>the ABNF</ref>.
 
-## 4.5 Representing a ComplexType Value ##
+## 4.5 Representing a Complex Type Value ##
 
-In the following example, Address is a Property with a ComplexType value.
+In the following example, Address is a property with a complex type value.
 
 	{
 		"CustomerID": "ALFKI",
 		"Address": { "Street": "57 Contoso St", "City": "Seattle" }
 	}
 
-A ComplexType value MUST be represented as a single JSON object. It MUST have one name/value pair for each Property that makes up the complex type. Each Property MUST be formatted as appropriate for the property. See [Representing a Property](representingaproperty) for details.
+A complex type value MUST be represented as a single JSON object. It MUST have one name/value pair for each Property that makes up the complex type. Each property MUST be formatted as appropriate for the property. See [Representing a Property](representingaproperty) for details.
 
-The object representing a ComplexType value SHOULD NOT contain any other name/value pairs.
+The object representing a complex type value SHOULD NOT contain any other name/value pairs.
 
-## 4.6 Representing a Collection of ComplexType Values ##
-
-A Collection of ComplexType values MUST be represented as a JSON array. Each element in the array MUST be the representation for a ComplexType value. See [Representing a ComplexType Value](#representingacomplextypevalue) for details.
-
-## 4.7 Representing a Set of Links ##
+## 4.6 Representing a Set of Links ##
 
 A set of links expresses a relation from one Entity to zero or more related Entities.
 
@@ -259,7 +255,7 @@ Each link item MUST be represented as a single JSON object. This object MUST con
 
 There are additional considerations for representing a set of links in a response. See [Representing a Set of Links in a Response](#representingasetoflinksinaresponse) for details.
 
-## 4.8 Representing Annotations ##
+## 4.7 Representing Annotations ##
 
 Annotations MAY be applied to any name/value pair in a JSON payload that represents a value of any type from the EDM.
 
@@ -291,7 +287,7 @@ In general, it is possible to express an annotation internally or externally to 
 
 See the specific subsections of this section for normative rules abuot how to represent annotations on various types.
 
-### 4.8.1 Annotate a Value Represented as a JSON Object ###
+### 4.7.1 Annotate a Value Represented as a JSON Object ###
 
 This section applies when annotating a name/value pair for which the value is represented as a JSON object.
 
@@ -301,7 +297,7 @@ The name MUST be the fully-scoped name of the annotation. This name MUST include
 
 The value MUST be the appropriate value for the annotation.
 
-### 4.8.2 Annotate a Value Represented as a JSON Array or Primitive ###
+### 4.7.2 Annotate a Value Represented as a JSON Array or Primitive ###
 
 This section applies when annotating a name/value pair for which the value is not represented as a JSON object.
 
@@ -315,7 +311,7 @@ The name MUST be the fully-scoped name of the annotation. This name MUST include
 
 The value MUST be the appropriate value for the annotation.
 
-## 4.9 Advertisement for a Function or Action ##
+## 4.8 Advertisement for a Function or Action ##
 
 A Function or Action is advertised via a name/value pair. The name MUST be a Metadata URL. The value MUST be an array of JSON objects.
 
@@ -334,6 +330,10 @@ This section describes additional payload semantics that only apply to request p
 An EntitySet or collection of entities MUST be represented as a JSON array. Each element MUST be a correctly formatted Entity (see [Representing an Entity](#representinganentity)).
 
 An empty EntitySet or collection of entities (one that contains no EntityType instances) MUST be represented as an empty JSON array.
+
+## 5.2 Representing a Collection of Complex Type Values in a Request ##
+
+A Collection of complex type values MUST be represented as a JSON array. Each element in the array MUST be the representation for a complex type value. See [Representing a ComplexType Value](#representingacomplextypevalue) for details.
 
 # 6 Response Specifics #
 
@@ -360,11 +360,11 @@ In OData 1.0 and 2.0, it was also represented with a Content-Type of "applicaton
 
 ## 6.3 Representing Multiple Entities in a Response ##
 
-In OData 1.0, an EntitySet of collection of Entities in a response is formatted just like in a request. See [Representing Multiple Entities in a Request](#representingmultipleentitiesinarequest) for details.
+In OData 1.0, a collection of Entities in a response is formatted just like in a request. See [Representing Multiple Entities in a Request](#representingmultipleentitiesinarequest) for details.
 
 The rest of this section applies to OData 2.0 and 3.0 only.
 
-An EntitySet or collection of Entities MUST be represented as a JSON object. This object MUST contain a `results` name/value pair. It MAY contain `__count`, `__next`, or `__metadata` name/value pairs.
+A collection of Entities MUST be represented as a JSON object. This object MUST contain a `results` name/value pair. It MAY contain `__count`, `__next`, or `__metadata` name/value pairs.
 
 The `results` value MUST be a JSON array. Each element MUST be a correctly formatted Entity (see [Representing an Entity](#representinganentity)).
 
@@ -374,7 +374,7 @@ The `__next` name/value pair MAY be included. If provided, its value MUST be a s
 
 The `__metadata` name/value pair MAY be included. If provided, its value MUST be a JSON object. This object represents the metadata for the set of Entities.
 
-An empty EntitySet or collection of entities (one that contains no EntityType instances) MUST be represented as a JSON object with a `results` name/value pair. The `results` name/value pair MUST be an empty JSON array.
+An empty collection of entities (one that contains no EntityType instances) MUST be represented as a JSON object with a `results` name/value pair. The `results` name/value pair MUST be an empty JSON array.
 
 ## 6.3.1 Representing Actions Bound to Multiple Entities ##
 
@@ -409,7 +409,21 @@ A set of Links MUST be formatted as a single JSON object. This object MUST conta
 
 The outer JSON object MAY contain additional name/value pairs. One such example is the [Inline Count](#inlinecount).
 
-## 6.5 Errors ##
+## 6.5 Representing a Collection of Complex Type Values in a Response ##
+
+In OData 1.0, collection of complex type values in a response is formatted just like in a request. See [Representing a Collection of Complex Type Values in a Response](#representingacollectionofcomplextypevaluesinaresponse) for details.
+
+The rest of this section applies to OData 2.0 and 3.0 only.
+
+An collection of complex type values MUST be represented as a JSON object. This object MUST contain a `results` name/value pair. It MAY contain a `__metadata` name/value pair.
+
+The `results` value MUST be a JSON array. Each element MUST be a correctly formatted complex type value (see [Representing a ComplexType Value](#representingacomplextypevalue)).
+
+The `__metadata` name/value pair MAY be included. If provided, its value MUST be a JSON object. This object represents the metadata for the collection of complex type values.
+
+An empty collection of complex type values (one that contains no instances) MUST be represented as a JSON object with a `results` name/value pair. The `results` name/value pair MUST be an empty JSON array.
+
+## 6.6 Representing Errors in a Response
 
 Top-level errors in JSON Verbose responses MUST be represented as in the following example.
 
@@ -437,7 +451,7 @@ The value for the `message` name/value pair MUST be an object. This object MUST 
 
 The value for the `innererror` name/value pair MUST be an object. The contents of this object are service-defined. Usually this object contains information that will help debug the service.
 
-## 6.8 Service Document ##
+## 6.7 Representing the Service Document ##
 
 The root URL of an OData service MUST identify a service document. This document is represented as show in the following example.
 

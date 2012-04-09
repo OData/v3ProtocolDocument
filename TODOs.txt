@@ -30,7 +30,6 @@ Dealing with redirects (Mike)
 	Line 393: -- TODO: MUSTHAVE Find other reference to this same content and copy (functions bound to multiple entities)
 	Line 416: -- TODO: MUSTHAVE 6.5 Errorswrite this.
 	Line 420: -- TODO: MUSTHAVE 6.6 Next Links write this.
-	Line 424: -- TODO: MUSTHAVE Inline Count write this.
 
 
 

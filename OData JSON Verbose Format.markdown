@@ -421,7 +421,9 @@ The outer JSON object MAY contain additional name/value pairs. One such example 
 
 ## 6.7 Inline Count ##
 
--- TODO: MUSTHAVE Inline Count write this.
+A response MAY contain an inline count. See <ref>core doc `$inlinecount`</ref> for details.
+
+To represent an inline count, the response MUST include a name/value pair. This pair MUST come before any link name/value pairs. The name MUST be `__count`. The value must be a number equal to the total number of links addressed by the request.
 
 ## 6.8 Service Document ##
 

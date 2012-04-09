@@ -388,11 +388,9 @@ In the ODATA 3.0 protocol, it is possible to advertise Functions that are bound 
 
 Functions are advertised in the metadata for a set of Entities. The metadata object MAY contain a `functions` name/value pair. The value is a JSON object that contains Function advertisement name/value pairs. See [Advertisement for a Function or Action](#advertisementforafunctionoraction) for details.
 
-The function metadata URL MUST identify only functions that are bindable to the current feed definition. If overloads exist that cannot be bound to the current feed definition, 
+The function metadata URL MUST identify only functions that are bindable to the current feed definition. If overloads exist that cannot be bound to the current feed definition, the name SHOULD address a specific function overload.
 
--- TODO: MUSTHAVE Find other reference to this same content and copy (functions bound to multiple entities)
-
-**Don't know what to do here. There's a bug in the OIPI. Alex will fix, then I'll incorporate his fix here.**
+If all Function overloads can be bound to the current feed definition, the server SHOULD advertise a single Function Metadata URL that identifies all of the overloads.
 
 ## 6.4 Representing a Set of Links in a Response ##
 

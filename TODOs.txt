@@ -26,7 +26,6 @@ Dealing with redirects (Mike)
 	Line 139: -- TODO: MUSTHAVE verify. Is this correct for collection types? Does a collection value contain the same object & metadata?
 	Line 143: -- TODO: MUSTHAVE write NamedResourceStreamProperty.
 	Line 348: -- TODO: MUSTHAVE write 6.1 Response body. Talk about the d object, etc.
-	Line 393: -- TODO: MUSTHAVE Find other reference to this same content and copy (functions bound to multiple entities)
 
 
 

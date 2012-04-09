@@ -211,7 +211,41 @@ See [Example Deferred Navigation Property](#exampledeferrednavigationproperty) f
 
 ## 4.4 Representing a Named Resource Stream Value
 
--- TODO: MUSTHAVE write NamedResourceStreamProperty.
+The value of a named resource stream property is represented like in the following example.
+
+	{
+		"__mediaresource": {
+			"edit_media": "http://server/uploads/Thumbnail546.jpg",
+			"media_src": "http://server/Thumbnail546.jpeg",
+			"content-type": "img/jpeg",
+			"media_etag": "####"
+		}
+	}
+
+This would typically show up in the definition of an entity, as in the following example:
+
+	{
+		"__metadata": {...},
+		"ID": 3,
+		"Thumbnail": {
+			"__mediaresource": {...}
+		},
+		"PrintReady": {
+			"__mediaresource": {...}
+		},
+	}
+
+The named stream value MUST be represented as a JSON object. That object MUST contain a single name/value pair. The name MUST be `__mediaresource`. The value MUST be a JSON object.
+
+The JSON object contains up to 4 name/value pairs. Each pair is described below.
+
+The `media_src` name/value pair MUST be included. The value of the name/value pair MUST be a URI that can be used to retrieve the stream of bytes with a GET request.
+
+The `content_type` name/value pair MUST be included. If the `edit_media` name/value pair is present the value of the `content_type` name/value pair MUST specify the content type of the binary stream represented by the `edit_media` URI. The value of the `content_type` name/value pair MAY match the content type of the binary stream represented by the `media_src` URI.
+
+The `edit_media` name/value pair MAY be included. This name/value pair MUST be supplied if the named resource stream instance can be updated. The value of the `edit_media` name/value pair MUST be a URI that can be used to replace the existing stream with a HTTP PUT request.
+
+The `media_etag` name/value pair MAY be included. When included, the value MUST be the value of the ETag for the named resource stream last PUT to the `edit_media URI.
 
 ## 4.4 Representing a Primitive Value ##
 

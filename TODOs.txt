@@ -22,11 +22,6 @@ Check that everything talks about what the error codes are (multiple)
 Dealing with accepted (Mike)
 Dealing with redirects (Mike)
 
-  C:\git\specs\OData JSON Verbose Format.markdown (8 hits) (Arlo)
-	Line 143: -- TODO: MUSTHAVE write NamedResourceStreamProperty.
-
-
-
 
   C:\git\specs\OData URL Conventions.markdown (1 hits) (Alex)
 	Line 647: TODO: MUSTHAVE figure out how to actually do a cast!

@@ -614,12 +614,13 @@ The raw value of the ShipCountry property of the matching Order using the JSON m
 
 To request only the count of an entity collection, the client appends /$count to the path of the request URL.
 
+On success, the server returns a 2xx status code with the response body containing the count of entities matching the request, formatted as a simple scalar integer value.
+
 For example:
 
     http://services.odata.org/OData/OData.svc/Products/$count?$filter=Price lt 10.00
 
-Returns all count of all Products whose Price is less than $10.00.
-
+Returns the count of all Products whose Price is less than $10.00.
 
 ## 7.3. Data Modification ##
 

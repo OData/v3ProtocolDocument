@@ -632,7 +632,11 @@ Any response may use any valid HTTP status code, as appropriate for the action t
 
 In all failure responses, the service MUST provide an accurate failure HTTP status code. The response body MUST contain a human-readable description of the problem, and SHOULD contain suggested resolution steps, if the service knows what those are. This information MUST be supplied in the <ref>Error format</ref>.
 
-###  Responses for Updates ###
+### 7.3.1. Common Details ###
+
+This section contains information that is common between multiple types of requests. Each request identifies which of these apply to that request.
+
+#### 7.3.1.1. Responses for Updates
 
 Many different parts of the model can be updated. Responses to update requests for all parts of the model share some common traits. Rather than repeating them for all responses, the common traits are identified here.
 
@@ -640,11 +644,31 @@ Upon successful completion, the response to any update request MUST be either 20
 
 A non-empty body MUST contain the updated value of the identified resource. This MUST be formatted exactly as would the response for a GET to the same URL as was specified in the update request.
 
-### 7.3.1. Modifying Entities ###
+#### 7.3.1.2. Differential Update
+
+Some update requests support 2 types of update: replace and merge. The client chooses which to execute and specifies this by which HTTP verb it sends in the request.
+
+A PUT request indicates a replacement update. The service MUST replace all property values with those specified in the request body. Missing properties MUST be set to their default values. Missing dynamic properties MUST be removed or set to NULL.
+
+A PATCH or MERGE indicates a differential update. The service MUST replace exactly those property values that are specified in the request body. Missing properties, including dynamic properties, MUST NOT be altered.
+
+The semantics of PATCH are defined in <ref>[[RFC 5789]][]</ref>. The service MUST be compliant with that definition.
+
+The HTTP MERGE verb is defined by this document. The remainder of this section defines the semantics for the MERGE verb. All the semantics for HTTP PUT apply to HTTP MERGE. The only difference is client intent.
+
+Because PATCH is a standard verb and MERGE is not, a client SHOULD prefer PATCH.
+
+The semantics of a MERGE request on a data service entity is to merge the content in the request payload with the entity's current state. The merging is done by comparing each component of the request body to the entity as it exists on the server.
+
+If a component in the request body is not defined on the entity that is to be updated the request MAY be considered malformed.
+
+If a component in the request body does match a component on the entity that is to be updated, the value of the component in the request body MUST replace the matching component of the entity to be updated and the matching process continues with the children of the component from the request body.
+
+### 7.3.2. Modifying Entities ###
 
 Entities are described in [Section 2.1](#entities). URL conventions for entities are described in [URL Conventions](URL_conventions).
 
-#### 7.3.2. Create an Entity ####
+#### 7.3.2.1. Create an Entity ####
 
 To create an entity in a collection, send a POST request to that collection's URL. The POST body MUST contain a single valid entity representation.
 
@@ -682,9 +706,7 @@ On failure, the service MUST NOT create any of the entities.
 
 To update an existing entity, send a PUT, PATCH, or MERGE request to that entity's edit URL. The request body MUST contain a single valid entity representation.
 
-If the request is a PUT request, the service MUST replace all property values with those specified in the request body. Missing properties MUST be set to their default values. Missing dynamic properties MUST be removed or set to NULL.
-
-If the request is a PATCH or MERGE request, the service MUST replace exactly those property values that are specified in the request body. Missing properties, including dynamic properties, MUST NOT be altered. Exact semantics are defined in <ref>PATCH and MERGE</ref>.
+A service SHOULD support [Differential Update](#differentialupdate) for entities.
 
 If the request contains a value for a key property, the service MUST ignore that value when applying the update.
 
@@ -711,8 +733,6 @@ To relate an existing entity to another entity, send a POST request to the URL f
 The body MUST be formatted as a single link. See the appropriate format document for details.
 
 On success, the response MUST be 204 and contain an empty body.
-
-<!-- TODO: NICETOHAVE This is an update operation; see above for additional common behavior. (Are there any other areas where we need a similar clause?) -->
 
 ##### 7.3.5.2. Remove a Relationship Between Two Entities
 
@@ -780,6 +800,8 @@ The request MUST contain a Content-Type header, set to the correct value.
 
 The body of the request MUST be the binary data that will be the new value for the stream.
 
+On success the response SHOULD be 204 with an empty body.
+
 ### 7.3.7. Managing Values and Properties Directly ###
 
 Values and properties can be explicitly addressed with URLs. This allows them to be individually modified. See <ref>URL conventions</ref> for details on addressing.
@@ -788,7 +810,7 @@ Values and properties can be explicitly addressed with URLs. This allows them to
 
 To update a value, the client MAY send a PUT, MERGE, or PATCH request to an edit URL for a primitive property. The message body MUST contain the new value, formatted as a single property.
 
-Regardless of which verb is used, the service MUST replace the entire value with the value supplied in the request body.
+Primitive properties do not support differential update. Regardless of which verb is used the service MUST replace the entire value with the value supplied in the request body.
 
 The same rules apply whether this is a regular property or a dynamic property.
 
@@ -796,27 +818,25 @@ On success, the response must be a valid [update response](#responsesforupdates)
 
 #### 7.3.7.2. Null a Value ####
 
-There are two ways to set a primitive value to NULL. The client may [Update a PrimitiveProperty](#), specifying a NULL value. Alternatively, the client MAY send a DELETE request with an empty message body to the property URL.
+There are two ways to set a primitive value to NULL. The client may [Update a PrimitiveProperty](#updateaprimitiveproperty), specifying a NULL value. Alternatively, the client MAY send a DELETE request with an empty message body to the property URL.
 
 The service SHOULD consider a DELETE request to a non-nullable value to be malformed.
 
-The same rules apply whether this is the value of a regular property or the value of a dynamic property. A missing dynamic property is defined to be the same as a dynamic property with value NULL. All dynamic properties are nullable.
+The same rules apply whether the target is the value of a regular property or the value of a dynamic property. A missing dynamic property is defined to be the same as a dynamic property with value NULL. All dynamic properties are nullable.
 
 On success, the service MUST respond with 204 and an empty body.
 
-#### 7.3.7.3. Update a ComplexType ####
+#### 7.3.7.3. Update a Complex Type ####
 
 To update a complex type, send a PUT, PATCH, or MERGE request to that property's URL. The request body MUST contain a single valid representation for that type.
 
-If the request is a PUT request, the service MUST replace all property values with those specified in the request body. Missing properties MUST be set to their default values.
-
-If the request is a PATCH or MERGE request, the service MUST replace exactly those property values that are specified in the request body. Missing properties MUST NOT be altered. Exact semantics are defined in <ref>PATCH and MERGE</ref>.
+A service MUST support [Differential Update](#differentialupdate) for complex types.
 
 On success, the response must be a valid [update response](#responsesforupdates).
 
-#### 7.3.7.4. Update a CollectionProperty ####
+#### 7.3.7.4. Update a Collection Property ####
 
-To update a value, send a PUT request to the collection property's URL. The message body MUST contain the desired new value, formatted as a <ref>CollectionProperty</ref>.
+To update a value, send a PUT request to the collection property's URL. The message body MUST contain the desired new value, formatted as a <ref>collection property</ref>.
 
 The service MUST replace the entire value with the value supplied in the request body.
 

@@ -130,19 +130,7 @@ The name MUST only identify functions that are bindable to the current EntityTyp
 
 If all Function overloads can be bound to the current EntityType, the server SHOULD advertise a single Function Metadata URL that identifies all of the overloads.
 
-## 4.2 Representing a Property ##
-
-A Property is represented as a name/value pair. The name is the Property's name.
-
-The value for a PrimitiveProperty, a ComplexTypeProperty, or a CollectionProperty is the Property's value. It MUST be formatted appropriately for its type.
-
--- TODO: MUSTHAVE verify. Is this correct for collection types? Does a collection value contain the same object & metadata?
-
-### 4.2.1 Representing a NamedResourceStreamProperty ###
-
--- TODO: MUSTHAVE write NamedResourceStreamProperty.
-
-### 4.2.2 Representing a NavigationProperty ###
+## 4.2 Representing a NavigationProperty
 
 A NavigationProperty represents a reference from a source Entity to zero or more other Entities.
 
@@ -152,7 +140,7 @@ By default, a server SHOULD represent each NavigationProperty in the deferred fo
 
 A client MAY request that a NavigationProperty be expanded, using a combination of $expand and $select. The server MUST represent each NavigationProperty so requested in the expanded format.
 
-#### 4.2.2.1 Example Deferred NavigationProperty ####
+### 4.2.1 Example Deferred NavigationProperty
 
 	{
 		"CustomerID": "ALFKI",
@@ -170,7 +158,7 @@ A client MAY request that a NavigationProperty be expanded, using a combination 
 		}
 	}
 
-#### 4.2.2.2 Example Expanded NavigationProperty ####
+### 4.2.2 Example Expanded Navigation Property
 
 	{
 		"CustomerID": "ALFKI",
@@ -193,56 +181,90 @@ A client MAY request that a NavigationProperty be expanded, using a combination 
 		}
 	}
 
-#### 4.2.2.3 Representing a Deferred NavigationProperty ####
+### 4.2.3 Representing a Deferred Navigation Property
 
-A deferred NavigationProperty is represented as a name/value pair. The name MUST be the name of the property. The value must be a JSON object.
+A deferred navigation property is represented as a name/value pair. The name MUST be the name of the property. The value must be a JSON object.
 
 The value must contain a single name/value pair. This name MUST be `__deferred`. The inner value MUST be another JSON object.
 
 The inner JSON Object must contain a single name/value pair. The name must be `uri`. The value must be the URI for the NavigationProperty (this is not the NavigationLink URI).
 
-See [Example Deferred NavigationProperty](#exampledeferrednavigationproperty) for an example.
+See [Example Deferred Navigation Property](#exampledeferrednavigationproperty) for an example.
 
-#### 4.2.2.4 Representing an Expanded NavigationProperty ####
+### 4.2.4 Representing an Expanded Navigation Property
 
-An expanded NavigationProperty is represented as a name/value pair. The name MUST be the name of the property.
+An expanded navigation property is represented as a name/value pair. The name MUST be the name of the property.
 
 The value MUST be the correct representation of the related Entity or EntitySet. See [Representing an Entity](#representinganentity), [Representing Multiple Entities in a Response](#representingmultipleentitiesinaresponse), or  [Representing Multiple Entities in a Request](#representingmultipleentitiesinarequest) for details.
 
 See [Example Expanded NavigationProperty](#exampleexpandednavigationproperty) for an example.
 
-## 4.3 Representing NavigationProperty Metadata ##
+## 4.3 Representing Navigation Property Metadata ##
 
-Metadata for a NavigationProperty is represented as a name/value pair.
+Metadata for a navigation property is represented as a name/value pair.
 
-The name MUST be the Property's name.
+The name MUST be the property's name.
 
 The value MUST be a JSON object containing a single name/value pair. The name must be `associationuri`. The value must be a string containing the NavigationLink URI for that property.
 
-See [Example Deferred NavigationProperty](#exampledeferrednavigationproperty) for an example.
+See [Example Deferred Navigation Property](#exampledeferrednavigationproperty) for an example.
+
+## 4.4 Representing a Named Resource Stream Value
+
+The value of a named resource stream property is represented like in the following example.
+
+	{
+		"__mediaresource": {
+			"edit_media": "http://server/uploads/Thumbnail546.jpg",
+			"media_src": "http://server/Thumbnail546.jpeg",
+			"content-type": "img/jpeg",
+			"media_etag": "####"
+		}
+	}
+
+This would typically show up in the definition of an entity, as in the following example:
+
+	{
+		"__metadata": {...},
+		"ID": 3,
+		"Thumbnail": {
+			"__mediaresource": {...}
+		},
+		"PrintReady": {
+			"__mediaresource": {...}
+		},
+	}
+
+The named stream value MUST be represented as a JSON object. That object MUST contain a single name/value pair. The name MUST be `__mediaresource`. The value MUST be a JSON object.
+
+The JSON object contains up to 4 name/value pairs. Each pair is described below.
+
+The `media_src` name/value pair MUST be included. The value of the name/value pair MUST be a URI that can be used to retrieve the stream of bytes with a GET request.
+
+The `content_type` name/value pair MUST be included. If the `edit_media` name/value pair is present the value of the `content_type` name/value pair MUST specify the content type of the binary stream represented by the `edit_media` URI. The value of the `content_type` name/value pair MAY match the content type of the binary stream represented by the `media_src` URI.
+
+The `edit_media` name/value pair MAY be included. This name/value pair MUST be supplied if the named resource stream instance can be updated. The value of the `edit_media` name/value pair MUST be a URI that can be used to replace the existing stream with a HTTP PUT request.
+
+The `media_etag` name/value pair MAY be included. When included, the value MUST be the value of the ETag for the named resource stream last PUT to the `edit_media URI.
 
 ## 4.4 Representing a Primitive Value ##
 
 The representation for primitives in JSON Verbose is specified in <ref>the ABNF</ref>.
 
-## 4.5 Representing a ComplexType Value ##
+## 4.5 Representing a Complex Type Value ##
 
-In the following example, Address is a Property with a ComplexType value.
+In the following example, Address is a property with a complex type value.
 
 	{
 		"CustomerID": "ALFKI",
 		"Address": { "Street": "57 Contoso St", "City": "Seattle" }
 	}
 
-A ComplexType value MUST be represented as a single JSON object. It MUST have one name/value pair for each Property that makes up the complex type. Each Property MUST be formatted as appropriate for the property. See [Representing a Property](representingaproperty) for details.
+A complex type value MUST be represented as a single JSON object. It MUST have one name/value pair for each Property that makes up the complex type. Each property MUST be formatted as appropriate for the property. See [Representing a Property](representingaproperty) for details.
 
-The object representing a ComplexType value SHOULD NOT contain any other name/value pairs.
+The object representing a complex type value SHOULD NOT contain any other name/value pairs.
 
-## 4.6 Representing a Collection of ComplexType Values ##
-
-A Collection of ComplexType values MUST be represented as a JSON array. Each element in the array MUST be the representation for a ComplexType value. See [Representing a ComplexType Value](#representingacomplextypevalue) for details.
-
-## 4.7 Representing a Set of Links ##
+## 4.6 Representing a Set of Links ##
 
 A set of links expresses a relation from one Entity to zero or more related Entities.
 
@@ -259,7 +281,7 @@ Each link item MUST be represented as a single JSON object. This object MUST con
 
 There are additional considerations for representing a set of links in a response. See [Representing a Set of Links in a Response](#representingasetoflinksinaresponse) for details.
 
-## 4.8 Representing Annotations ##
+## 4.7 Representing Annotations ##
 
 Annotations MAY be applied to any name/value pair in a JSON payload that represents a value of any type from the EDM.
 
@@ -291,7 +313,7 @@ In general, it is possible to express an annotation internally or externally to 
 
 See the specific subsections of this section for normative rules abuot how to represent annotations on various types.
 
-### 4.8.1 Annotate a Value Represented as a JSON Object ###
+### 4.7.1 Annotate a Value Represented as a JSON Object ###
 
 This section applies when annotating a name/value pair for which the value is represented as a JSON object.
 
@@ -301,7 +323,7 @@ The name MUST be the fully-scoped name of the annotation. This name MUST include
 
 The value MUST be the appropriate value for the annotation.
 
-### 4.8.2 Annotate a Value Represented as a JSON Array or Primitive ###
+### 4.7.2 Annotate a Value Represented as a JSON Array or Primitive ###
 
 This section applies when annotating a name/value pair for which the value is not represented as a JSON object.
 
@@ -315,7 +337,7 @@ The name MUST be the fully-scoped name of the annotation. This name MUST include
 
 The value MUST be the appropriate value for the annotation.
 
-## 4.9 Advertisement for a Function or Action ##
+## 4.8 Advertisement for a Function or Action ##
 
 A Function or Action is advertised via a name/value pair. The name MUST be a Metadata URL. The value MUST be an array of JSON objects.
 
@@ -329,11 +351,23 @@ The `title` name/value pair MUST contain the Action Title as a string.
 
 This section describes additional payload semantics that only apply to request payloads.
 
-## 5.1 Representing Multiple Entities in a Request ##
+## 5.1 Representing a Property in a Request
+
+A Property is represented as a name/value pair. The name is the Property's name.
+
+The value for a primitive, complex type, collection, or named stream property is the property's value. It MUST be formatted appropriately for its type.
+
+A property's representation is always contained within a JSON object. If the request does not already contain a wrapping JSON object, then one is wrapped around the described name/value pair.
+
+## 5.2 Representing Multiple Entities in a Request ##
 
 An EntitySet or collection of entities MUST be represented as a JSON array. Each element MUST be a correctly formatted Entity (see [Representing an Entity](#representinganentity)).
 
 An empty EntitySet or collection of entities (one that contains no EntityType instances) MUST be represented as an empty JSON array.
+
+## 5.3 Representing a Collection of Complex Type or Primitive Values in a Request ##
+
+A Collection of complex type or primitive values MUST be represented as a JSON array. Each element in the array MUST be the representation for a value. See [Representing a Primitive Value](#representingaprimitivevalue) or [Representing a Complex Type Value](#representingacomplextypevalue) for details.
 
 # 6 Response Specifics #
 
@@ -341,16 +375,9 @@ This section describes additional payload semantics that only apply to response 
 
 ## 6.1 Response body ##
 
+All JSON Verbose responses are wrapped in a single object for security reasons.
 
-
-
-
--- TODO: MUSTHAVE write 6.1 Response body. Talk about the d object, etc.
-
-
-
-
-
+Each response body MUST be represented as a single JSON object. This object contains a single name/value pair. The name MUST be `d`. The value MUST be the correct representation for the data being returned.
 
 ## 6.2 MIME Type ##
 
@@ -358,23 +385,56 @@ Verbose JSON is represented with a Content-Type of "application/json;odata=verbo
 
 In OData 1.0 and 2.0, it was also represented with a Content-Type of "applicaton/json". However, in OData 3.0, "application/json" has been redefined to mean <ref>JSON</ref>.
 
+## 6.3 Representing a Property in a Response
+
+In OData 1.0, a property in a response is formatted just like in a request. See [Representing a Property in a Request](#representingapropertyinarequest) for details.
+
+Additionally, any property that is being represented as part of a larger item is represented as in a request.
+
+The rest of this section applies only to representing a top-level property in OData 2.0 and 3.0.
+
+A property is represented as in the following example.
+
+	{
+		"results": {
+			"CustomerName": "the value of the property"
+		}
+	}
+
+A property is represented as a JSON object with a single name/value pair. The name is `results`. The value is a JSON object.
+
+The object contains the representation that would be used for this property in a request. See [Representing a Property in a Request](#representingapropertyinarequest) for details.
+
 ## 6.3 Representing Multiple Entities in a Response ##
 
-In OData 1.0, an EntitySet of collection of Entities in a response is formatted just like in a request. See [Representing Multiple Entities in a Request](#representingmultipleentitiesinarequest) for details.
+In OData 1.0, a collection of Entities in a response is formatted just like in a request. See [Representing Multiple Entities in a Request](#representingmultipleentitiesinarequest) for details.
 
 The rest of this section applies to OData 2.0 and 3.0 only.
 
-An EntitySet or collection of Entities MUST be represented as a JSON object. This object MUST contain a `results` name/value pair. It MAY contain `__count`, `__next`, or `__metadata` name/value pairs.
+A collection of entities is represented as in the following example.
+
+	{
+		"__metadata": { ... },
+		"__count": 37,
+		"results": [
+			{ ... },
+			{ ... },
+			{ ... }
+		],
+		"__next": "/next?$skiptoken=342r89",
+	}
+
+A collection of Entities MUST be represented as a JSON object. This object MUST contain a `results` name/value pair. It MAY contain `__count`, `__next`, or `__metadata` name/value pairs.
 
 The `results` value MUST be a JSON array. Each element MUST be a correctly formatted Entity (see [Representing an Entity](#representinganentity)).
 
-The `__count` name/value pair represents the inlinecount. Its value MUST be an integer. See <ref>inlinecount</ref> for details on when it is required and when it is prohibited.
+The `__count` name/value pair represents the inlinecount. Its value MUST be an integer corresponding to the total count of members in the collection represented by the request. If present, this name/value pair MUST come before the `results` name/value pair. See <ref>`$inlinecount`</ref> for details on when it is required and when it is prohibited. 
 
 The `__next` name/value pair MAY be included. If provided, its value MUST be a string containing a URL. If provided, then the response MUST be interpreted as a partial result. The client MAY request this URL if it wishes to receive the next part of the collection or EntitySet.
 
 The `__metadata` name/value pair MAY be included. If provided, its value MUST be a JSON object. This object represents the metadata for the set of Entities.
 
-An empty EntitySet or collection of entities (one that contains no EntityType instances) MUST be represented as a JSON object with a `results` name/value pair. The `results` name/value pair MUST be an empty JSON array.
+An empty collection of entities (one that contains no EntityType instances) MUST be represented as a JSON object with a `results` name/value pair. The `results` name/value pair MUST be an empty JSON array.
 
 ## 6.3.1 Representing Actions Bound to Multiple Entities ##
 
@@ -388,11 +448,9 @@ In the ODATA 3.0 protocol, it is possible to advertise Functions that are bound 
 
 Functions are advertised in the metadata for a set of Entities. The metadata object MAY contain a `functions` name/value pair. The value is a JSON object that contains Function advertisement name/value pairs. See [Advertisement for a Function or Action](#advertisementforafunctionoraction) for details.
 
-The function metadata URL MUST identify only functions that are bindable to the current feed definition. If overloads exist that cannot be bound to the current feed definition, 
+The function metadata URL MUST identify only functions that are bindable to the current feed definition. If overloads exist that cannot be bound to the current feed definition, the name SHOULD address a specific function overload.
 
--- TODO: MUSTHAVE Find other reference to this same content and copy (functions bound to multiple entities)
-
-**Don't know what to do here. There's a bug in the OIPI. Alex will fix, then I'll incorporate his fix here.**
+If all Function overloads can be bound to the current feed definition, the server SHOULD advertise a single Function Metadata URL that identifies all of the overloads.
 
 ## 6.4 Representing a Set of Links in a Response ##
 
@@ -411,18 +469,60 @@ A set of Links MUST be formatted as a single JSON object. This object MUST conta
 
 The outer JSON object MAY contain additional name/value pairs. One such example is the [Inline Count](#inlinecount).
 
-## 6.5 Errors ##
+## 6.5 Representing a Collection of Complex Type or Primitive Values in a Response ##
 
--- TODO: MUSTHAVE 6.5 Errorswrite this.
+In OData 1.0, collection of complex type or primitive values in a response is formatted just like in a request. See [Representing a Collection of Complex Type or Primitive Values in a Response](#representingacollectionofcomplextypeorprimitivevaluesinaresponse) for details.
 
-## 6.6 Next Links ##
+The rest of this section applies to OData 2.0 and 3.0 only.
 
--- TODO: MUSTHAVE 6.6 Next Links write this.
+An collection of complex type or primitive values MUST be represented as a JSON object. This object MUST contain a `results` name/value pair. It MAY contain a `__metadata` name/value pair.
 
-## 6.7 Inline Count ##
+The `results` value MUST be a JSON array. Each element MUST be a correctly formatted value (see [Representing a Complex Type Value](#representingacomplextypevalue) or [Representing a Primitive Value](#representingaprimitivevalue)).
 
--- TODO: MUSTHAVE Inline Count write this.
+The `__metadata` name/value pair MAY be included. If provided, its value MUST be a JSON object. This object represents the metadata for the collection of complex type values.
 
-## 6.8 Service Document ##
+An empty collection (one that contains no instances) MUST be represented as a JSON object with a `results` name/value pair. The `results` name/value pair MUST be an empty JSON array.
 
--- TODO: MUSTHAVE Service Document write this.
+## 6.6 Representing Errors in a Response
+
+Top-level errors in JSON Verbose responses MUST be represented as in the following example.
+
+	{
+		"error": {
+			"code": "A custom error code",
+			"message": {
+				"lang": "en-us",
+				"value": "A custom long message for the user."
+			},
+			"innererror": {
+				"trace": [...],
+				"context": {...}
+			}
+		}
+	}
+
+The error response MUST be a single JSON object. This object MUST have a single name/value pair. The name MUST be `error`. The value must be a JSON object.
+
+This object can have 2 or 3 name/value pairs. It MUST contain name/value pairs with the names `code` and `message`. In debug environments, it MAY contain a name/value pair with the name `innererror`. A production service MUST NOT ever respond with an error that includes an `innererror` name/value pair.
+
+The value for the `code` name/value pair MUST be a string. Its value MUST be a service-defined error code. This code serves as a sub-status for the HTTP error code specified in the response.
+
+The value for the `message` name/value pair MUST be an object. This object MUST have two name/value pairs, with names `lang` and `message`. The `message` name/value pair MUST contain a human-readable representation of the error. The `lang` name/value pair MUST contain the language code from <ref>[[RFC 4646]][]</ref> corresponding to the language in which the value for `message` is written.
+
+The value for the `innererror` name/value pair MUST be an object. The contents of this object are service-defined. Usually this object contains information that will help debug the service.
+
+## 6.7 Representing the Service Document ##
+
+The root URL of an OData service MUST identify a service document. This document is represented as show in the following example.
+
+	{
+		"EntitySets": [
+			"Customers",
+			"Orders",
+			"OrderDetails"
+		]
+	}
+	
+The service document MUST consist of a single JSON object. This object MUST have a single name/value pair. The name MUST be `EntitySets`. The value MUST be a JSON Array.
+
+There MUST be one element in this array for each entity set exposed by the service. Each element MUST be a JSON string with a value equal to the name of the entity set.

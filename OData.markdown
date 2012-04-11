@@ -256,9 +256,9 @@ A response to a PUT, POST, or PATCH request that returns `404 No Content` MUST i
 
 In response to a [Data Modification](#datamodification) or [Action](#actions) request containing a [`Prefer header`](#preferheader), the server may include a `Preference-Applied` response header to specify the `prefer` header value that was honored.
 
-If the server has returned content in the response, it MAY include a Preference-Applied response header with a value of `return-content`.
+If the server has returned content in response to a request including a `Prefer` header with a value of `return-content`, it MAY include a `Preference-Applied` response header with a value of `return-content`.
 
-If the server has not returned content in the response, it MAY include a Preference-Applied response header with a value of `return-no-content`.
+If the server has returned content in response to a request including a `Prefer` header with a value of `return-content`, it MAY include a `Preference-Applied` response header with a value of `return-no-content`.
 
 ### 7.5.3. The `Retry-After` Header ###
 
@@ -782,30 +782,25 @@ On success, the response body MUST contain the count of entities matching the re
 
 For example:
 
-    http://services.odata.org/OData/OData.svc/Products/$count?$filter=Price lt 10.00
+    http://services.odata.org/OData/OData.svc/Products/$count
 
-Returns the count of all Products whose Price is less than $10.00.
+Returns the count of Products in the Products entity set.
 
 ## 8.3. Data Modification ##
 
-<<<<<<< HEAD
-### 7.3.1. Common Details ###
-
-This section contains information that is common between multiple types of requests. Each request identifies which of these apply to that request.
-
-#### 7.3.1.1. Responses for Updates
-=======
 An OData service MAY support Create, Update, and Delete operations for some or all of the Entities that it exposes. Additionally, services MAY support one or more [Actions](#actions) which may affect the state of the system.
->>>>>>> added header fields, status codes, response and error information.
 
 A successfully completed Data Modification request must not violate the integrity of the data. 
 
 ### 8.3.1. Data Modification Responses ###
 
+An OData service MAY support Create, Update, and Delete operations for some or all of the Entities that it exposes. Additionally, services MAY support one or more [Actions](#actions) which may affect the state of the system.
+
 A client may request whether content be returned from a Create, Update, or Delete request, or the invocation of an Action, by specifying the [`Prefer` Header](#preferheader).
 
-<<<<<<< HEAD
-#### 7.3.1.2. Differential Update
+A successfully completed Data Modification request must not violate the integrity of the data. 
+
+#### 8.3.1.1. Differential Update
 
 Some update requests support 2 types of update: replace and merge. The client chooses which to execute and specifies this by which HTTP verb it sends in the request.
 
@@ -825,18 +820,7 @@ If a component in the request body is not defined on the entity that is to be up
 
 If a component in the request body does match a component on the entity that is to be updated, the value of the component in the request body MUST replace the matching component of the entity to be updated and the matching process continues with the children of the component from the request body.
 
-### 7.3.2. Modifying Entities ###
-=======
-A non-empty body returned from a Create, Update, or Delete operation MUST contain the new value of the identified resource. The body MUST be formatted exactly as would the response for a GET to the same URL as was specified in the update request.
->>>>>>> added header fields, status codes, response and error information.
-
-A non-empty body returned from the invocation of an Action must be formatted according to the return type specified in the Action defintion.
-
-<<<<<<< HEAD
-#### 7.3.2.1. Create an Entity ####
-=======
 ### 8.3.2. Create an Entity ###
->>>>>>> added header fields, status codes, response and error information.
 
 To create an entity in a collection, send a POST request to that collection's URL. The POST body MUST contain a single valid entity representation.
 
@@ -902,17 +886,11 @@ The body MUST be formatted as a single link. See the appropriate format document
 
 On success, the response MUST be 204 and contain an empty body.
 
-<<<<<<< HEAD
 ##### 7.3.5.2. Remove a Relationship Between Two Entities
 =======
 <!-- TODO: NICETOHAVE This is an update operation; see above for additional common behavior. (Are there any other areas where we need a similar clause?) -->
 
-#### 7.3.5.2. Remove a Relationship Between Two Entities
->>>>>>> added header fields, status codes, response and error information.
-
 To remove a relationship to a related entity, send a `DELETE` request to a URL that represents the link to the related entity.
-
-<!-- TODO: MUSTHAVE Add a section in the common requirements that indicates that a request or batch request must not modify data such that integrity constraints are violated. -->
 
 The `DELETE` request MUST follow the requirements for integrity constraints above.
 
@@ -974,13 +952,7 @@ The request MUST contain a Content-Type header, set to the correct value.
 
 The body of the request MUST be the binary data that will be the new value for the stream.
 
-<<<<<<< HEAD
-On success the response SHOULD be 204 with an empty body.
-
-### 7.3.7. Managing Values and Properties Directly ###
-=======
 ### 7.3.8. Managing Values and Properties Directly ###
->>>>>>> added header fields, status codes, response and error information.
 
 Values and properties can be explicitly addressed with URLs. This allows them to be individually modified. See <ref>URL conventions</ref> for details on addressing.
 
@@ -1004,11 +976,7 @@ The same rules apply whether the target is the value of a regular property or th
 
 On success, the service MUST respond with 204 and an empty body.
 
-<<<<<<< HEAD
 #### 7.3.7.3. Update a Complex Type ####
-=======
-#### 7.3.8.3. Update a ComplexType ####
->>>>>>> added header fields, status codes, response and error information.
 
 To update a complex type, send a PUT, PATCH, or MERGE request to that property's URL. The request body MUST contain a single valid representation for that type.
 
@@ -1016,11 +984,7 @@ A service MUST support [Differential Update](#differentialupdate) for complex ty
 
 On success, the response must be a valid [update response](#responsesforupdates).
 
-<<<<<<< HEAD
 #### 7.3.7.4. Update a Collection Property ####
-=======
-#### 7.3.8.4. Update a CollectionProperty ####
->>>>>>> added header fields, status codes, response and error information.
 
 To update a value, send a PUT request to the collection property's URL. The message body MUST contain the desired new value, formatted as a <ref>collection property</ref>.
 

@@ -26,11 +26,13 @@ This section provides a high-level description of the Entity Data Model (EDM): t
 
 The central concepts in the EDM are *entities*, *entity sets*, and *relationships*.
 
-*Entities* are instances of entity types (e.g. `Customer`, `Employee`, etc.). *Entity types* are nominal structured types with a key. Entities consist of named properties and may include relationships with other entities. Entities are the core identity types in a data model.
+*Entities* are instances of entity types (e.g. `Customer`, `Employee`, etc.). *Entity types* are nominal structured types with a key. Entities consist of named properties and may include relationships with other entities. Entity types support single inheritance from other entity types. Entities are the core identity types in a data model.
 
 *Entity sets* are named collections of entities (e.g. `Customers` is a set of `Customer` entities). An entity can be a member of at most one entity set. Entity sets provide the primary entry points into your data model.
 
-*Relationships* have a name and are used to navigate from an entity to related entities. Relationships are represented via *navigation properties*. Each relationship has a cardinality.
+Entities and entity sets are *relatable types*.
+
+*Relationships* have a name and are used to navigate from an entity to related entities. Relationships are represented in entity types as *navigation properties*. Relationships may be addressed directly through a *navigation link* representing the relationship itself. Each relationship has a cardinality.
 
 *Complex types* are keyless nominal structural types consisting of a set of properties. These are value types that lack identity. Complex types are commonly used as property values in an entity or as parameters to operations.
 
@@ -40,29 +42,28 @@ Properties declared as part of the entity type's definition are called *declared
 
 *Operations* allow the execution of custom logic on parts of a data model. *Functions* do not allow side effects and are composable. *Actions* allow side effects and are not composable. Actions and functions are global to the service and may be used as members of entities and collections of entities.
 
-<!-- TODO: MUSTHAVE Add entity inheritance (succinct) -->
+Entity sets and operations are grouped in a named *entity container*. This container represents a service's model.
 
-Finally, entity sets and operations are grouped in a named *entity container*. This container represents a service's model.
+*Structural elements* are composed of other model elements. Entity types, complex types, association types, and row types are all structural elements. *Row types* are unnamed structural elements.
+
+An OData *resource* is anything in the model that can be addressed (an entity set, entity, property, or operation).
 
 Refer to the [CSDL specification][OData CSDL Specification] for more information on the data model.
 
-## 2.1 Definitions ##
-
-<!-- TODO: MUSTHAVE The Definitions section needs work or to be eliminated. -->
-
-
-Structural elements are composed of other model elements. Structural elements are common in entity models as they are the typical means of representing entities in the OData service. The structural types are: entity type, complex type, row type and association type.
-
-The NavigationLink is the URL that addresses the relationship itself.
-
-- Relatable types: entity type, collection of entity type
-
-<!-- TODO: MUSTHAVE Add a definition for resource (anything in a model that can be addressed). -->
-
 ## 2.4 Annotations ##
 
+Model and instance elements may be annotated with type annotations or value annotations.
+
+*Type Annotations* are defined in metadata as entity types or complex types, and are generally used to define a common concept, such as a person or a movie.
+
+*Value Annotations* are defined in metadata as individual value terms with a name and a type. Value annotations are typically used to specify an individual fact about an element, such as whether it is read-only.
+
+A set of related type annotation terms or value annotation terms in a common namespace comprises a *Vocabulary*.
+
+Applied *annotations* have a term (the namespace-qualified name of the annotation being applied), a target (the model or instance element to which the term is applied), and a value. The value may be a static value, or an expression which may contain a path to one or more properties of an annotated entity.
+
 # 3. Service Model #
-<todo...>
+<todo or delete (Arlo?)>
 
 # 4. Notational Conventions #
 
@@ -163,9 +164,13 @@ See the format-specific specifications ([[JSON](JSON)], [[JSON Verbose](JSON_Ver
 
 # 7. Header Fields #
 
+OData defines semantics around the following request and response headers. Additional headers MAY be specified, but have no unique semantics defined in OData.
+
 ## 7.1. Common Headers##
 
-### 7.1.1. The `DataServiceVersion` Header Field ###
+The DataServiceVersion and Content-Type headers may be used on any OData request or response.
+
+### 7.1.1. The `DataServiceVersion` Header ###
 
 OData clients MAY use the DataServiceVersion header on a request to specify the version of the protocol used to generate the request. 
 
@@ -202,19 +207,21 @@ The service SHOULD respond with the maximum version supported by the service tha
 For more details see [Versioning](#versioning).
 
 ### 7.2.3.	The Accept Request Header
+
 As specified in [RFC2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html), the client MAY specify the set of accepted [formats](#formats) through the use of the Accept Header.
 
 ### 7.2.4.	The If-Match Request Header
 
 A client MAY include an If-Match header in a request to GET, PUT, MERGE, PATCH or DELETE an entity or entity property, or to invoke an action bound to an entity. The value of the If-Match request header MUST be an ETag value previously retrieved for the entity.
 
-If specified, the request MUST only be invoked if the specified value matches the current ETag value of the entity. If the value does not match the current ETag value of the entity for a [Data Modification](#datamodification) or [Action](#actions) request, the server MUST ensure that no data is modified as a result of the request.
+If specified, the request MUST only be invoked if the specified value matches the current ETag value of the entity. If the value does not match the current ETag value of the entity for a [Data Modification](#datamodification) or [Action](#actions) request, the server MUST respond with '412 Precondition Failed' and MUST ensure that no data is modified as a result of the request.
 
 ### 7.2.5.	The If-None-Match Request Header
 
 A client MAY include an If-None-Match header in a request to GET, PUT, MERGE, PATCH or DELETE an entity or entity property, or to invoke an action bound to an entity. The value of the If-None-Match request header MUST be an ETag value previously retrieved for the entity.
 
-If specified, the request MUST only be invoked if the specified value does not match the current ETag value of the entity. If the value does match the current ETag value of the entity for a [Data Modification](#datamodification) or [Action](#actions) request, the server MUST ensure that no data is modified as a result of the request.
+If specified, the request MUST only be invoked if the specified value does not match the current ETag value of the entity. If the value does match the current ETag value of the entity for a [Data Modification](#datamodification) or [Action](#actions) request, the server MUST respond with '412 Precondition Failed' and MUST ensure that no data is modified as a result of the request.
+ 
 
 ## 7.3. Common Response Headers ##
 
@@ -274,7 +281,7 @@ The following represent the most common success response codes. In some cases, a
 
 ### 7.6.1. `200 OK`
 
-A GET, PUT, or PATCH request MAY return `200 OK` if the operation is completed successfully. In this case, the body of the response body MUST contain the value of the entity or property specified in the request URL.
+A GET, PUT, or PATCH request MAY return `200 OK` if the operation is completed successfully. In this case, the response body MUST contain the value of the entity or property specified in the request URL.
 
 ### 7.6.2. `201 Created`
 
@@ -304,7 +311,7 @@ If the entity or collection specified by the request URL does not exist, the ser
 
 In all failure responses, the service MUST provide an accurate failure HTTP status code. The response body SHOULD contain a human-readable, possibly localized description of the problem, and SHOULD contain suggested resolution steps, if the service knows what those are. 
 
-The service SHOULD return "top-level" errors, in the appropriate format, when an error is detected prior to sending the status line or any response headers to the client. When an error is detected after sending a partial response to the client, including a success code, the service MUST generate an [Instream Error].
+The service SHOULD return "top-level" errors, in the appropriate format, when an error is detected prior to sending the status line or any response headers to the client. When an error is detected after sending a partial response to the client, including a success code, the service MUST generate an [Instream Error](#instreamerrors).
 
 The service MUST ensure that no observable change has occured to the state of the service as a result of any request that returns an error status code.
 
@@ -319,6 +326,7 @@ This specification does not prescribe a particular format for such instream erro
 An OData service is a self-describing service that exposes metadata defining the entity sets, relationships, entity types, and operations.
 
 ### 8.1.1. Service Document Request ###
+
 To request a `Service Document` describing the set of entity collections (i.e., entity sets) that can be queried from a service, the client issues a GET request to the root URL of the service (the *Service Root*).
 
 The format of the Service Document is dependent upon the format selected. For example, in Atom the Service Document is an AtomPub Service Document (as specified in [RFC5023]). 
@@ -774,7 +782,7 @@ For example:
 
 Returns the URLs of each Order related to the Product with `ID=0`.
 
-### 8.2.5. Requesting the  `$count` of an Entity Collection ####
+### 8.2.5. Requesting the `$count` of an Entity Collection ####
 
 To request only the count of an entity collection, the client issues a GET request with `/$count` appended to the path of the request URL.
 
@@ -792,15 +800,9 @@ An OData service MAY support Create, Update, and Delete operations for some or a
 
 A successfully completed Data Modification request must not violate the integrity of the data. 
 
-### 8.3.1. Data Modification Responses ###
-
-An OData service MAY support Create, Update, and Delete operations for some or all of the Entities that it exposes. Additionally, services MAY support one or more [Actions](#actions) which may affect the state of the system.
-
 A client may request whether content be returned from a Create, Update, or Delete request, or the invocation of an Action, by specifying the [`Prefer` Header](#preferheader).
 
-A successfully completed Data Modification request must not violate the integrity of the data. 
-
-#### 8.3.1.1. Differential Update
+#### 8.3.1. Differential Update
 
 Some update requests support 2 types of update: replace and merge. The client chooses which to execute and specifies this by which HTTP verb it sends in the request.
 
@@ -887,14 +889,12 @@ The body MUST be formatted as a single link. See the appropriate format document
 On success, the response MUST be 204 and contain an empty body.
 
 ##### 7.3.5.2. Remove a Relationship Between Two Entities
-=======
-<!-- TODO: NICETOHAVE This is an update operation; see above for additional common behavior. (Are there any other areas where we need a similar clause?) -->
 
 To remove a relationship to a related entity, send a `DELETE` request to a URL that represents the link to the related entity.
 
 The `DELETE` request MUST follow the requirements for integrity constraints above.
 
-On success, the response MUST be 204 and contain an empty body.
+On success, the response MUST be `204 No Content` and contain an empty body.
 
 #### 7.3.5.3. Change the Relation in a One to One Navigation Property ####
 
@@ -994,34 +994,32 @@ On success, the response must be a valid [update response](#responsesforupdates)
 
 ## 7.4. Operations ##
 
-Services MAY support custom operations. Operations (actions, functions and legacy service operations) are represented as FunctionImport elements in [OData CSDL](OData CSDL Definition.html).
+Services MAY support custom operations. Operations (actions, functions and legacy service operations) are represented as function import elements in [OData CSDL](OData CSDL Definition.html).
 
 ### 7.4.1 Common rules for all operations ###
 
 All operations MUST follow the rules outlined in [OData CSDL](OData CSDL Definition.html), in addition operations:
 
-- MAY specify at most one ReturnType.
-- MUST specify an EntitySet or EntitySetPathExpression for the results if the operation ReturnType is an entity or collection of entities.
+- MAY specify at most one return type.
+- MUST specify an entity set or entity set path expression for the results if the operation return type is an entity or collection of entities.
 
-The [OData CSDL](OData CSDL Definition.html) specifies how syntactically this information, and information specific to each kind of operation is specified.
+The [OData CSDL](OData CSDL Definition.html) specifies how syntactically this information, and information specific to each kind of operation, is specified.
 
-### EntitySetPathExpression ###
+### 7.4.1.1. Entity Set Path Expression ###
 
-Functions or actions that return an Entity or Entities MAY return results from an EntitySet that is dependent upon the EntitySet of one of the parameter values used to invoke the Operation.
+For functions or actions that return an entity or collection of entities, the entity set associated with the returned entity or collection of entities MAY depend upon the entity set of one of the parameter values used to invoke the operation.
 
-When such a dependency exists an EntitySetPathExpression is used. An EntitySetPathExpression MUST begin with the name of a parameter to the Operation, and optionally includes a series NavigationProperties (and occasional type casts) as a succinct way to describe the series of EntitySet transitions. 
+When such a dependency exists an *entity set path expression* is used. An entity set path expression MUST begin with the name of a parameter to the operation, and optionally includes a series navigation properties (and occasional type casts) as a succinct way to describe the series of entity set transitions. 
 
-The actual EntitySet transitions may be deduced by finding the AssociationSet backing each NavigationProperty, and moving from the current EntitySet which will be found on one End to the EntitySet found on the other End. 
+The actual entity set transitions may be deduced by finding the association set backing each navigation property, and moving from the current entity set which will be found on one end to the entity set found on the other End. 
 
-The EntitySet of the results of an Operation Invocation with an EntitySetPathExpression can only be established once the EntitySet of the parameter that begins the EntitySetPathExpression is known.
+The entity set of the results of an operation invocation with an entity set path expression can only be established once the entity set of the parameter that begins the entity set path expression is known.
 
-For example this EntitySetPathExpression: "p1/Orders/Customer" can only be evaluted once the EntitySet of the p1 parameter value is known.
+For example this entity set path expression: "p1/Orders/Customer" can only be evaluted once the entity set of the p1 parameter value is known.
 
-### Common Rules for Binding Operations ###
+### 7.4.1.2. Common Rules for Binding Operations ###
 
 Actions and functions MAY be bound to an entity or a collection of entities. The first parameter of a bound operation is the *binding parameter*. 
-
-<!-- TODO: MUSTHAVE Scan for "version 3.0" -->
 
 Any URL that can identify a binding parameter of the correct type MAY be used as the foundation of a URL to invoke an operation that supports binding using the resource identified by that URL as the *binding parameter value*.
 
@@ -1120,11 +1118,9 @@ Each non-binding parameter value specified MUST be encoded as a separate 'name/v
 
 If the action returns results the client SHOULD use content type negotiation to request the results in the desired format, otherwise the default content type will be used.
 
-<!-- TODO: MUSTHAVE Add etags to common update section and just refer to it from here.
+If a client only wants an action to be processed when the binding parameter value, an entity or collection of entities, is unmodified, the client SHOULD include the [`If-Match`](#theif-matchrequestheader) header with the latest known ETag value for the Entity or collection of Entities.
 
-If a client only wants an action to be processed when the binding parameter value, an entity or collection of entities, is unmodified, the client SHOULD include the `'If-Match'` header with the latest known ETag value for the Entity or collection of Entities. When present, a service MUST attempt to verify that the ETag found in the 'If-Match' header is current before processing the request. If the ETag cannot be verified or is found to be out of date the service response MUST be '412 Precondition Failed'. 
- -->
-On success, the response SHOULD be 200 for actions with a return type or 204 for action without a return type. The client can request whether any results from the action be returned using the `Prefer` header.
+On success, the response SHOULD be 200 for actions with a return type or 204 for action without a return type. The client can request whether any results from the action be returned using the [`Prefer` header](#thepreferheader).
 
 Example: The following request invokes the `SampleEntities.CreateOrder` action using `/Customers('ALFKI') `as the customer (or binding parameter). The values `2` for the `quantity` parameter and `BLACKFRIDAY` for the `discountcode` parameter are passed in the body of the request: 
 

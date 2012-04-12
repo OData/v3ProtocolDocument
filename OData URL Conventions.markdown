@@ -50,16 +50,16 @@ Since OData has a uniform composable URL syntax and associated rules there are m
 
 - Via an entity set (see rule: entitySetName)
 
-		For Example: http://services.odata.org/OData/OData.svc/Products
+		For example: http://services.odata.org/OData/OData.svc/Products
 
 - By invoking a function that returns a collection of entities (see rule: entityColFunctionCall)
 
-		For Example: http://services.odata.org/OData/OData.svc/GetProductsByCategoryId(categoryId=2)
+		For example: http://services.odata.org/OData/OData.svc/GetProductsByCategoryId(categoryId=2)
 
-- By invoking an action that returns a collection of Entities (see rule: actionCall)
-- By invoking a service operation that returns a collection of Entities (see rule: entityColServiceOpCall)
+- By invoking an action that returns a collection of entities (see rule: actionCall)
+- By invoking a service operation that returns a collection of entities (see rule: entityColServiceOpCall)
 
-		For Example: http://services.odata.org/OData/OData.svc/ProductsByColor?color='red'
+		For example: http://services.odata.org/OData/OData.svc/ProductsByColor?color='red'
 
 Likewise there are many ways to address a single entity.
 
@@ -69,57 +69,57 @@ Sometimes a single entity can be accessed directly, for example by:
 - Invoking an action that returns a single entity (see rule: actionCall)
 - Invoking a service operation that returns a single entity (see rule: entityServiceOpCall)
  
-Often however a single entity is accessed by composing more path segments to a resourcePath that identifies a Collection of Entities, for example by:
+Often however a single entity is accessed by composing more path segments to a resourcePath that identifies a collection of entities, for example by:
 
-- Using a entityKey to select a single entity (see rules: collectionNavigation and keyPredicate)
+- Using a entity key to select a single entity (see rules: collectionNavigation and keyPredicate)
 
-		For Example: http://services.odata.org/OData/OData.svc/Categories(1)
+		For example: http://services.odata.org/OData/OData.svc/Categories(1)
 
-- Invoking an action bound to a collection of Entities that returns a singleentity (see rule: boundOperation)
-- Invoking an function bound to a collection of Entities that returns a singleentity (see rule: boundOperation)
+- Invoking an action bound to a collection of entities that returns a single entity (see rule: boundOperation)
+- Invoking an function bound to a collection of entities that returns a single entity (see rule: boundOperation)
 
-		For Example: http://services.odata.org/OData/OData.svc/Products/MostExpensive
+		For example: http://services.odata.org/OData/OData.svc/Products/MostExpensive
 
 These rules are recursive, so it is possible to address a single entity via another single entity, a collection via a single entity and even a collection via a collection, examples include, but are not limited to:
 
-- By following a Navigation from a single entity to another related entity (see rule: entityNavigationproperty)
+- By following a navigation from a single entity to another related entity (see rule: entityNavigationproperty)
 
-		For Example: http://services.odata.org/OData/OData.svc/Products(1)/Supplier
+		For example: http://services.odata.org/OData/OData.svc/Products(1)/Supplier
 
 - By invoking a function bound to a single entity that returns a single entity (see rule: boundOperation)
 
-		For Example: http://services.odata.org/OData/OData.svc/Products(1)/MostRecentOrder
+		For example: http://services.odata.org/OData/OData.svc/Products(1)/MostRecentOrder
 
 - By invoking an action bound to a single entity that returns a single entity (see rule: boundOperation)
-- By following a Navigation from a single entity to a related collection of Entities (see rule: entityColNavigationproperty)
+- By following a navigation from a single entity to a related collection of entities (see rule: entityColNavigationproperty)
 
-		For Example: http://services.odata.org/OData/OData.svc/Categories(1)/Products
+		For example: http://services.odata.org/OData/OData.svc/Categories(1)/Products
 
-- By invoking a function bound to a single entity that returns a collection of Entities (see rule: boundOperation)
+- By invoking a function bound to a single entity that returns a collection of entities (see rule: boundOperation)
 
-		For Example: http://services.odata.org/OData/OData.svc/Categories(1)/TopTenProducts
+		For example: http://services.odata.org/OData/OData.svc/Categories(1)/TopTenProducts
 
-- By invoking an action bound to a single entity that returns a collection of Entities (see rule: boundOperation)
-- By invoking a function bound to a collection of Entities that returns a collection of Entities (see rule: boundOperation)
+- By invoking an action bound to a single entity that returns a collection of entities (see rule: boundOperation)
+- By invoking a function bound to a collection of entities that returns a collection of entities (see rule: boundOperation)
 
-		For Example: http://services.odata.org/OData/OData.svc/Categories(1)/Products/AllOrders
+		For example: http://services.odata.org/OData/OData.svc/Categories(1)/Products/AllOrders
 
-- By invoking an action bound to a collection of Entities that returns a collection of Entities (see rule: boundOperation)
+- By invoking an action bound to a collection of entities that returns a collection of entities (see rule: boundOperation)
 
-Finally it is possible to compose path segments onto a resourcePath that identifies a Primitive, Complex instance, Collection of Primitives or Collection of Complex instances and bind an action or function that returns a entity or Collections of Entities.
+Finally it is possible to compose path segments onto a resource path that identifies a primitive, complex instance, collection of primitives or collection of complex instances and bind an action or function that returns a entity or collections of entities.
 
 #### 4.1.1 Canonical URL ####
-For OData services conformant with the addressing conventions in this section, the canonical form of an absolute URL identifying a non contained entity is formed by adding a single path segment to the service root URL. The path segment is made up of the name of the entitySet associated with the entity followed by the key predicate identifying the entity within the Collection. 
+For OData services conformant with the addressing conventions in this section, the canonical form of an absolute URL identifying a non contained entity is formed by adding a single path segment to the service root URL. The path segment is made up of the name of the entitySet associated with the entity followed by the key predicate identifying the entity within the collection. 
 
 For example the URLs [http://services.odata.org/OData/OData.svc/Categories(1)/Products(1)](http://services.odata.org/OData/OData.svc/Categories(1)/Products(1)) and [http://services.odata.org/OData/OData.svc/Products(1)](http://services.odata.org/OData/OData.svc/Products(1)) represent the same entity, but the canonical URL for the entity is [http://services.odata.org/OData/OData.svc/Products(1)](http://services.odata.org/OData/OData.svc/Products(1)).
 
-For contained Entities the canonical URL begins with canonical URL of the parent, with further path segments that:
+For contained entities the canonical URL begins with canonical URL of the parent, with further path segments that:
 
-- Name and navigate through the Containing Navigationproperty 
-- and, if the Navigationproperty returns a Collection, an entityKey (see rule: entityKey) that uniquely identifies the entity in that collection.
+- Name and navigate through the containing navigation property 
+- and, if the navigation property returns a collection, an entity key (see rule: entity key) that uniquely identifies the entity in that collection.
 
 ### 4.2 Addressing Links between Entities ###
-Much like the use of links on Web pages, the data model used by OData services supports relationships as a first class construct. For example, an OData service could expose a Collection of Products entities each of which are related to a Category entity.
+Much like the use of links on Web pages, the data model used by OData services supports relationships as a first class construct. For example, an OData service could expose a collection of Products entities each of which are related to a Category entity.
 
 Links between entities are addressable in OData just like entities themselves are (as described above). The basic rules for addressing relationships are shown in the following figure. By the following rule:
 
@@ -693,12 +693,12 @@ Each expandItem MUST be evaluated relative to the entity type of the request, wh
 
 A type cast using the qualifiedEntityTypeName to a type containing the property is required in order to expand a navigation property defined on a derived type.
 
-The leftmost navigationPropertyName segment MUST identify a Navigation Property defined on the EntityType of the request or an EntityType derived from the EntityType of the request. Subsequent navigationPropertyName segments MUST identify Navigation Properties defined on the EntityType returned by the previous NavigationProperty or the EntityType introduced in the previous cast.
+The leftmost navigationPropertyName segment MUST identify a navigation property defined on the entity type of the request or an entity type derived from the entity type of the request. Subsequent navigationPropertyName segments MUST identify navigation properties defined on the entity type returned by the previous navigation property or the entity type introduced in the previous cast.
 
 Redundant expandClause rules on the same data service URI MAY be considered valid, but MUST NOT alter the meaning of the URI.
 
 ### 5.1.4 Select System Query Option ###
-The $select system query option allows clients to requests a limited set of information for each entity or ComplexType identified by the ResourcePath and other System Query Options like $filter, $top, $skip etc. 
+The $select system query option allows clients to requests a limited set of information for each entity or complex type identified by the ResourcePath and other System Query Options like $filter, $top, $skip etc. 
 The $select query option is often used in conjunction with the $expand query option, to first increase the scope of the resource graph returned ($expand) and then selectively prune that resource graph ($select).
 
 What follows is a snippet [OData ABNF][OData ABNF] that applies to the Select System Query Option: 
@@ -716,13 +716,13 @@ What follows is a snippet [OData ABNF][OData ABNF] that applies to the Select Sy
 									)
 
 
-The selectClause MUST be interpreted relative to the EntityType or ComplexType of the resources identified by the resource path section of the URI, for example:
+The selectClause MUST be interpreted relative to the entity type or complex type of the resources identified by the resource path section of the URI, for example:
 
 	http://services.odata.org/OData/OData.svc/Products?$select=Rating,ReleaseDate
 
-In this URI the "Rating,ReleaseDate" selectClause MUST be interpreted relative to the Product EntityType which is the EntityType of the resources identified by this http://services.odata.org/OData/OData.svc/Products URI.
+In this URI the "Rating,ReleaseDate" selectClause MUST be interpreted relative to the Product entity type which is the entity type of the resources identified by this http://services.odata.org/OData/OData.svc/Products URI.
 
-Each selectItem in the selectClause indicates that the response MUST include the Properties, Open Properties, Related Properties, Actions and Functions identified by that selectClause. 
+Each selectItem in the selectClause indicates that the response MUST include the properties, open properties, related properties, actions and functions identified by that selectClause. 
 
 The simplest selectClause explicitly requests properties defined on the entity type of the resources identified by the resource path section of the URI, for example this URI requests just the Rating and ReleaseDate for the matching Products: 
 
@@ -736,13 +736,13 @@ If a selectClause consists of a single selectItem that is a star (i.e. *), then 
 
 If a navigation property appears as the last segment of a selectItem and does not appear in an $expand query option, the entity or collection of entities identified by the navigation property MUST be represented as deferred content.
 
-Each selectItem is a path, while often simply a propertyName or star, the path MAY include a cast to a derived type using a qualifiedEntityTypeName segment or a navigation to a related entity via navigationProperty segment followed by a nested selectItem. For example the following URI requests, the Spokesperson property of any Products that are of the derived type idenfitied by the qualifiedEntityType 'Namespace.BestSellingProduct', and the AccountRepresentative property of any related Supplier that is of a the derived type 'Namespace.PreferredSupplier':
+Each selectItem is a path, while often simply a propertyName or star, the path MAY include a cast to a derived type using a qualifiedEntityTypeName segment or a navigation to a related entity via navigation property segment followed by a nested selectItem. For example the following URI requests, the Spokesperson property of any Products that are of the derived type idenfitied by the qualifiedEntityType 'Namespace.BestSellingProduct', and the AccountRepresentative property of any related Supplier that is of a the derived type 'Namespace.PreferredSupplier':
 	
 	http://service.odata.org/OData/OData.svc/Products?$select=Namespace.BestSellingProduct/Spokesperson,Supplier/Namespace.PreferredSupplier/AccountRepresentative
 
 If a navigation property appears as the last segment of a selectItem and the same navigation property is specified as a segment of a path in an $expand query option, then all the properties of the expanded entity identified by the selectItem MUST be in the response. In addition, all the properties of the entities identified by segments in the $expand path after the segment that matched the selectedItem MUST also be included in the response.
 
-In order to select any nested properties of NavigationProperties the client MUST also include an expandClause for that NavigationProperty. For example the following URI expands the Category NavigationProperty so the Name of the Category can be selected.
+In order to select any nested properties of navigation properties the client MUST also include an expandClause for that navigation property. For example the following URI expands the Category navigation property so the Name of the Category can be selected.
 
 	http://services.odata.org/OData/OData.svc/Products?$select=Category/Name&$expand=Category
 

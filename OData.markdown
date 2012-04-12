@@ -73,7 +73,7 @@
 [8.9.3. Update an Entity][]  
 [8.9.4. Delete an Entity][]  
 [8.9.5. Modifying Relationships Between Entities][]  
-[8.9.5.1. Create a New Link Between Two Existing Entities in a One to Many NavigationProperty][]  
+[8.9.5.1. Create a New Link Between Two Existing Entities in a One to Many Navigation Property][]  
 [8.9.5.2. Remove a Relationship Between Two Entities][]  
 [8.9.5.3. Change the Relation in a One to One Navigation Property][]  
 [8.9.6. Managing Media Entities][]  
@@ -763,7 +763,7 @@ For each Order within the Orders entity set, the following should be represented
 
 	http://host/service.svc/Customers?$expand=SampleModel.VipCustomer/InHouseStaff
 
-For each Customer entity in the Customers entity set, the value of all associated InHouseStaff are represented inline if the entity is of type VipCustomer or a subtype of that. For entities that are not of type VipCustomer, or any of its subtypes, that entity is returned with no inline representation for the expanded NavigationProperty.
+For each Customer entity in the Customers entity set, the value of all associated InHouseStaff are represented inline if the entity is of type VipCustomer or a subtype of that. For entities that are not of type VipCustomer, or any of its subtypes, that entity is returned with no inline representation for the expanded navigation property.
 
 #### 8.8.3.3. The `$select` System Query Option
 
@@ -905,11 +905,11 @@ Returns the count of Products in the Products entity set.
 
 ## 8.9. Data Modification
 
-An OData service MAY support Create, Update, and Delete operations for some or all of the Entities that it exposes. Additionally, services MAY support one or more [Actions](#actions) which may affect the state of the system.
+An OData service MAY support Create, Update, and Delete operations for some or all of the entities that it exposes. Additionally, services MAY support one or more [Actions](#actions) which may affect the state of the system.
 
 A successfully completed Data Modification request must not violate the integrity of the data. 
 
-A client may request whether content be returned from a Create, Update, or Delete request, or the invocation of an Action, by specifying the [`Prefer` Header](#preferheader).
+A client may request whether content be returned from a Create, Update, or Delete request, or the invocation of an action, by specifying the [`Prefer` Header](#preferheader).
 
 ### 8.9.1. Differential Update
 
@@ -989,7 +989,7 @@ On success, the response MUST be 204 (No Content).
 
 Relationships between entities are represented by navigation properties. Navigation properties are described in <ref>[Section ??](#navigationproperties)</ref>. URL conventions for navigation properties are described in [URL Conventions](URL_conventions).
 
-#### 8.9.5.1. Create a New Link Between Two Existing Entities in a One to Many NavigationProperty
+#### 8.9.5.1. Create a New Link Between Two Existing Entities in a One to Many Navigation Property
 
 To relate an existing entity to another entity, send a POST request to the URL for the appropriate navigation property's links collection. The request body MUST contain a URL that identifies the entity to be added.
 
@@ -1077,7 +1077,7 @@ On success, the response must be a valid [update response](#responsesforupdates)
 
 #### 8.9.8.2. Null a Value
 
-There are two ways to set a primitive value to NULL. The client may [Update a PrimitiveProperty](#updateaprimitiveproperty), specifying a NULL value. Alternatively, the client MAY send a DELETE request with an empty message body to the property URL.
+There are two ways to set a primitive value to NULL. The client may [update a primitive property](#updateaprimitiveproperty), specifying a NULL value. Alternatively, the client MAY send a DELETE request with an empty message body to the property URL.
 
 The service SHOULD consider a DELETE request to a non-nullable value to be malformed.
 
@@ -1089,7 +1089,7 @@ On success, the service MUST respond with 204 and an empty body.
 
 To update a complex type, send a PUT, PATCH, or MERGE request to that property's URL. The request body MUST contain a single valid representation for that type.
 
-A service MUST support [Differential Update](#differentialupdate) for complex types.
+A service MUST support [differential update](#differentialupdate) for complex types.
 
 On success, the response must be a valid [update response](#responsesforupdates).
 
@@ -1154,9 +1154,9 @@ Actions are operations exposed by an OData server that MAY have side effects whe
 
 #### 8.10.2.1. Declaring Actions in Metadata
 
-Actions SHOULD be declared in $metadata using a FunctionImport element that indicates the signature (Name, ReturnType and Parameters) of the Action. 
+Actions SHOULD be declared in $metadata using a FunctionImport element that indicates the signature (name, return type and parameters) of the action. 
 
-In addition to the [Common Rules for All Operations](#Common Rules for All Operations) the following rules apply for Actions:
+In addition to the [Common Rules for All Operations](#Common Rules for All Operations) the following rules apply for actions:
 
 - Actions MUST NOT specify the HttpMethod as this is reserved for ServiceOperations.
 - Actions MUST be marked as side effecting.
@@ -1169,7 +1169,7 @@ In addition to the [Common Rules for All Operations](#Common Rules for All Opera
 
 The [OData CSDL](OData CSDL Definition.html) specifies how syntactically this information, and information specific to each kind of operation is specified.
 
-For example this FunctionImport represents an Action that Creates an Order for a customer using the specified quantity and discountCode. This action can be bound to any resource path that represents a Customer entity:
+For example this FunctionImport represents an action that creates an order for a customer using the specified quantity and discount code. This action can be bound to any resource path that represents a `Customer` entity:
 
 	<FunctionImport Name="CreateOrder" IsBindable="true" IsSideEffecting="true" 
 					m:IsAlwaysBindable="true">
@@ -1186,9 +1186,9 @@ A service SHOULD advertise only those actions that are available for a given ent
 
 The following information MUST be included when an action is advertised: 
 
-- A 'Target Url' that MUST identify the resource that accepts requests to invoke the Action.
-- A 'Metadata Url' that MUST identify the FunctionImport that declares the Action. This Url can be either relative or absolute, but when relative it MUST be assumed to be relative to the $metadata Url of the current service.
-- A 'Title' that SHOULD contain a human readable description of the Action.
+- A 'Target Url' that MUST identify the resource that accepts requests to invoke the action.
+- A 'Metadata Url' that MUST identify the FunctionImport that declares the action. This URL can be either relative or absolute, but when relative it MUST be assumed to be relative to the $metadata URL of the current service.
+- A 'Title' that SHOULD contain a human readable description of the action.
 
 Example: Given a GET request to http://server/Customers('ALFKI')
 
@@ -1211,15 +1211,15 @@ The service might respond with a Customer entity that advertises a binding of th
 	 }
 	}
 
-When the resource retrieved represents a collection, the 'Target Url' of any Actions advertised MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
+When the resource retrieved represents a collection, the 'Target Url' of any actions advertised MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
 
-An efficient format that assumes client knowledge of metadata SHOULD NOT advertise Actions whose availability ('IsAlwaysBindable' is set to 'true') and the target url can be established via metadata. 
+An efficient format that assumes client knowledge of metadata SHOULD NOT advertise actions whose availability ('IsAlwaysBindable' is set to 'true') and the target URL can be established via metadata. 
 
 #### 8.10.2.3. Invoking an Action
 
-To invoke an Action a client MUST make a POST request to the 'Target Url' of the Action. 
+To invoke an action a client MUST make a POST request to the 'Target Url' of the action. 
 
-If the Action supports binding the binding parameter value MUST be encoded in the 'Target Url'. It is not possible to specify an entity or a collection of entities as a parameter value in the request body.
+If the action supports binding the binding parameter value MUST be encoded in the 'Target Url'. It is not possible to specify an entity or a collection of entities as a parameter value in the request body.
 
 If the invoke request contains any non-binding parameter values, the `Content-Type` of the request MUST be `'application/json'`, and the parameter values MUST be encoded in a single JSON object in the request body. 
 
@@ -1227,7 +1227,7 @@ Each non-binding parameter value specified MUST be encoded as a separate 'name/v
 
 If the action returns results the client SHOULD use content type negotiation to request the results in the desired format, otherwise the default content type will be used.
 
-If a client only wants an action to be processed when the binding parameter value, an entity or collection of entities, is unmodified, the client SHOULD include the [`If-Match`](#theif-matchrequestheader) header with the latest known ETag value for the Entity or collection of Entities.
+If a client only wants an action to be processed when the binding parameter value, an entity or collection of entities, is unmodified, the client SHOULD include the [`If-Match`](#theif-matchrequestheader) header with the latest known ETag value for the entity or collection of entities.
 
 On success, the response SHOULD be 200 for actions with a return type or 204 for action without a return type. The client can request whether any results from the action be returned using the [`Prefer` header](#thepreferheader).
 
@@ -1250,7 +1250,7 @@ Functions are operations exposed by an OData service that MUST return data and M
 
 #### 8.10.3.1. Declaring Functions in Metadata
 
-Functions SHOULD be declared in $metadata. Function declarations indicate the signature (Name, ReturnType and Parameters) and semantics (composability, bindability and result entityset) of the Function. 
+Functions SHOULD be declared in $metadata. Function declarations indicate the signature (Name, ReturnType and Parameters) and semantics (composability, bindability and result entity set) of the Function. 
 
 In addition to the [Common Rules for All Operations](#Common Rules for All Operations) the following rules apply for Functions:
 
@@ -1266,7 +1266,7 @@ In addition to the [Common Rules for All Operations](#Common Rules for All Opera
 
 The [OData CSDL](OData CSDL Definition.html) specifies how syntactically this information, and information specific to each kind of operation is specified.
 
-For Example:
+For example:
 The following FunctionImport describes a Function called MostRecent that returns the 'MostRecent' Order within a collection of Orders:
 
 	<FunctionImport Name="MostRecent" EntitySet="Orders" ReturnType="SampleModel.Order" 
@@ -1303,27 +1303,27 @@ Example: Given a GET request to `http://server//Orders`, the service might respo
 	}
  
  
-When the resource retrieved represents a collection, the 'Target Url' of any Functions advertised MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
+When the resource retrieved represents a collection, the 'Target Url' of any functions advertised MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
 
-An efficient format that assumes client knowledge of metadata SHOULD NOT advertise Functions whose availability ('IsAlwaysBindable' is set to 'true') and whose target url can be established via metadata.
+An efficient format that assumes client knowledge of metadata SHOULD NOT advertise functions whose availability ('IsAlwaysBindable' is set to 'true') and whose target url can be established via metadata.
 
 #### 8.10.3.3. Invoking a Function
 
-To invoke a Function directly a client MUST issue a GET request to a Url that identifies the Function and that specifies any parameter values required by the Function. 
+To invoke a function directly a client MUST issue a GET request to a Url that identifies the function and that specifies any parameter values required by the function. 
 
-It is also possible to invoke a Function indirectly using GET, PUT, POST, PATCH or DELETE requests by formulating a URL that identifies a Function and its parameters and then appending further path segments to create a Request URL that identifies resources related to the results of the Function.
+It is also possible to invoke a function indirectly using GET, PUT, POST, PATCH or DELETE requests by formulating a URL that identifies a function and its parameters and then appending further path segments to create a request URL that identifies resources related to the results of the function.
 
-Parameter Values passed to Functions MUST be specified either as a URL Literal (for Primitive Types) or as a JSON formatted OData object (for ComplexTypes or Collections of Primitive Types or ComplexTypes). 
+Parameter values passed to functions MUST be specified either as a URL Literal (for primitive types) or as a JSON formatted OData object (for complex types or collections of primitive types or complex types). 
 
-Functions calls MAY be present in the Request URL Path or the Request URL Query inside either the $filter or $orderby Query Options. 
+Functions calls MAY be present in the request URL path or the request URL query inside either the $filter or $orderby Query Options. 
 
 ##### 8.10.3.3.1. Inline Parameter Syntax
 
-The simplest way to pass parameter values to a Function is using inline parameter syntax.
+The simplest way to pass parameter values to a function is using inline parameter syntax.
 
-To use Inline Parameter Syntax, where-ever a Function is called, parameter values MUST be specified inside the parenthesis, i.e. `()`, appended directly to the Function name. 
+To use Inline Parameter Syntax, whereever a function is called, parameter values MUST be specified inside the parenthesis, i.e. `()`, appended directly to the function name. 
 
-The parameter values MUST be specified as a comma separated list of Name/Value pairs in the format `Name=Value`, where `Name` is the Name of the parameter to the Function and `Value` is the parameter value.
+The parameter values MUST be specified as a comma separated list of Name/Value pairs in the format `Name=Value`, where `Name` is the name of the parameter to the function and `Value` is the parameter value.
 
 For example this request:
 
@@ -1335,9 +1335,9 @@ And this request:
 
 	GET http://server/Customers?$filter=Sales.GetSalesRegion(City=$it/City) eq "Western"
 
-Filters `Customers` to those in the `Western` sales region, calculated for each Customer in the Collection by passing the Customer's City as the `City` parameter value to the `Sales.GetSalesRegion` function. 
+Filters `Customers` to those in the `Western` sales region, calculated for each Customer in the collection by passing the Customer's City as the `City` parameter value to the `Sales.GetSalesRegion` function. 
 
-Primitive parameters values may be provided to Functions in the Request URL path using inline syntax. All other parameter types MUST be provided externally. 
+Primitive parameters values may be provided to functions in the request URL path using inline syntax. All other parameter types MUST be provided externally. 
 
 ##### 8.10.3.3.2. Parameter Aliases
 
@@ -1371,17 +1371,17 @@ When a function is invoked (using any of the three parameter syntaxes) the param
 
 ### 8.10.4. Legacy Service Operations
 
-Service Operations are Operations like Actions and Functions. However use of Service Operations is now discouraged because they are legacy and have a number of disadvantages:
+Service operations are operations like actions and functions. However use of service operations is now discouraged because they are legacy and have a number of disadvantages:
 
-- Service Operations only support primitive parameter types.
-- Service Operations are not bindable.
-- Unlike Functions, composing Multiple Service Operations calls in the same request is not supported.
+- Service operations only support primitive parameter types.
+- Service operations are not bindable.
+- Unlike functions, composing multiple service operations calls in the same request is not supported.
 
 #### 8.10.4.1. Declaring Service Operations in Metadata
 
-Legacy Service Operations MUST declared in $metadata. Service Operation declarations indicate the signature (Name, ReturnType and Parameters) and semantics (http verb and result entityset) of the Service Operation. 
+Legacy service operations MUST declared in $metadata. Service operation declarations indicate the signature (name, return type and parameters) and semantics (HTTP verb and result entity set) of the service operation. 
 
-In addition to the [Common Rules for All Operations](#Common Rules for All Operations) the following rules apply for Service Operations:
+In addition to the [Common Rules for All Operations](#Common Rules for All Operations) the following rules apply for service operations:
 
 - Service Operations MUST specify the HttpMethod as this is reserved for ServiceOperations.
 - Service Operations MAY have parameters which MUST all be primitive.
@@ -1392,7 +1392,7 @@ The [OData CSDL](OData CSDL Definition.html) specifies how syntactically this in
 
 #### 8.10.4.2. Invoking a Service Operation
 
-To invoke a ServiceOperation the Request URL used MUST begin with the URL of the Service Document, followed by a path segment containing the Name or Namespace Qualified Name of the ServiceOperation and optionally parentheses.
+To invoke a service operation the request URL used MUST begin with the URL of the Service Document, followed by a path segment containing the name or namespace-qualified name of the service operation and optionally parentheses.
 
 For example:
 
@@ -1400,9 +1400,9 @@ For example:
 or 
 	http://server/service.svc/ServiceOperation()
 
-The HttpMethod (either GET or POST) used to invoke the ServiceOperation MUST match the HttpMethod specified by the FunctionImport that defines the ServiceOperation. 
+The HttpMethod (either GET or POST) used to invoke the service operation MUST match the HttpMethod specified by the FunctionImport that defines the service operation. 
 
-The body of a request to invoke a Service Operation SHOULD be empty. 
+The body of a request to invoke a service operation SHOULD be empty. 
 
 Any Parameter Values MUST be encoded into the Query part of the Request URL, as individual Query string Name/Value pairs, where the Name is the Parameter Name and the Value is a URLLiteral representing the parameter value.
 
@@ -1410,31 +1410,35 @@ For example:
 
 	POST http://server/service.svc/CreatePerson?Firstname="John"&Surname="Smith"&DateOfBirth=datetime'1971-07-07T13:03:00' HTTP/1.1
  
-Invokes the `CreatePerson` ServiceOperation with the following Parameter values:
+Invokes the `CreatePerson` service operation with the following Parameter values:
 
 - Firstname: `"John"`
 - Surname: `"Smith"`
 - DateOfBirth: `datetime'1971-07-07T13:03:00'`
 
-If the ServiceOperation specifies a ReturnType it MAY be possible to compose further OData path and/or Query Options after the segment that identifies the ServiceOperation. 
+If the service operation specifies a return type it MAY be possible to compose further OData path and/or Query Options after the segment that identifies the service operation. 
 
 For example:
 
 	GET http://server/service.svc/GetOrdersByDate/$filter=Customer/Name eq 'ACME'&OrderDate=datetime'2012-07-07T01:03:00'
 
-Invokes the `GetOrdersByDate` ServiceOperation with the `OrderDate` parameter value of `datetime'2012-07-07T01:03:00` and then further filters the results so only the Orders for `ACME` on that date are returned.
+Invokes the `GetOrdersByDate` service operation with the `OrderDate` parameter value of `datetime'2012-07-07T01:03:00` and then further filters the results so only the Orders for `ACME` on that date are returned.
 
 ------
 
 # Appendix A: Terminology
 
-*bound Action invocation URL*: the URL that can be used to invoke a particular Action bound to a particular Entity or collection of Entities.
+bound Action invocation URL
+: the URL that can be used to invoke a particular action bound to a particular entity or collection of entities.
 
-*bound Function invocation URL*: the URL that can be used to invoke a particular Function bound to a particular Entity or collection of Entities.
+bound Function invocation URL
+: the URL that can be used to invoke a particular function bound to a particular entity or collection of entities.
 
-Action *title*: a descriptive name used for an Action. This is intended to be presented to an end user.
+Action title
+: a descriptive name used for an action. This is intended to be presented to an end user.
 
-Function *title*: a descriptive name used for a Function. This is intended to be presented to an end user.
+Function title
+: a descriptive name used for a function. This is intended to be presented to an end user.
 
 ADO.NET Entity Framework
 : A set of technologies that enables developers to create data access applications by programming against the conceptual application model instead of programming directly against a relational storage schema.
@@ -1443,19 +1447,19 @@ alias
 : A simple identifier that is typically used as a short name for a **namespace**.
 
 alias qualified name
-: A qualified name that is used to refer to a **StructuralType**, except that the 
-**namespace** is replaced by the alias for the **namespace**. For example, if an **EntityType** called "Person" is defined in the "Model.Business" **namespace**, and that **namespace** has been given the **alias** "Self", the alias qualified name for the person **EntityType** is "Self.Person".
+: A qualified name that is used to refer to a **structural type**, except that the 
+**namespace** is replaced by the alias for the **namespace**. For example, if an **entity type** called "Person" is defined in the "Model.Business" **namespace**, and that **namespace** has been given the **alias** "Self", the alias qualified name for the person **entity type** is "Self.Person".
 
 annotation
 : Any custom, application-specific extension that is applied to an instance of **CSDL** through the use of custom attributes and elements that are not a part of this **CSDL** specification.
 
 association
-: A named independent relationship between two **EntityType** definitions. Associations in the 
+: A named independent relationship between two **entity type** definitions. Associations in the 
 **Entity Data Model (EDM)** are first-class concepts and are always bidirectional. Indeed, the first-class nature of associations helps distinguish the **EDM** from the relational model. Every association includes exactly two association ends.
 
 association end
-: A term that specifies the **EntityType** elements that are related, the roles of each of those 
-**EntityType** elements in the **association**, and the **cardinality** rules for each end of the **association**.
+: A term that specifies the **entity type** elements that are related, the roles of each of those 
+**entity type** elements in the **association**, and the **cardinality** rules for each end of the **association**.
 
 cardinality
 : The measure of the number of elements in a set.
@@ -1485,19 +1489,19 @@ CSDL 3.0
 : The version of **CSDL** that is the focus of this document. **CSDL 3.0** documents reference this XML namespace: http://schemas.microsoft.com/ado/2009.11/edm.
 
 declared property
-: A property that is statically declared by a **Property** element as part of the definition of a **StructuralType**. For example, in the context of an **EntityType**, a declared property includes all properties of an **EntityType** that are represented by the **Property** child elements of the **EntityType** element that defines the **EntityType**.
+: A property that is statically declared by a **Property** element as part of the definition of a **structural type**. For example, in the context of an **entity type**, a declared property includes all properties of an **entity type** that are represented by the **Property** child elements of the **entity type** element that defines the **entity type**.
 
 derived type
-: A type that is derived from the **BaseType**. Only **ComplexType** and **EntityType** can define a **BaseType**.
+: A type that is derived from the **base type**. Only **complex type** and **entity type** can define a **base type**.
 
 dynamic property
-: A designation for an instance of an **OpenEntityType** that includes additional nullable properties (of a **scalar type** or **ComplexType**), or navigation properties, beyond its **declared properties**. The set of additional properties, and the type of each, may vary between instances of the same **OpenEntityType**. Such additional properties are referred to as dynamic properties and do not have a representation in a **CSDL document**.
+: A designation for an instance of an **open entity type** that includes additional nullable properties (of a **scalar type** or **complex type**), or navigation properties, beyond its **declared properties**. The set of additional properties, and the type of each, may vary between instances of the same **open entity type**. Such additional properties are referred to as dynamic properties and do not have a representation in a **CSDL document**.
 
 EDM type
-: A categorization that includes all the following types: **EDMSimpleType**, **ComplexType**, **EntityType**, **enumeration**, and **association**.
+: A categorization that includes all the following types: **EDMSimpleType**, **complex type**, **entity type**, **enumeration**, and **association**.
 
 entity
-: An instance of an **EntityType** that has a unique identity and an independent existence. An entity is an operational unit of consistency.
+: An instance of an **entity type** that has a unique identity and an independent existence. An entity is an operational unit of consistency.
 
 entity request URL
 : A URL for requesting a single entity as a top-level object (as opposed to a collection containing a single entity). An entity request URL may be obtained from a response payload containing that instance (for example, as a self-link in an [Atom Payload](ODataAtomPayload)). Services MAY support conventions for constructing an entity request URL using the entity's Key Value(s), as described in [OData URL Conventions](ODataURLConventions).
@@ -1515,19 +1519,19 @@ identifier
 : A string value that is used to uniquely identify a component of the **CSDL** and is of type **SimpleIdentifier**.
 
 in scope
-: A designation that is applied to an XML construct that is visible or can be referenced, assuming that all other applicable rules are satisfied. Types that are in scope include all **scalar types** and **StructuralType** types that are defined in **namespaces** that are in scope. **Namespaces** that are in scope include the **namespace** of the current **schema** and other **namespaces** that are referenced in the current **schema** by using the **Using** element.
+: A designation that is applied to an XML construct that is visible or can be referenced, assuming that all other applicable rules are satisfied. Types that are in scope include all **scalar types** and **structural type** types that are defined in **namespaces** that are in scope. **Namespaces** that are in scope include the **namespace** of the current **schema** and other **namespaces** that are referenced in the current **schema** by using the **Using** element.
 
 namespace
-: A name that is defined on the **schema** and that is subsequently used to prefix **identifiers** to form the **namespace qualified name** of a **StructuralType**. **CSDL** enforces a maximum length of 512 characters for namespace values.
+: A name that is defined on the **schema** and that is subsequently used to prefix **identifiers** to form the **namespace qualified name** of a **structural type**. **CSDL** enforces a maximum length of 512 characters for namespace values.
 
 namespace qualified name
-: A qualified name that refers to a **StructuralType** by using the name of the **namespace**, followed by a period, followed by the name of the **StructuralType**.
+: A qualified name that refers to a **structural type** by using the name of the **namespace**, followed by a period, followed by the name of the **structural type**.
 
 nominal type
 : A designation that applies to the types that can be referenced. Nominal types include all primitive types and named **EDM types**. Nominal types are frequently used inline with collection in the following format: collection(nominal_type).
 
 property
-: An **EntityType** can have one or more properties of the specified **scalar type** or **ComplexType**. A property can be a **declared property** or a **dynamic property**. (In **CSDL 1.2**, **dynamic properties** are defined only for use with **OpenEntityType** instances.)
+: An **entity type** can have one or more properties of the specified **scalar type** or **complex type**. A property can be a **declared property** or a **dynamic property**. (In **CSDL 1.2**, **dynamic properties** are defined only for use with **open entity type** instances.)
 
 referential constraint
 : A constraint on the keys contained in the **associatio**n type. The ReferentialConstraint **CSDL** construct is used for defining referential constraints.
@@ -1541,8 +1545,8 @@ schema
 schema level named element
 : An element that is a child element of the **schema** and contains a **Name** attribute that must have a unique value.
 
-StructuralType
-: A type that has members that define its structure. **ComplexType**, **EntityType**, and **Association** are all StructuralTypes.
+structural type
+: A type that has members that define its structure. **complex type**, **entity type**, and **association** are all StructuralTypes.
 
 type annotation
 : An **annotation** of a model element that allows a term and provision of zero or more values for the properties of the term.

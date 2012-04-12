@@ -1,16 +1,8 @@
 Find and replace: (Mark)
 - service instead of server
 - consistently use client
-- casing of entity type rather than EntityType (for example)
-- make sure Edm.Stream is everywhere it needs to be
 - make sure JSON Light is JSON
-- URI is URL
 - file names are right (Appendix A is ABNF)
-- references to Microsoft
-- structured with structural
-- model elements with something
-- renumber sections
-Handle all CSDL TODOs (Mark)
 
 Make sure every header is mentioned somewhere (Mike)
 Deal with EPM (Mike)

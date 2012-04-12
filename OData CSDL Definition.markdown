@@ -725,7 +725,7 @@ When a navigation property navigates between entity types in the same entity set
 
 The association set for a containment navigation property MUST specify the same entity set for entity types with a common ancestor in the inheritance chain.
 
-An EntitySet MUST NOT be bound by AssociationSet to more than one navigation property via a containment navigation property that indicates that the entity type (or derived entity types) of that EntitySet is contained.
+An entity set MUST NOT be bound by association set to more than one navigation property via a containment navigation property that indicates that the entity type (or derived entity types) of that entity set is contained.
 
 # 7	Complex Type Constructs[csdl7]
 

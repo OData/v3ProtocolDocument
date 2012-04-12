@@ -6,15 +6,15 @@ The OData protocol is comprised of a set of specifications for representing and 
 
 An OData payload may represent:
 
-* a single Primitive value  
-* a sequence of Primitive values  
-* a single structured ("Complex") value  
-* a sequence of structured ("Complex") values  
-* an Entity (a structured type with an identity)  
-* a sequence of Entities  
+* a single primitive value  
+* a sequence of primitive values  
+* a single structured ("complex") value  
+* a sequence of structured ("complex") values  
+* an entity (a structured type with an identity)  
+* a sequence of entities  
 * a media resource  
 * a single instance of a mime type  
-* a service document describing the collections (EntitySets) exposed by the service  
+* a service document describing the collections (entity sets) exposed by the service  
 * an xml document describing the entity model exposed by the service  
 * an error  
 * a batch of requests to be executed in a single request  
@@ -295,7 +295,7 @@ An `atom:entry` element representing an OData entity SHOULD contain a self link,
 #### 6.1.5 Stream Properties as `atom:link` Elements ####
 An entity may have one or stream properties (for example, a photo property of an employee entity). Properties that represent streams have a type of "Edm.Stream".
 
-OData uses `atom:link` elements to represent named stream properties of an Entity.
+OData uses `atom:link` elements to represent named stream properties of an entity.
 
 For example, a stream property named "Photo" be represented through an `atom:link` element as a child of the `atom:entry` element as follows:
 
@@ -331,7 +331,7 @@ For example, the set of related products for a particular catagory may be repres
 		type="application/atom+xml;type=feed" 
 		title="Products" />
 
-The related data for the relationship MAY be included in the Entity using a single child [`metadata:inline`](#InlineContentwithina`metadata:inline`Element) element.
+The related data for the relationship MAY be included in the entity using a single child [`metadata:inline`](#InlineContentwithina`metadata:inline`Element) element.
 	
 #### 6.1.6.1. The `rel` attribute of an `atom:link` element Representing a Relationship ####
 The `rel` attribute for an `atom:link` element that represents a relationship MUST be present and is made up of the name of the [OData Data Namespace](#ODataDataNamespace), followed by the string "`/related/`" followed by the name of the navigation property on the entity.  
@@ -446,7 +446,7 @@ For example, the collection typed property "Emails" would be respresented as:
 
 For properties that represent a collection of complex types, the `data:[propertyName]` element may include a `metdata:type` attribute with a value of `"Collection([ComplexTypeName])`" attribute. The content of the element consists of nested child elements named "`element`", in the Data Service namespace, for each complex typed value in the collection. 
 
-The `<data:element>` element representing the instance may include a `metadata:type` attribute to specify the type of the individual element. The value of each complex-typed `<data:element>` follows the syntax for Complex Typed Properties <todo:insert link>. 
+The `<data:element>` element representing the instance may include a `metadata:type` attribute to specify the type of the individual element. The value of each complex-typed `<data:element>` follows the syntax for complex-typed properties <todo:insert link>. 
 
 <data:element> elements MUST NOT be empty and MUST NOT contain the metadata:null="true" attribute.
 
@@ -697,7 +697,7 @@ Similarly, the following payload represents a collection of full names.
 	
 # 13.	Entity Container as a Workspace within a Service Document #
 
-Atom defines the concept of a Service Document to represent the set of available collections. OData uses Service Documents to describe the set of EntitySets available through the service.
+Atom defines the concept of a Service Document to represent the set of available collections. OData uses Service Documents to describe the set of entity sets available through the service.
 
 ## 13.2. The `app:service` element ##
 
@@ -705,16 +705,16 @@ The atom ServiceDocument is represented by the app:service element.  The app:ser
 
 ### 13.2.1.	EntityContainer as an `app:workspace` element ###
 
-OData represents EntityContainers as `app:workspace` elements.  An `app:workspace` element contains zero or more `app:collections`. 
+OData represents entity containers as `app:workspace` elements.  An `app:workspace` element contains zero or more `app:collections`. 
 
-#### 13.2.1.1.	EntitySets as an `app:collection` elements ####
+#### 13.2.1.1.	Entity Sets as an `app:collection` elements ####
 
-OData describes available EntitySets as `app:collection` elements.
-The app:collection element contains an href attribute which represents a URI that can be used to retrieve the members of the EntitySet.
+OData describes available collections of entities as `app:collection` elements.
+The app:collection element contains an href attribute which represents a URI that can be used to retrieve the members of the entity set.
 
 ##### 13.2.1.1.1	EntitySet Name as an `atom:title` element #####
 
-The `atom:title` element within the app:collection contains the name of the EntitySet.
+The `atom:title` element within the app:collection contains the name of the entity set.
 
 # 14. Links 
 Links represent the relationships between an entity and related entity(s). The link(s) available from a particular entity for a particular relationship can be retrieved from the service as a colleciton of URIs within a [`data:link`](#Linkswithinadata:linkselement) element.

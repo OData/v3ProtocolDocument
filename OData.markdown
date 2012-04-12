@@ -115,7 +115,7 @@ The OData Protocol is an application-level protocol for interacting with data vi
 
 - Metadata: a machine-readable description of the data model exposed by a particular data provider.
 - Data: sets of data entities and the relationships between them.
-- Querying: requesting that the server perform a set of filtering and other transformations to its data, then return the results.
+- Querying: requesting that the service perform a set of filtering and other transformations to its data, then return the results.
 - Editing: creating, editing, and deleting data.
 - Operations: invoking custom logic
 - Vocabularies: attaching custom semantics
@@ -323,13 +323,13 @@ As specified in [RFC2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
 
 A client MAY include an If-Match header in a request to GET, PUT, MERGE, PATCH or DELETE an entity or entity property, or to invoke an action bound to an entity. The value of the If-Match request header MUST be an ETag value previously retrieved for the entity.
 
-If specified, the request MUST only be invoked if the specified value matches the current ETag value of the entity. If the value does not match the current ETag value of the entity for a [Data Modification](#datamodification) or [Action](#actions) request, the server MUST respond with '412 Precondition Failed' and MUST ensure that no data is modified as a result of the request.
+If specified, the request MUST only be invoked if the specified value matches the current ETag value of the entity. If the value does not match the current ETag value of the entity for a [Data Modification](#datamodification) or [Action](#actions) request, the service MUST respond with '412 Precondition Failed' and MUST ensure that no data is modified as a result of the request.
 
 ### 8.2.5.	The If-None-Match Request Header
 
 A client MAY include an If-None-Match header in a request to GET, PUT, MERGE, PATCH or DELETE an entity or entity property, or to invoke an action bound to an entity. The value of the If-None-Match request header MUST be an ETag value previously retrieved for the entity.
 
-If specified, the request MUST only be invoked if the specified value does not match the current ETag value of the entity. If the value does match the current ETag value of the entity for a [Data Modification](#datamodification) or [Action](#actions) request, the server MUST respond with '412 Precondition Failed' and MUST ensure that no data is modified as a result of the request.
+If specified, the request MUST only be invoked if the specified value does not match the current ETag value of the entity. If the value does match the current ETag value of the entity for a [Data Modification](#datamodification) or [Action](#actions) request, the service MUST respond with '412 Precondition Failed' and MUST ensure that no data is modified as a result of the request.
  
 
 ## 8.3. Common Response Headers ##
@@ -354,11 +354,11 @@ In addition to the [Common Headers](#commonheaders), a client MAY specify the fo
 
 The client MAY specify a `Prefer` header on [Data Modification](#datamodification) or [Action](#actions) request.
 
-A Prefer header with a value of `return-no-content` requests that the server invoke the request but not return content in the response. The server MAY honor this request by returning [`204 No Content`](#204nocontent).
+A Prefer header with a value of `return-no-content` requests that the service invoke the request but not return content in the response. The service MAY honor this request by returning [`204 No Content`](#204nocontent).
 
-A Prefer header with a value of `return-content` requests that the server invoke the request and return the modified entity. The server MAY honor this request by returning the successfully modified entity in the body of the response, formatted according to the rules specified for the requested [format](#formats).
+A Prefer header with a value of `return-content` requests that the service invoke the request and return the modified entity. The service MAY honor this request by returning the successfully modified entity in the body of the response, formatted according to the rules specified for the requested [format](#formats).
 
-In response to a request containing a `Prefer` header, the server MAY return the [`Preference-Applied`](#preference-applied) Header.
+In response to a request containing a `Prefer` header, the service MAY return the [`Preference-Applied`](#preference-applied) Header.
 
 ## 8.5. Data Modification Response Headers
 
@@ -370,11 +370,11 @@ A response to a PUT, POST, or PATCH request that returns `404 No Content` MUST i
 
 ### 8.5.2. The `Preference-Applied` Header
 
-In response to a [Data Modification](#datamodification) or [Action](#actions) request containing a [`Prefer header`](#preferheader), the server may include a `Preference-Applied` response header to specify the `prefer` header value that was honored.
+In response to a [Data Modification](#datamodification) or [Action](#actions) request containing a [`Prefer header`](#preferheader), the service may include a `Preference-Applied` response header to specify the `prefer` header value that was honored.
 
-If the server has returned content in response to a request including a `Prefer` header with a value of `return-content`, it MAY include a `Preference-Applied` response header with a value of `return-content`.
+If the service has returned content in response to a request including a `Prefer` header with a value of `return-content`, it MAY include a `Preference-Applied` response header with a value of `return-content`.
 
-If the server has returned content in response to a request including a `Prefer` header with a value of `return-content`, it MAY include a `Preference-Applied` response header with a value of `return-no-content`.
+If the service has returned content in response to a request including a `Prefer` header with a value of `return-content`, it MAY include a `Preference-Applied` response header with a value of `return-no-content`.
 
 ### 8.5.3. The `Retry-After` Header
 
@@ -398,7 +398,7 @@ A POST request MAY return `201 Created` if the entity or link was successfully c
 
 ### 8.6.3. `202 Accepted`
 
-A server MAY reply to a Data Modification Request with `202 Accepted`, indicating that the request has been accepted but has not yet completed. In this case, the response body MUST contain a [`Location` header](#locationheader) in addition to a [`Retry-After` header](#retry-afterheader), and the response body MUST be empty.
+A service MAY reply to a Data Modification Request with `202 Accepted`, indicating that the request has been accepted but has not yet completed. In this case, the response body MUST contain a [`Location` header](#locationheader) in addition to a [`Retry-After` header](#retry-afterheader), and the response body MUST be empty.
 
 Once the request has successfully completed, the service MUST return `303 See Other` with a [`Location` header](#locationheader) specifying the final URL to retrieve the outcome of the operation. The response body and headers from this final URL MUST be formatted as would the completion of the initial Data Modification Request.
 
@@ -470,7 +470,7 @@ Services MAY support conventions for constructing an entity request URL using th
 
 ### 8.8.2. Requesting Individual Properties
 
-A server SHOULD support retrieving an individual property value. 
+A service SHOULD support retrieving an individual property value. 
 
 To retrieve an individual property, a client issues a GET request to the property URL. The property URL is the entity request URL with "`/`" and the property name appended. See the [OData:URL](OData URL Conventions) document for details.
 
@@ -480,7 +480,7 @@ For example:
 
 #### 8.8.2.1. Requesting a Property's Raw Value using `$value`
 
-A server SHOULD support retrieving the raw value of a primitive type property. To retrieve this value, a client sends a GET request to the property value URL. See the [OData:URL](OData URL Conventions) document for details.
+A service SHOULD support retrieving the raw value of a primitive type property. To retrieve this value, a client sends a GET request to the property value URL. See the [OData:URL](OData URL Conventions) document for details.
 
 For example:
 
@@ -937,11 +937,11 @@ To create an entity in a collection, send a POST request to that collection's UR
 
 To create an *open entity* (an instance of an open type), additional property values beyond those specified in the metadata MAY be sent in the request body. The service MUST treat these as dynamic properties and add them to the created instance.
 
-If the entity being created is not an open entity, additional property values beyond those specified in the metadata SHOULD NOT be sent in the request body. The server SHOULD ignore any such values supplied.
+If the entity being created is not an open entity, additional property values beyond those specified in the metadata SHOULD NOT be sent in the request body. The service SHOULD ignore any such values supplied.
 
 Upon successful completion, the response MUST contain a [`Location` header](#locationheader) that contains the edit URL of the created entity. 
 
-Upon successful completion the server MUST respond with either [`201 Created`](#201created), or ['204 No Content'](#204nocontent) if the request included a [`Prefer` header](#preferheader) with a value of "return-no-content'.
+Upon successful completion the service MUST respond with either [`201 Created`](#201created), or ['204 No Content'](#204nocontent) if the request included a [`Prefer` header](#preferheader) with a value of "return-no-content'.
 
 #### 8.9.2.1. Link to Related Entities When Creating Entity
 
@@ -1150,7 +1150,7 @@ Which again invokes the `MostRecentOrder` function, this time with the 'customer
 
 ### 8.10.2. Actions
 
-Actions are operations exposed by an OData server that MAY have side effects when invoked and optionally return some data.
+Actions are operations exposed by an OData service that MAY have side effects when invoked and optionally return some data.
 
 #### 8.10.2.1. Declaring Actions in Metadata
 

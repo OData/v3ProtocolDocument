@@ -1,7 +1,5 @@
 Find and replace: (Mark)
-- service instead of server
 - consistently use client
-- make sure JSON Light is JSON
 - file names are right (Appendix A is ABNF)
 
 Make sure every header is mentioned somewhere (Mike)
@@ -23,6 +21,5 @@ Dealing with redirects (Mike)
 	Line 60: <!-- TODO: MUSTHAVE Add a definition for resource (anything in a model that can be addressed). --> (Mark)
 	Line 700: <!-- TODO: MUSTHAVE Add a section in the common requirements that indicates that a request or batch request must not modify data such that integrity constraints are violated. --> (Mike)
 	Line 830: - TODO: MUSTHAVE overload rules (i.e. unordered combination of parameter names & types must be unique). (Alex)
-	Line 850: <!-- TODO: MUSTHAVE Scan for "version 3.0" --> (Mark)
 	Line 884: <!-- TODO: MUSTHAVE Remove any redundant attributes here with CSDL. --> (Alex)
 	Line 944: <!-- TODO: MUSTHAVE Add etags to common update section and just refer to it from here. (Mike)

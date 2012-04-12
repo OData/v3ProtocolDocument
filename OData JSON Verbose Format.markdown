@@ -39,15 +39,15 @@ Verbose JSON is not the default OData format. To receive responses in Verbose JS
 
 To request this format using <ref>$format</ref>, use the value `jsonverbose`. To request this format using the <ref>Accept header</ref>, use the MIME type `application/json;odata=verbose`.
 
-## 3.1 Client/Server Format Compatibility and Versions ##
+## 3.1 Client/Service Format Compatibility and Versions ##
 
 Prior to version 3.0, Verbose JSON format was simply the only OData JSON format. In version 3.0 and later, <ref>JSON</ref> is the default JSON format.
 
-A request with Accept header `application/json` or with a $format value of `json` MUST be treated as a request for the server's default JSON format.
+A request with Accept header `application/json` or with a $format value of `json` MUST be treated as a request for the service's default JSON format.
 
-Therefore, such a request on a version 1.0 or 2.0 server, or if specified with a <ref>MaxDataServiceVersion header</ref> of 1.0 or 2.0 will result in Verbose JSON. However, a request for default JSON on a version 3.0 or higher server with a MaxDataServiceVersion of 3.0 or higher will result in <ref>JSON</ref>
+Therefore, such a request on a version 1.0 or 2.0 service, or if specified with a <ref>MaxDataServiceVersion header</ref> of 1.0 or 2.0 will result in Verbose JSON. However, a request for default JSON on a version 3.0 or higher service with a MaxDataServiceVersion of 3.0 or higher will result in <ref>JSON</ref>
 
-Clients and servers SHOULD prefer the new <ref>JSON</ref> format as long as they both support it. To maximize compatibility, clients MAY use one of the following sets of headers.
+Clients and services SHOULD prefer the new <ref>JSON</ref> format as long as they both support it. To maximize compatibility, clients MAY use one of the following sets of headers.
 
 If the client does not understand OData version 3.0:
 
@@ -64,7 +64,7 @@ If the client fully supports OData version 3.0:
 	MaxDataServiceVersion: 3.0
 	Accept: application/json;odata=light;q=1,application/json;odata=verbose;q=0.5
 
-Optionally, Atom can be added as a further fallback in case the server supports neither JSON format.
+Optionally, Atom can be added as a further fallback in case the service supports neither JSON format.
 
 # 4 Common Payload Format #
 
@@ -96,15 +96,15 @@ The `type` name/value pair MUST be included if the entity's type is part of an i
 
 The `etag` name/value pair MAY be included. When included, it MUST represent the concurrency token associated with the entity <ref>ETag</ref>. When present, this value MUST be used instead of the <ref>ETag HTTP header</ref>.
 
-The `id` name/value pair MAY be included if the server is using OData 2.0 and MUST be included if the server is using OData 3.0.
+The `id` name/value pair MAY be included if the service is using OData 2.0 and MUST be included if the service is using OData 3.0.
 
 The value of the `properties` name/value pair MUST be a JSON object. It SHOULD contain a name/value pair for each navigation property. See [Representing Navigation Property Metadata](#representingnavigationpropertymetadata) for details.
 
-The `actions` name/value pair MAY be included in a response if the server is advertising actions. See [Entity Metadata for Actions](#entitymetadataforactions) for details.
+The `actions` name/value pair MAY be included in a response if the service is advertising actions. See [Entity Metadata for Actions](#entitymetadataforactions) for details.
 
-The `functions` name/value pair MAY be included in a response if the server is advertising functions. See [Entity Metadata for Functions](#entitymetadataforfunctions) for details.
+The `functions` name/value pair MAY be included in a response if the service is advertising functions. See [Entity Metadata for Functions](#entitymetadataforfunctions) for details.
 
-The `actions` and `functions` name/value pairs MAY be included in request payloads. In requests they are without meaning and MUST be ignored by the server.
+The `actions` and `functions` name/value pairs MAY be included in request payloads. In requests they are without meaning and MUST be ignored by the service.
 
 #### 4.1.1.1 Entity Metadata for Media Link Entries ####
 
@@ -124,11 +124,11 @@ Starting in the OData 3.0 protocol, the `actions` name/value pair MAY be include
 
 #### 4.1.1.3 Entity Metadata for Functions ####
 
-Starting in the OData 3.0 protocol, the `functions` name/value pair MAY be included in `__metadata`. The value is a JSON object that contains Function advertisement name/value pairs. See [Advertisement for a Function or Action](#advertisementforafunctionoraction) for details.
+Starting in the OData 3.0 protocol, the `functions` name/value pair MAY be included in `__metadata`. The value is a JSON object that contains function advertisement name/value pairs. See [Advertisement for a Function or Action](#advertisementforafunctionoraction) for details.
 
 The name MUST only identify functions that are bindable to the current entity type. If overloads exist that cannot be bound to the current entity type, the name SHOULD address a specific function overload.
 
-If all Function overloads can be bound to the current entity type, the server SHOULD advertise a single Function Metadata URL that identifies all of the overloads.
+If all function overloads can be bound to the current entity type, the service SHOULD advertise a single function Metadata URL that identifies all of the overloads.
 
 ## 4.2 Representing a Navigation Property
 
@@ -136,9 +136,9 @@ A navigation property represents a reference from a source entity to zero or mor
 
 There are two representations for a navigation property: deferred and expanded. The deferred representation represents each related entity with a URI. The expanded representation represents each related entity with its expanded contents.
 
-By default, a server SHOULD represent each navigation property in the deferred format. This conserves resources.
+By default, a service SHOULD represent each navigation property in the deferred format. This conserves resources.
 
-A client MAY request that a navigation property be expanded, using a combination of $expand and $select. The server MUST represent each navigation property so requested in the expanded format.
+A client MAY request that a navigation property be expanded, using a combination of $expand and $select. The service MUST represent each navigation property so requested in the expanded format.
 
 ### 4.2.1 Example Deferred Navigation Property
 
@@ -450,7 +450,7 @@ Functions are advertised in the metadata for a set of entities. The metadata obj
 
 The function metadata URL MUST identify only functions that are bindable to the current feed definition. If overloads exist that cannot be bound to the current feed definition, the name SHOULD address a specific function overload.
 
-If all function overloads can be bound to the current feed definition, the server SHOULD advertise a single function Metadata URL that identifies all of the overloads.
+If all function overloads can be bound to the current feed definition, the service SHOULD advertise a single function metadata URL that identifies all of the overloads.
 
 ## 6.4 Representing a Set of Links in a Response ##
 

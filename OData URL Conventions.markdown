@@ -1,7 +1,7 @@
 # OData URL Conventions #
 
 ## 1.0 Introduction ##
-The Open Data Protocol (OData) enables the creation of REST-based data services, which allow resources, identified using Uniform Resource Identifiers (URLs) and defined in a data model, to be published and edited by Web clients using simple HTTP messages. This specification defines a set of recommended (but not required) rules for constructing URLs to identify the data and metadata exposed by an OData server as well as a set of reserved URL query string operators, which if accepted by an OData server, MUST be implemented as required by this document.
+The Open Data Protocol (OData) enables the creation of REST-based data services, which allow resources, identified using Uniform Resource Identifiers (URLs) and defined in a data model, to be published and edited by Web clients using simple HTTP messages. This specification defines a set of recommended (but not required) rules for constructing URLs to identify the data and metadata exposed by an OData service as well as a set of reserved URL query string operators, which if accepted by an OData service, MUST be implemented as required by this document.
 
 The [OData:Atom] and [OData:JSON] documents specify the format of the resource representations that are exchanged using OData and the [OData:Operations] document describes the actions that can be performed on the URLs (optionally constructed following the conventions defined in this document) embedded in those representations.
 
@@ -28,7 +28,7 @@ The following are two example URLs broken down into their component parts:
 The service root URL identifies the root of an OData service. The resource identified by this URL MUST be an AtomPub Service Document (as specified in [RFC5023]) and follow the OData conventions for AtomPub Service Documents (or an alternate representation of an Atom Service Document if a different format is requested). OData: JSON Format specifies such an alternate JSON-based representation of a service document. The service document is required to be returned from the root of an OData service to provide clients with a simple mechanism to enumerate all of the collections of resources available for the data service.
 
 ## 4.0 resource path ##
-The resource path construction rules defined in this section are optional. OData servers are encouraged to follow the URL path construction rules (in addition to the required query string rules) as such consistency promotes a rich ecosystem of reusable client components and libraries.
+The resource path construction rules defined in this section are optional. OData services are encouraged to follow the URL path construction rules (in addition to the required query string rules) as such consistency promotes a rich ecosystem of reusable client components and libraries.
 
 The resource path section of a URL identifies the resource to be interacted with (such as Customers, a single Customer, Orders related to Customers in London, and so forth). The resource path enables any aspect of the data model (collections of entities, a single entity, properties, Links, service operations, and so on) exposed by an OData service to be addressed.
 
@@ -774,7 +774,7 @@ The semantics of $orderby are covered in the [OData:core](OData) document.
 The [orderby](#orderByRule) syntax rule defines the formal grammar of the $orderby query option.
 
 ### 5.1.5 Top and Skip System Query Options ###
-The $top system query option allows clients a required number of resources, used in conjunction $skip query option which allows a client to ask the server to begin sending resource after skipping a required number of resource, a client can request a particular page of matching resources.  
+The $top system query option allows clients a required number of resources, used in conjunction $skip query option which allows a client to ask the service to begin sending resource after skipping a required number of resource, a client can request a particular page of matching resources.  
 
 The semantics of $top and $skip are covered in the [OData:core](OData) document.
 
@@ -782,7 +782,7 @@ The [skip](#skipRule) and [top](#topRule) syntax rules define the formal grammar
 
 ### 5.1.6 Inlinecount System Query Option ####
 The $inlinecount system query option allows clients to request a count of the number of matching resources inline with the resources in the response. 
-Typically this is most useful when a server implements serverside paging, as it allows clients to retrieve the number of matching resources even if the server decides to only response with a single page of matching resources.
+Typically this is most useful when a service implements server-side paging, as it allows clients to retrieve the number of matching resources even if the service decides to only response with a single page of matching resources.
 
 The semantics of $inlinecount is covered in the [OData:core](OData) document.
 

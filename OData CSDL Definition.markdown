@@ -3,13 +3,6 @@ Author: Mark Stafford
 Date: 29 March 2012
 Keywords: odata, csdl
 
-<!-- TODO: Verify that all links to csdl18 (abnf) are as tight as possible. -->
-<!-- TODO: Verify that all primitive types are declared with Edm. prefix. -->
-<!-- TODO: Verify that MSFT fwlinks should be replaced. -->
-<!-- TODO: Verify all links point to the right place. -->
-<!-- TODO: Verify that all coloned things are formatted as code. -->
-<!-- TODO: Add a statement that indicates what types can be used in an EDM model. -->
-
 # Appendix A: Formal Description of Common Schema Definition Language (CSDL)[top]
 
 ### Table of Contents[toc]
@@ -19,160 +12,157 @@ Keywords: odata, csdl
 [1.1	Entity Data Model for Data Services Packaging (EDMX) Namespace][csdl1.1]  
 [1.2	Entity Data Model (EDM) Namespace][csdl1.2]  
 [1.3	Data Service Metadata Namespace][csdl1.3]  
-[2	Common Characteristics of Entity Model Elements][csdl2]  
-[2.1	Nominal Elements][csdl2.1]  
-[2.2	Structured Elements][csdl2.2]  
-[2.3	The edm:Documentation Element][csdl2.3]  
+[2	Common Characteristics of Entity Models][csdl2]  
+[2.1	Nominal Types][csdl2.1]  
+[2.2	Structural Types][csdl2.2]  
+[2.3	The `edm:Documentation` Element][csdl2.3]  
 [2.4	Vocabulary Annotations][csdl2.4]  
-[2.5	Custom Annotations][csdl2.5]  
-[2.6	Primitive Types][csdl2.6]  
+[2.5	Primitive Types][csdl2.5]  
 [3	Entity Model Wrapper Constructs][csdl3]  
-[3.1	The edmx:Edmx Element][csdl3.1]  
-[3.1.1	The Version Attribute][csdl3.1.1]  
-[3.2	The edmx:DataServices Element][csdl3.2]  
-[3.2.1	The metadata:DataServiceVersion Attribute][csdl3.2.1]  
-[3.3	The edmx:Reference Element][csdl3.3]  
-[3.3.1	The edmx:Url Attribute][csdl3.3.1]  
-[3.4	The edmx:AnnotationsReference Element][csdl3.4]  
-[3.4.1	The edmx:Url Attribute][csdl3.4.1]  
-[3.5	The edmx:Include Element][csdl3.5]  
-[3.5.1	The edmx:TermNamespace Attribute][csdl3.5.1]  
-[3.5.2	The edmx:Qualifier Attribute][csdl3.5.2]  
+[3.1	The `edmx:Edmx` Element][csdl3.1]  
+[3.1.1	The `Version` Attribute][csdl3.1.1]  
+[3.2	The `edmx:DataServices` Element][csdl3.2]  
+[3.2.1	The `metadata:DataServiceVersion` Attribute][csdl3.2.1]  
+[3.3	The `edmx:Reference` Element][csdl3.3]  
+[3.3.1	The `edmx:Url` Attribute][csdl3.3.1]  
+[3.4	The `edmx:AnnotationsReference` Element][csdl3.4]  
+[3.4.1	The `edmx:Url` Attribute][csdl3.4.1]  
+[3.5	The `edmx:Include` Element][csdl3.5]  
+[3.5.1	The `edmx:TermNamespace` Attribute][csdl3.5.1]  
+[3.5.2	The `edmx:Qualifier` Attribute][csdl3.5.2]  
 [4	Schema Constructs][csdl4]  
-[4.1	The edm:Schema Element][csdl4.1]  
-[4.1.1	The edm:Namespace Attribute][csdl4.1.1]  
-[4.1.2	The edm:Alias Attribute][csdl4.1.2]  
-[4.2	The edm:Using Element][csdl4.2]  
-[4.2.1	The edm:Namespace Attribute][csdl4.2.1]  
-[4.2.2	The edm:Alias Attribute][csdl4.2.2]  
+[4.1	The `edm:Schema` Element][csdl4.1]  
+[4.1.1	The `edm:Namespace` Attribute][csdl4.1.1]  
+[4.1.2	The `edm:Alias` Attribute][csdl4.1.2]  
+[4.2	The `edm:Using` Element][csdl4.2]  
+[4.2.1	The `edm:Namespace` Attribute][csdl4.2.1]  
+[4.2.2	The `edm:Alias` Attribute][csdl4.2.2]  
 [5	Properties][csdl5]  
-[5.1	The edm:Property Element][csdl5.1]  
-[5.1.1	The edm:Name Attribute][csdl5.1.1]  
-[5.2	The edm:Type Attribute][csdl5.2]  
+[5.1	The `edm:Property` Element][csdl5.1]  
+[5.1.1	The `edm:Name` Attribute][csdl5.1.1]  
+[5.2	The `edm:Type` Attribute][csdl5.2]  
 [5.3	Property Facets][csdl5.3]  
-[5.3.1	The edm:Nullable Facet][csdl5.3.1]  
-[5.3.2	The edm:MaxLength Facet][csdl5.3.2]  
-[5.3.3	The edm:FixedLength Facet][csdl5.3.3]  
-[5.3.4	The edm:Precision Attribute][csdl5.3.4]  
-[5.3.5	The edm:Scale Attribute][csdl5.3.5]  
-[5.3.6	The edm:Unicode Attribute][csdl5.3.6]  
-[5.3.7	The edm:Collation Attribute][csdl5.3.7]  
-[5.3.8	The edm:SRID Attribute][csdl5.3.8]  
-[5.3.9	The edm:DefaultValue Facet][csdl5.3.9]  
-[5.3.10	The edm:ConcurrencyMode Attribute][csdl5.3.10]  
+[5.3.1	The `edm:Nullable` Facet][csdl5.3.1]  
+[5.3.2	The `edm:MaxLength` Facet][csdl5.3.2]  
+[5.3.3	The `edm:FixedLength` Facet][csdl5.3.3]  
+[5.3.4	The `edm:Precision` Attribute][csdl5.3.4]  
+[5.3.5	The `edm:Scale` Attribute][csdl5.3.5]  
+[5.3.6	The `edm:Unicode` Attribute][csdl5.3.6]  
+[5.3.7	The `edm:Collation` Attribute][csdl5.3.7]  
+[5.3.8	The `edm:SRID` Attribute][csdl5.3.8]  
+[5.3.9	The `edm:DefaultValue` Facet][csdl5.3.9]  
+[5.3.10	The `edm:ConcurrencyMode` Attribute][csdl5.3.10]  
 [6	Entity Type Constructs][csdl6]  
-[6.1	The edm:EntityType Element][csdl6.1]  
-[6.1.1	The edm:Name Attribute][csdl6.1.1]  
-[6.1.2	The edm:BaseType Attribute][csdl6.1.2]  
-[6.1.3	The edm:Abstract Attribute][csdl6.1.3]  
-[6.1.4	The edm:OpenType Attribute][csdl6.1.4]  
-[6.2	The edm:Key Element][csdl6.2]  
-[6.3	The edm:PropertyRef Element][csdl6.3]  
-[6.4	The edm:NavigationProperty Element][csdl6.4]  
-[6.4.1	The edm:Name Attribute][csdl6.4.1]  
-[6.4.2	The edm:Relationship Attribute][csdl6.4.2]  
-[6.4.3	The edm:ToRole Attribute][csdl6.4.3]  
-[6.4.4	The edm:FromRole Attribute][csdl6.4.4]  
-[6.4.5	The edm:ContainsTarget Attribute][csdl6.4.5]  
+[6.1	The `edm:EntityType` Element][csdl6.1]  
+[6.1.1	The `edm:Name` Attribute][csdl6.1.1]  
+[6.1.2	The `edm:BaseType` Attribute][csdl6.1.2]  
+[6.1.3	The `edm:Abstract` Attribute][csdl6.1.3]  
+[6.1.4	The `edm:OpenType` Attribute][csdl6.1.4]  
+[6.2	The `edm:Key` Element][csdl6.2]  
+[6.3	The `edm:PropertyRef` Element][csdl6.3]  
+[6.4	The `edm:NavigationProperty` Element][csdl6.4]  
+[6.4.1	The `edm:Name` Attribute][csdl6.4.1]  
+[6.4.2	The `edm:Relationship` Attribute][csdl6.4.2]  
+[6.4.3	The `edm:ToRole` Attribute][csdl6.4.3]  
+[6.4.4	The `edm:FromRole` Attribute][csdl6.4.4]  
+[6.4.5	The `edm:ContainsTarget` Attribute][csdl6.4.5]  
 [7	Complex Type Constructs][csdl7]  
-[7.1	The edm:ComplexType Element][csdl7.1]  
+[7.1	The `edm:ComplexType` Element][csdl7.1]  
 [8	Enumeration Type Constructs][csdl8]  
-[8.1	The edm:EnumType Element][csdl8.1]  
-[8.1.1	The edm:UnderlyingType Attribute][csdl8.1.1]  
-[8.1.2	The edm:IsFlags Attribute][csdl8.1.2]  
-[8.2	The edm:Member Element][csdl8.2]  
-[8.2.1	The edm:Name Attribute][csdl8.2.1]  
-[8.2.2	The edm:Value Attribute][csdl8.2.2]  
+[8.1	The `edm:EnumType` Element][csdl8.1]  
+[8.1.1	The `edm:UnderlyingType` Attribute][csdl8.1.1]  
+[8.1.2	The `edm:IsFlags` Attribute][csdl8.1.2]  
+[8.2	The `edm:Member` Element][csdl8.2]  
+[8.2.1	The `edm:Name` Attribute][csdl8.2.1]  
+[8.2.2	The `edm:Value` Attribute][csdl8.2.2]  
 [9	Other Type Constructs][csdl9]  
 [9.1	Collection Types][csdl9.1]  
-[9.1.1	The edm:CollectionType Element][csdl9.1.1]  
-[9.2	The edm:TypeRef Element][csdl9.2]  
+[9.1.1	The `edm:CollectionType` Element][csdl9.1.1]  
+[9.2	The `edm:TypeRef` Element][csdl9.2]  
 [9.3	Reference Types][csdl9.3]  
-[9.3.1	The edm:ReferenceType Element][csdl9.3.1]  
+[9.3.1	The `edm:ReferenceType` Element][csdl9.3.1]  
 [9.4	Row Types][csdl9.4]  
-[9.4.1	The edm:RowType Element][csdl9.4.1]  
+[9.4.1	The `edm:RowType` Element][csdl9.4.1]  
 [10	Association Constructs][csdl10]  
-[10.1	The edm:Association Element][csdl10.1]  
-[10.2	The edm:End Element][csdl10.2]  
-[10.2.1	The edm:Type Attribute][csdl10.2.1]  
-[10.2.2	The edm:Role Attribute][csdl10.2.2]  
-[10.2.3	The edm:Multiplicity Attribute][csdl10.2.3]  
-[10.3	The edm:OnDelete Element][csdl10.3]  
-[10.4	The edm:ReferentialConstraint Element][csdl10.4]  
-[10.5	The edm:Principal Element][csdl10.5]  
-[10.6	The edm:Dependent Element][csdl10.6]  
-[10.7	The edm:PropertyRef Element][csdl10.7]  
+[10.1	The `edm:Association` Element][csdl10.1]  
+[10.2	The `edm:End` Element][csdl10.2]  
+[10.2.1	The `edm:Type` Attribute][csdl10.2.1]  
+[10.2.2	The `edm:Role` Attribute][csdl10.2.2]  
+[10.2.3	The `edm:Multiplicity` Attribute][csdl10.2.3]  
+[10.3	The `edm:OnDelete` Element][csdl10.3]  
+[10.4	The `edm:ReferentialConstraint` Element][csdl10.4]  
+[10.5	The `edm:Principal` Element][csdl10.5]  
+[10.6	The `edm:Dependent` Element][csdl10.6]  
+[10.7	The `edm:PropertyRef` Element][csdl10.7]  
 [11	Model Functions][csdl11]  
-[11.1	The edm:Function Element][csdl11.1]  
-[11.1.1	The edm:ReturnType Attribute][csdl11.1.1]  
-[11.2	The edm:Parameter Element][csdl11.2]  
-[11.3	The edm:ReturnType Element][csdl11.3]  
+[11.1	The `edm:Function` Element][csdl11.1]  
+[11.1.1	The `edm:ReturnType` Attribute][csdl11.1.1]  
+[11.2	The `edm:Parameter` Element][csdl11.2]  
+[11.3	The `edm:ReturnType` Element][csdl11.3]  
 [12	Entity Container Constructs][csdl12]  
-[12.1	The edm:EntityContainer Element][csdl12.1]  
-[12.2	The edm:EntitySet Element][csdl12.2]  
-[12.3	The edm:AssociationSet Element][csdl12.3]  
-[12.3.1	The edm:End Element][csdl12.3.1]  
-[12.4	The edm:FunctionImport Element][csdl12.4]  
-[12.4.1	The edm:ReturnType Attribute][csdl12.4.1]  
-[12.4.2	The edm:EntitySet Attribute][csdl12.4.2]  
-[12.4.3	The edm:EntitySetPath Attribute][csdl12.4.3]  
-[12.4.4	The edm:IsSideEffecting Attribute][csdl12.4.4]  
-[12.4.5	The edm:IsBindable Attribute][csdl12.4.5]  
-[12.4.6	The edm:IsComposable Attribute][csdl12.4.6]  
-[12.5	The edm:ReturnType Element][csdl12.5]  
-[12.6	The edm:Parameter Element][csdl12.6]  
-[12.6.1	The edm:Type Attribute][csdl12.6.1]  
-[12.6.2	The edm:Mode Attribute][csdl12.6.2]  
+[12.1	The `edm:EntityContainer` Element][csdl12.1]  
+[12.2	The `edm:EntitySet` Element][csdl12.2]  
+[12.3	The `edm:AssociationSet` Element][csdl12.3]  
+[12.3.1	The `edm:End` Element][csdl12.3.1]  
+[12.4	The `edm:FunctionImport` Element][csdl12.4]  
+[12.4.1	The `edm:ReturnType` Attribute][csdl12.4.1]  
+[12.4.2	The `edm:EntitySet` Attribute][csdl12.4.2]  
+[12.4.3	The `edm:EntitySetPath` Attribute][csdl12.4.3]  
+[12.4.4	The `edm:IsSideEffecting` Attribute][csdl12.4.4]  
+[12.4.5	The `edm:IsBindable` Attribute][csdl12.4.5]  
+[12.4.6	The `edm:IsComposable` Attribute][csdl12.4.6]  
+[12.5	The `edm:ReturnType` Element][csdl12.5]  
+[12.6	The `edm:Parameter` Element][csdl12.6]  
+[12.6.1	The `edm:Type` Attribute][csdl12.6.1]  
+[12.6.2	The `edm:Mode` Attribute][csdl12.6.2]  
 [12.6.3	Parameter Facets][csdl12.6.3]  
 [13	Vocabulary Concepts][csdl13]  
 [14	Vocabulary Terms][csdl14]  
-[14.1	edm:EntityType and edm:ComplexType Terms][csdl14.1]  
-[14.2	The edm:ValueTerm Element][csdl14.2]  
+[14.1	`edm:EntityType` and `edm:ComplexType` Terms][csdl14.1]  
+[14.2	The `edm:ValueTerm` Element][csdl14.2]  
 [15	Vocabulary Annotations][csdl15]  
-[15.1	The edm:Annotations Element][csdl15.1]  
-[15.2	The edm:TypeAnnotation Element][csdl15.2]  
-[15.3	The edm:PropertyValue Element][csdl15.3]  
-[15.4	The edm:ValueAnnotation Element][csdl15.4]  
-[15.5	The edm:Qualifier Attribute][csdl15.5]  
+[15.1	The `edm:Annotations` Element][csdl15.1]  
+[15.2	The `edm:TypeAnnotation` Element][csdl15.2]  
+[15.3	The `edm:PropertyValue` Element][csdl15.3]  
+[15.4	The `edm:ValueAnnotation` Element][csdl15.4]  
+[15.5	The `edm:Qualifier` Attribute][csdl15.5]  
 [16	Vocabulary Expressions][csdl16]  
 [16.1	Constant Expressions][csdl16.1]  
-[16.1.1	The edm:Binary Constant Expression][csdl16.1.1]  
-[16.1.2	The edm:Bool Constant Expression][csdl16.1.2]  
-[16.1.3	The edm:DateTime Constant Expression][csdl16.1.3]  
-[16.1.4	The edm:DateTimeOffset Constant Expression][csdl16.1.4]  
-[16.1.5	The edm:Decimal Constant Expression][csdl16.1.5]  
-[16.1.6	The edm:Float Constant Expression][csdl16.1.6]  
-[16.1.7	The edm:Guid Constant Expression][csdl16.1.7]  
-[16.1.8	The edm:Int Constant Expression][csdl16.1.8]  
-[16.1.9	The edm:String Constant Expression][csdl16.1.9]  
-[16.1.10	The edm:Time Constant Expression][csdl16.1.10]  
+[16.1.1	The `edm:Binary` Constant Expression][csdl16.1.1]  
+[16.1.2	The `edm:Bool` Constant Expression][csdl16.1.2]  
+[16.1.3	The `edm:DateTime` Constant Expression][csdl16.1.3]  
+[16.1.4	The `edm:DateTimeOffset` Constant Expression][csdl16.1.4]  
+[16.1.5	The `edm:Decimal` Constant Expression][csdl16.1.5]  
+[16.1.6	The `edm:Float` Constant Expression][csdl16.1.6]  
+[16.1.7	The `edm:Guid` Constant Expression][csdl16.1.7]  
+[16.1.8	The `edm:Int` Constant Expression][csdl16.1.8]  
+[16.1.9	The `edm:String` Constant Expression][csdl16.1.9]  
+[16.1.10	The `edm:Time` Constant Expression][csdl16.1.10]  
 [16.2	Dynamic Expressions][csdl16.2]  
-[16.2.1	The edm:Apply Expression][csdl16.2.1]  
-[16.2.2	The edm:AssertType Expression][csdl16.2.2]  
-[16.2.3	The edm:Collection Expression][csdl16.2.3]  
-[16.2.4	The edm:EntitySetReference Expression][csdl16.2.4]  
-[16.2.5	The edm:EnumMemberReference Expression][csdl16.2.5]  
-[16.2.6	The edm:FunctionReference Expression][csdl16.2.6]  
-[16.2.7	The edm:If Expression][csdl16.2.7]  
-[16.2.8	The edm:IsType Expression][csdl16.2.8]  
-[16.2.9	The edm:LabeledElement Expression][csdl16.2.9]  
-[16.2.10	The edm:LabeledElementReference Expression][csdl16.2.10]  
-[16.2.11	The edm:Null Expression][csdl16.2.11]  
-[16.2.12	The edm:ParameterReference Expression][csdl16.2.12]  
-[16.2.13	The edm:Path Expression][csdl16.2.13]  
-[16.2.14	The edm:PropertyReference Expression][csdl16.2.14]  
-[16.2.15	The edm:Record Expression][csdl16.2.15]  
-[16.2.16	The edm:ValueTermReference Expression][csdl16.2.16]  
+[16.2.1	The `edm:Apply` Expression][csdl16.2.1]  
+[16.2.2	The `edm:AssertType` Expression][csdl16.2.2]  
+[16.2.3	The `edm:Collection` Expression][csdl16.2.3]  
+[16.2.4	The `edm:EntitySetReference` Expression][csdl16.2.4]  
+[16.2.5	The `edm:EnumMemberReference` Expression][csdl16.2.5]  
+[16.2.6	The `edm:FunctionReference` Expression][csdl16.2.6]  
+[16.2.7	The `edm:If` Expression][csdl16.2.7]  
+[16.2.8	The `edm:IsType` Expression][csdl16.2.8]  
+[16.2.9	The `edm:LabeledElement` Expression][csdl16.2.9]  
+[16.2.10	The `edm:LabeledElementReference` Expression][csdl16.2.10]  
+[16.2.11	The `edm:Null` Expression][csdl16.2.11]  
+[16.2.12	The `edm:ParameterReference` Expression][csdl16.2.12]  
+[16.2.13	The `edm:Path` Expression][csdl16.2.13]  
+[16.2.14	The `edm:PropertyReference` Expression][csdl16.2.14]  
+[16.2.15	The `edm:Record` Expression][csdl16.2.15]  
+[16.2.16	The `edm:ValueTermReference` Expression][csdl16.2.16]  
 [17	CSDL Examples][csdl17]  
 [17.1	Title for example][csdl17.1]  
 [17.2	Title for example][csdl17.2]  
 [18	Informative XSD for CSDL][csdl18]  
-[19	ABNF for CSDL][csdl19]
 
 # Introduction
 
-<!-- TODO: Get the reference links for XML 1.0 and XMLSCHEMA. -->
-OData services are described by an Entity Data Model (EDM). Common Schema Definition Language (CSDL) defines an XML-based representation of the entity model exposed by an OData service. CSDL is based on standards defined in <ref>XML 1.0</ref> and <ref>XMLSCHEMA</ref>.
+OData services are described by an Entity Data Model (EDM). Common Schema Definition Language (CSDL) defines an XML-based representation of the entity model exposed by an OData service. CSDL is based on standards defined in [`XML 1.1`][http://www.w3.org/TR/2006/REC-xml11-20060816/] and [`XML Schema`][http://www.w3.org/standards/techs/xmlschema#w3c_all].
 
 An OData service SHOULD provide a CSDL description of its entity model when a client requests a description of the entity model by sending a `GET` request to `<serviceRoot>/$metadata`. `$metadata` MUST wrap the CSDL document in an EDMX wrapper.
 
@@ -192,8 +182,6 @@ Elements and attributes that define the entity model exposed by the OData Servic
 
 Prior versions of CSDL used the following namespaces for EDM:
 
-
-<!-- TODO: Try to find the valid versions of CSDL for OData -->
 - http://schemas.microsoft.com/ado/2006/04/edm
 - http://schemas.microsoft.com/ado/2007/05/edm
 - http://schemas.microsoft.com/ado/2008/01/edm
@@ -209,49 +197,41 @@ Elements and attributes specific to how the entity model is exposed as an OData 
 
 In this specification the namespace prefix `metadata` is used to represent the Data Service Metadata namespace, however the prefix name is not prescriptive.
 
-# 2	Common Characteristics of Entity Model Elements[csdl2]
+# 2	Common Characteristics of Entity Models[csdl2]
 
 A typical entity model for an OData service contains one or more model elements. Some of these elements share a few common characteristics.
 
-## 2.1	Nominal Elements[csdl2.1]
+## 2.1	Nominal Types[csdl2.1]
 
-<!-- TODO: A nominal element has a name. The name MUST be a <simpleIdentifier>. In combination with a <namespace>... -->
-Model elements can be nominal in nature. A nominal element has a name of the type [`<simpleIdentifier>`][csdl18] that in combination with a [`<namespace>`][csdl18] produces a fully qualified name of the form [`<namespaceQualifiedIdentifier>`][csdl18]. The [`<namespaceQualifiedIdentifier>`][csdl18] MUST be unique as it facilitates references to the element from other parts of the model.
+A nominal type has a name. The name MUST be a [`<simpleIdentifier>`][csdl19]. In combination with a <namespace>[csdl19] produces a fully qualified name of the form [`<namespaceQualifiedIdentifier>`][csdl19]. The [`<namespaceQualifiedIdentifier>`][csdl19] MUST be unique as it facilitates references to the element from other parts of the model.
 
-When referring to nominal elements, the reference can use either of the following:
+When referring to nominal types, the reference MUST use one of the following:
 
 - Fully qualified name
 - Alias qualified name
 
-<!-- TODO: This is only true of Edm. -->
-If the nominal element is unambiguous, the reference can simply use the name of the element.
-
 Consider the following example:
 
-<!-- TODO: Don't use "odata" in the namespace. -->
 	<Schema
 	 xmlns=http://schemas.microsoft.com/ado/2006/04/edm
 	 xmlns:m=http://schemas.microsoft.com/ado/2007/08/dataservices/metadata
 	 xmlns:d=http://schemas.microsoft.com/ado/2007/08/dataservices
-	 Namespace="org.odata" Alias="odata">
+	 Namespace="org.example" Alias="example">
 	 <ComplexType Name="Address">...</ComplexType>
 	</Schema>
 
-The various ways of referring to the nominal element are:
+The various ways of referring to the nominal type are:
 
-- References in any namespace can use the fully qualified name, for example, `org.odata.Address`
-- References in any namespace can specify an alias and use an alias qualified name, for example, `odata.Address`
-- References in org.odata can simply use the name, for example, `Address`
+- References in any namespace can use the fully qualified name, for example, `org.example.Address`
+- References in any namespace can specify an alias and use an alias qualified name, for example, `example.Address`
 
-<!-- TODO: Structural -->
-## 2.2	Structured Elements[csdl2.2]
+## 2.2	Structural Types[csdl2.2]
 
-<!-- TODO: Structural types are composed of other types. -->
-Structured elements are composed of other model elements. Structured elements are common in entity models as they are the typical means of representing entities in the OData service. [Entity types][csdl6] and [complex types][csdl7] are both structured elements. [Row types][csdl9.4] are less common but are also structured elements.
+Structural types are composed of other model elements. Structural types are common in entity models as they are the typical means of representing entities in the OData service. [Entity types][csdl6] and [complex types][csdl7] are both structural types. [Row types][csdl9.4] are less common but are also structural types.
 
 A [structural property][csdl5] is a property that has one of the following types:
 
-- [Primitive][csdl2.6]
+- [Primitive][csdl2.5]
 - [Complex type][csdl7]
 - [Enumeration type][csdl8]
 - A [collection][csdl9.1] of one of the above
@@ -278,9 +258,8 @@ For example:
 
 ## 2.4	Vocabulary Annotations[csdl2.4]
 
-<!-- TODO: Many parts of the model... -->
 <!-- TODO: Pull out addressable metadata... perhaps reuse definition in Annotations Target -->
-Many model elements can be annotated with additional information with the [`edm:TypeAnnotation`][csdl15.2] and [`edm:ValueAnnotation`][csdl15.4] elements.
+Many parts of the model can be annotated with additional information with the [`edm:TypeAnnotation`][csdl15.2] and [`edm:ValueAnnotation`][csdl15.4] elements.
 
 A model element MUST NOT specify more than one type annotation or value annotation for a given type term or value term.
 
@@ -288,11 +267,9 @@ Vocabulary annotations may be specified as a child of the model element or as a 
 
 Refer to [Vocabulary Annotations][csdl15] for details on which model elements support vocabulary annotations.
 
-<!-- TODO: Fix numbering -->
+## 2.5	Primitive Types[csdl2.5]
 
-## 2.6	Primitive Types[csdl2.6]
-
-Model elements are composed of other model elements and primitive types. CSDL defines the following fully qualified primitive types:
+Structural types are composed of other structural types and primitive types. CSDL defines the following fully qualified primitive types:
 
 - `Edm.Binary`
 - `Edm.Boolean`
@@ -349,8 +326,7 @@ The following example demonstrates the basic structure of the `Edmx` element and
 
 ### 3.1.1	The `Version` Attribute[csdl3.1.1]
 
-<!-- TODO: Find link to Version attribute in XMLSCHEMA -->
-The `Version` attribute MUST be present on the [`edmx:Edmx`][csdl3.1] element. See <xmlschema> for details.
+The `Version` attribute MUST be present on the [`edmx:Edmx`][csdl3.1] element.
 
 The `Version` attribute is a string value that specifies the version of the EDMX wrapper, and must be of the form `<majorversion>.<minorversion>`. This version of the specification defines version `1.0` of the EDMX Wrapper.
 
@@ -393,16 +369,16 @@ The following example demonstrates usage of the annotations reference element to
 	  <edmx:Include />
 	 </edmx:AnnotationsReference>
 	 <edmx:AnnotationsReference Url="http://odata.org/ann/b">
-	  <edmx:Include TermNamespace="org.odata.validation" />
-	  <edmx:Include TermNamespace="org.odata.display" Qualifier="Slate" />
+	  <edmx:Include TermNamespace="org.example.validation" />
+	  <edmx:Include TermNamespace="org.example.display" Qualifier="Slate" />
 	 </edmx:AnnotationsReference>
 	 <edmx:DataServices ...>
 	</edmx:Edmx>
 
 All annotations from `http://odata.org/ann/a` are included. For `http://odata.org/ann/b`, only the following annotations are included:
 
-- Annotations that use a term from the `org.odata.validation` namespace
-- Annotations that use a term from the `org.odata.display` namespace and specify a `Slate` qualifier
+- Annotations that use a term from the `org.example.validation` namespace
+- Annotations that use a term from the `org.example.display` namespace and specify a `Slate` qualifier
 
 
 ### 3.4.1	The `edmx:Url` Attribute[csdl3.4.1]
@@ -429,11 +405,11 @@ If a value is supplied, the include element will import the set of annotations t
 
 # 4	Schema Constructs[csdl4]
 
-Each entity model exposed by the OData service is described one or more schemas. The schema acts as a container for all of the entity types, complex types and other model elements that make up an entity model.
+Each entity model exposed by the OData service is described one or more schemas. The schema acts as a container for all of the entity types, complex types and other parts of the entity model.
 
-## 4.1	The edm:Schema Element[csdl4.1]
+## 4.1	The `edm:Schema` Element[csdl4.1]
 
-The Schema is the root of an entity model exposed by an OData service. Although an edmx:DataServices element contains zero or more Schema elements, many OData services will contain exactly one schema.
+The Schema is the root of an entity model exposed by an OData service. Although an `edmx:DataServices element contains zero or more Schema elements, many OData services will contain exactly one schema.
 
 A Schema element contains zero or more of the following elements:
 
@@ -447,38 +423,38 @@ A Schema element contains zero or more of the following elements:
 - [`edm:Using`][csdl4.2]
 - [`edm:ValueTerm`][csdl14.2]
 
-### 4.1.1	The edm:Namespace Attribute[csdl4.1.1]
+### 4.1.1	The `edm:Namespace` Attribute[csdl4.1.1]
 
 A schema is identified by the value of the `edm:Namespace` attribute. The schema’s namespace is combined with the name of elements in the entity model to create unique names.
 
-Identifiers that are used to name types MUST be unique within a namespace to prevent ambiguity. See [Nominal Elements][csdl2.1] for more detail.
+Identifiers that are used to name types MUST be unique within a namespace to prevent ambiguity. See [Nominal Types][csdl2.1] for more detail.
 
-A schema that contains model elements other than vocabulary annotations MUST specify a [`<namespace>`][csdl19] value for the namespace attribute. A schema that contains only vocabulary annotations MAY specify a [`<namespace>`][csdl19] value for the namespace attribute.
+A schema that contains nominal types MUST specify a [`<namespace>`][csdl19] value for the namespace attribute. A schema that contains only vocabulary annotations MAY specify a [`<namespace>`][csdl19] value for the namespace attribute.
 The `edm:Namespace` attribute MUST NOT use the reserved values `System`, `Transient` or `Edm`.
 
-### 4.1.2	The edm:Alias Attribute[csdl4.1.2]
+### 4.1.2	The `edm:Alias` Attribute[csdl4.1.2]
 
-A schema MAY provide a [`<simpleIdentifier>`][csdl19] value for the `edm:Alias` attribute. An alias allows a CSDL document to qualify nominal elements with a short string rather than a long namespace. For instance, `org.odata.vocabularies.display` may simply have an alias of `Self`. An alias qualified name is resolved to a fully qualified name by examining aliases on [`edm:Using`][csdl4.2] and [`edm:Schema`][csdl4.1] elements.
+A schema MAY provide a [`<simpleIdentifier>`][csdl19] value for the `edm:Alias` attribute. An alias allows a CSDL document to qualify nominal types with a short string rather than a long namespace. For instance, `org.example.vocabularies.display` may simply have an alias of `Self`. An alias qualified name is resolved to a fully qualified name by examining aliases on [`edm:Using`][csdl4.2] and [`edm:Schema`][csdl4.1] elements.
 
 An alias is scoped to the container in which it is declared. For example, a model referencing an annotations document cannot use any aliases defined in that annotations document. A referencing model defines its own aliases with the [`edm:Using`][csdl4.2] element.
 
-## 4.2	The edm:Using Element[csdl4.2]
+## 4.2	The `edm:Using` Element[csdl4.2]
 
 The `edm:Using` element imports the contents of a specified namespace. A using element binds an alias to the namespace of any entity model.
 
 Importing the contents of another model with a using element may alter the importing model. For instance, a model may import an entity model containing an entity type derived from an entity type in the importing model. In that case an [`edm:EntitySet`][csdl12.2] in the importing model may return either entity type.
 
-### 4.2.1	The edm:Namespace Attribute[csdl4.2.1]
+### 4.2.1	The `edm:Namespace` Attribute[csdl4.2.1]
 
 A using element MUST provide a [`<namespace>`][csdl19] value to the `edm:Namespace` attribute. The value provided to the namespace attribute SHOULD match the namespace of an entity model that is in scope.
 
-### 4.2.2	The edm:Alias Attribute[csdl4.2.2]
+### 4.2.2	The `edm:Alias` Attribute[csdl4.2.2]
 
-A using element MUST define a [`<simpleIdentifier>`][csdl19] value for the `edm:Alias` attribute. An alias allows a CSDL model to substitute a short string for a long namespace. For instance, `org.odata.vocabularies.display` may be bound to an alias of `display`. An alias qualified name is resolved to a fully qualified name by examining aliases on [`edm:Using`][csdl4.2] and [`edm:Schema`][csdl4.1] elements.
+A using element MUST define a [`<simpleIdentifier>`][csdl19] value for the `edm:Alias` attribute. An alias allows a CSDL model to substitute a short string for a long namespace. For instance, `org.example.vocabularies.display` may be bound to an alias of `display`. An alias qualified name is resolved to a fully qualified name by examining aliases on [`edm:Using`][csdl4.2] and [`edm:Schema`][csdl4.1] elements.
 
 # 5	Properties[csdl5]
 
-As mentioned in [Structured Elements][csdl2.2], structured elements are composed of other model elements. Structured elements expose a collection of zero or more [`edm:Property`][csdl5.1] elements.
+As mentioned in [Structural Types][csdl2.2], structural types are composed of other structural types and primitive types. Structural types expose a collection of zero or more [`edm:Property`][csdl5.1] elements.
 
 For example, the following complex type has two properties:
 
@@ -489,9 +465,9 @@ For example, the following complex type has two properties:
 
 [Open entity types][csdl6.1.4] allow properties to be added dynamically. When requesting the value of a missing property from an open entity type, the instance MUST return null.
 
-## 5.1	The edm:Property Element[csdl5.1]
+## 5.1	The `edm:Property` Element[csdl5.1]
 
-An `edm:Property` element allows the construction of structured elements from a scalar value or a collection of scalar values.
+An `edm:Property` element allows the construction of structural types from a scalar value or a collection of scalar values.
 
 For instance, the following property could be used to hold zero or more strings representing the names of measurement units:
 
@@ -509,11 +485,11 @@ The value of the name attribute MUST be unique within the set of properties and 
 
 A property MUST specify a value for the `edm:Type` attribute. The value of this attribute determines the type for the value of the property on instances of the containing type.
 
-The value of the type attribute MUST be of the form [`<anyKeylessTypeReference>`][csdl19]. The value of the type attribute MUST resolve to a [complex type][csdl7], [enumeration type][csdl8] or [primitive type][csdl2.6], or a collection of complex, enumeration or primitive types.
+The value of the type attribute MUST be of the form [`<anyKeylessTypeReference>`][csdl19]. The value of the type attribute MUST resolve to a [complex type][csdl7], [enumeration type][csdl8] or [primitive type][csdl2.5], or a collection of complex, enumeration or primitive types.
 
 ## 5.3	Property Facets[csdl5.3]
 
-<!-- TODO: This needs more of an introductory paragraph. -->
+Property facets allow a model to provide additional constraints or data about the value of structural properties.
 
 Facets apply to the type referenced in the element where the facet is declared. If the type is a collection type declared with attribute notation, the facets apply to the types in the collection. In the following example, the Nullable facet applies to the DateTime type.
 
@@ -589,7 +565,7 @@ A spatial property MAY define a value for the `edm:SRID` attribute. The value of
 
 The value of the SRID attribute MUST be a [`<nonNegativeInt32>`][csdl19] or the special value variable. If no value is specified, the attribute defaults to `0` for Geometry types or `4326` for Geography types.
 
-The valid values of the SRID attribute and their meanings are as defined by the [European Petroleum Survey Group (EPSG)][http://go.microsoft.com/fwlink/?linkid=148018].
+The valid values of the SRID attribute and their meanings are as defined by the [European Petroleum Survey Group (EPSG)][http://www.epsg.org/Geodetic.html].
 
 ### 5.3.9	The `edm:DefaultValue` Facet[csdl5.3.9]
 
@@ -609,7 +585,7 @@ The concurrency mode attribute MUST NOT be applied to properties whose type is a
 
 # 6	Entity Type Constructs[csdl6]
 
-Entity types are nominal structured model elements with a key that consists of one or more references to structural properties. An entity type by definition has an independent existence and can be created, updated or deleted independently of any other types. An entity type is the template for an entity: any uniquely identifiable record such as a customer or order.
+Entity types are nominal structural types with a key that consists of one or more references to structural properties. An entity type by definition has an independent existence and can be created, updated or deleted independently of any other types. An entity type is the template for an entity: any uniquely identifiable record such as a customer or order.
 
 A key MUST be supplied if and only if the entity type does not specify a base type. The key consists of one or more references to structural properties of the entity type.
 
@@ -626,13 +602,13 @@ A simple example of an entity type is as follows:
 	 <Property Name="ID" Type="Edm.Int32" Nullable="false"/>
 	 <Property Name="Name" Type="Edm.String" Nullable="true" />
 	 <Property Name="Description" Type="Edm.String" Nullable="true" />
-	 <NavigationProperty Name="Category" Relationship="ODataDemo.Product_Category_Category_Products" FromRole="Product_Category" ToRole="Category_Products"/>
-	 <NavigationProperty Name="Supplier" Relationship="ODataDemo.Product_Supplier_Supplier_Products" FromRole="Product_Supplier" ToRole="Supplier_Products"/>
+	 <NavigationProperty Name="Category" Relationship="Self.Product_Category_Category_Products" FromRole="Product_Category" ToRole="Category_Products"/>
+	 <NavigationProperty Name="Supplier" Relationship="Self.Product_Supplier_Supplier_Products" FromRole="Product_Supplier" ToRole="Supplier_Products"/>
 	</EntityType>
 
 The following example shows an entity type based on the previous example:
 
-	<EntityType Name="DiscontinuedProduct" BaseType="Product">
+	<EntityType Name="DiscontinuedProduct" BaseType="Self.Product">
 	 <Property Name="DiscontinuedDate" Type="Edm.DateTime" Nullable="true"/>
 	</EntityType>
 
@@ -646,7 +622,7 @@ If no base type is specified, the `edm:EntityType` element MUST contain one or m
 
 ### 6.1.1	The `edm:Name` Attribute[csdl6.1.1]
 
-A value of the form [`<simpleIdentifier>`][csdl19] MUST be provided for the `edm:Name` attribute because an entity type is a [nominal element][csdl2.1]. The value identifies the entity type and MUST be unique within the entity type’s namespace.
+A value of the form [`<simpleIdentifier>`][csdl19] MUST be provided for the `edm:Name` attribute because an entity type is a [nominal type][csdl2.1]. The value identifies the entity type and MUST be unique within the entity type’s namespace.
 
 ### 6.1.2	The `edm:BaseType` Attribute[csdl6.1.2]
 
@@ -709,12 +685,12 @@ In the following example, the Product entity type has a navigation property to a
 
 	<EntityType Name="Product">
 	 ...
-	 <NavigationProperty Name="Category" ToRole="Category" FromRole="Product" Relationship="ODataDemo.ProductCategory"/>
-	 <NavigationProperty Name="Supplier" ToRole="Supplier" FromRole="Product" Relationship="ODataDemo.ProductSupplier"/>
+	 <NavigationProperty Name="Category" ToRole="Category" FromRole="Product" Relationship="Self.ProductCategory"/>
+	 <NavigationProperty Name="Supplier" ToRole="Supplier" FromRole="Product" Relationship="Self.ProductSupplier"/>
 	</EntityType>
 	<EntityType Name="Category">
 	 ...
-	 <NavigationProperty Name="Products" ToRole="Product" FromRole="Category" Relationship="ODataDemo.ProductCategory"/>
+	 <NavigationProperty Name="Products" ToRole="Product" FromRole="Category" Relationship="Self.ProductCategory"/>
 	</EntityType>
 
 ### 6.4.1	The `edm:Name` Attribute[csdl6.4.1]
@@ -743,19 +719,13 @@ The value provided to the `edm:FromRole` attribute MUST be the same as one of th
 
 A [`<boolean>`][csdl19] value MAY be assigned to the `edm:ContainsTarget` attribute. If no value is assigned to the contains target attribute, the attribute defaults to `false`. If the value assigned to the `edm:ContainsTarget` attribute is `true`, the entity type to which the navigation property belongs is said to contain the destination of the navigation property.
 
-<!-- TODO: Reword this content from the MC-CSDL. -->
-“The EntityType that declares the NavigationProperty is the container EntityType.
-The AssociationType that is specified in the containment NavigationProperty is the containment AssociationType.
-The EntityType that is specified on the End element of the containment AssociationType, with the Name that is specified by the containment NavigationProperty element's ToRole attribute, is the contained EntityType.
-When the instances of both the contained entity and the container entity reside in the same EntitySet, it is called recursive containment.
-It MUST NOT be possible for an EntityType to contain itself by following more than one containment NavigationProperty.
-The contained EntityType can have a NavigationProperty that navigates to the container EntityType via the containment AssociationType.
-The End of the containment AssociationType that is specified by the ToRole attribute of the containment NavigationProperty can have any multiplicity.
-For nonrecursive containment, the End of the containment AssociationType that is specified by the FromRole attribute of the containment NavigationProperty MUST have a multiplicity of '1'.
-For recursive containment, the End of the containment AssociationType that is specified by the FromRole attribute of the containment NavigationProperty MUST have a multiplicity of '0..1'. The End that is specified by the ToRole MUST not have a multiplicity of '1' because this would lead to endless recursion.
-An AssociationSetMUST have the same EntitySet on both ends if it is for a containment AssociationType that has either the same EntityType on both ends or an EntityType on one end that derives from the EntityType on the other end.
-An EntitySet MUST NOT be bound by AssociationSet to more than one AssociationType via a containment NavigationProperty that indicates that the EntityType (or derived EntityTypes) of that EntitySet is contained.
-Note  Because the EntityType of an EntitySet on an AssociationSet End MUST be the same as or derived from the EntityTypes on the corresponding AssociationType End, the EntitySet MUST be either completely contained or completely noncontained. 
+It MUST NOT be possible for an entity type to contain itself by following more than one containment navigation property.
+
+When a navigation property navigates between entity types in the same entity set it is called recursive containment. If the containment is recursive, the containing entity type MUST have a multiplicity of `0..1`. If the containment is not recursive, the containing entity type MUST have a multiplicity of `1`.
+
+The association set for a containment navigation property MUST specify the same entity set for entity types with a common ancestor in the inheritance chain.
+
+An EntitySet MUST NOT be bound by AssociationSet to more than one navigation property via a containment navigation property that indicates that the entity type (or derived entity types) of that EntitySet is contained.
 
 # 7	Complex Type Constructs[csdl7]
 
@@ -772,12 +742,12 @@ The following example demonstrates a complex type that is used by two entity typ
 	</ComplexType>
 	<EntityType Name="Product">
 	 ... 
-	 <Property Name="ProductDimensions" Type="Dimensions" />
-	 <Property Name="ShippingDimensions" Type="Dimensions" />
+	 <Property Name="ProductDimensions" Type="Self.Dimensions" />
+	 <Property Name="ShippingDimensions" Type="Self.Dimensions" />
 	</EntityType>
 	<EntityType Name="ShipmentBox">
 	 ...
-	 <Property Name="Dimensions" Type="Dimensions" />
+	 <Property Name="Dimensions" Type="Self.Dimensions" />
 	</EntityType>
 
 ## 7.1	The `edm:ComplexType` Element[csdl7.1]
@@ -867,8 +837,6 @@ A collection type can be represented with attribute notation or element notation
 	 </CollectionType>
 	</ReturnType>
 
-	
-<!-- TODO: Watch for problems like this, where enum types are not mentioned but should be. Maybe use "nominal type" instead and replace the ABNF with a <nominalTypeIdentifier> -->
 If specified with attribute notation, the collection type MUST be a collection of entity types, complex types or scalar types. If specified with element notation, the collection type can also be a collection of other collection types, reference types or row types.
 
 ### 9.1.1	The `edm:CollectionType` Element[csdl9.1.1]
@@ -931,8 +899,8 @@ Associations provide the fundamental definition for a relationship between two e
 A simple association might look like this:
 
 	<Association Name="ProductCategory"> 
-	 <End Type="ODataDemo.Product" Multiplicity="*" Role="Product"/>
-	 <End Type="ODataDemo.Category" Multiplicity="0..1" Role="Category"/>
+	 <End Type="Self.Product" Multiplicity="*" Role="Product"/>
+	 <End Type="Self.Category" Multiplicity="0..1" Role="Category"/>
 	</Association>
 
 ## 10.1	The `edm:Association` Element[csdl10.1]
@@ -977,8 +945,8 @@ A referential constraint MUST contain exactly one `edm:Principal` element and ex
 In the example that follows, the category must exist for a product in that category to exist:
 
 	<Association Name="ProductCategory"> 
-	 <End Type="ODataDemo.Product" Multiplicity="*" Role="Product"/>
-	 <End Type="ODataDemo.Category" Multiplicity="0..1" Role="Category"/>
+	 <End Type="Self.Product" Multiplicity="*" Role="Product"/>
+	 <End Type="Self.Category" Multiplicity="0..1" Role="Category"/>
 	 <ReferentialConstraint>
 	  <Principal Role="Category">
 	   <PropertyRef Name="CategoryID" />
@@ -1014,8 +982,8 @@ The property references for the principal entity MUST be the same property refer
 The following example is NOT valid because the order of the `edm:PropertyRef` elements is inconsistent on the principal and dependent ends of the referential constraint:
 
 	<Association Name="OrderLineDetails"> 
-	 <End Type="ODataDemo.OrderLineDetail" Multiplicity="*" Role="Detail"/>
-	 <End Type="ODataDemo.OrderLine" Multiplicity="0..1" Role="OrderLine"/>
+	 <End Type="Self.OrderLineDetail" Multiplicity="*" Role="Detail"/>
+	 <End Type="Self.OrderLine" Multiplicity="0..1" Role="OrderLine"/>
 	 <ReferentialConstraint>
 	  <Principal Role="OrderLine">
 	   <PropertyRef Name="OrderID" />
@@ -1030,23 +998,22 @@ The following example is NOT valid because the order of the `edm:PropertyRef` el
 
 # 11	Model Functions[csdl11]
 
-Model functions are similar to [function imports][csdl12.4] in that they represent a function that can interact with model elements. Model functions allow the definition of a function body directly in the model. This specification does not place any requirements on the content of the function body.
+Model functions are similar to [function imports][csdl12.4] in that they represent a function that can interact with types in the model. Model functions allow the definition of a function body directly in the model. This specification does not place any requirements on the content of the function body.
 
 For example, the following function represents a means of calculating an age:
 
 	<Function Name="GetAge" ReturnType="Edm.Int32">
-	 <Parameter Name="Person" Type="Model.Person" />
+	 <Parameter Name="Person" Type="Self.Person" />
 	 <DefiningExpression>
 	  Edm.DiffYears(Edm.CurrentDateTime(), Person.Birthday)
 	 </DefiningExpression>
 	</Function>
 
-<!-- TODO: Find ref for ESQL. -->
-In the preceding example the function defines a function body using Entity SQL. This example is informative only; it is up to a given runtime to determine the validity of the defining expression.
+In the preceding example the function defines a function body using [Entity SQL][http://msdn.microsoft.com/en-us/library/bb387145.aspx]. This example is informative only; it is up to a given runtime to determine the validity of the defining expression.
 
 ## 11.1	The `edm:Function` Element[csdl11.1]
 
-The `edm:Function` element is a nominal element that represents a user function in an entity model. The function may return a single or collection of primitive types, row types or nominal structured types.
+The `edm:Function` element is a nominal type that represents a user function in an entity model. The function may return a single or collection of primitive types, row types or nominal structured types.
 
 A function MUST provide a [`<simpleIdentifier>`][csdl19] value for the `edm:Name` attribute.
 
@@ -1090,26 +1057,26 @@ If a value is provided for the return type element, the `edm:Function` element M
 
 An entity model can also describe how entities are logically grouped and even model the store or stores from which the entities can be retrieved. This is achieved through the declaration of entity containers, entity sets and association sets.
 
-An entity set is a nominal element that allows access to entity instances. Simple entity models frequently have one entity set per entity type, for example:
+An entity set is a nominal type that allows access to entity instances. Simple entity models frequently have one entity set per entity type, for example:
 
-	<EntitySet Name="Products" EntityType="ODataDemo.Product"/>
-	<EntitySet Name="Categories" EntityType="ODataDemo.Category"/>
+	<EntitySet Name="Products" EntityType="Self.Product"/>
+	<EntitySet Name="Categories" EntityType="Self.Category"/>
 
 Other entity models may expose multiple entity sets per type. For instance, an entity model may have the following entity sets:
 
-	<EntitySet Name="Products" EntityType="ODataDemo.Product"/>
-	<EntitySet Name="DiscontinuedProducts" EntityType="ODataDemo.Product"/>
+	<EntitySet Name="Products" EntityType="Self.Product"/>
+	<EntitySet Name="DiscontinuedProducts" EntityType="Self.Product"/>
 
 In this case the `Products` entity set could expose products that have not been discontinued and the `DiscontinuedProducts` entity set could expose products that have been discontinued.
 
 An entity set can expose instances of the specified entity type as well as any entity type inherited from the specified entity type.
 
-An association set is a nominal element that disambiguates the entity set used by an association end. In the preceding example an `ODataDemo.Product` could be exposed through the `Products` entity set or the `DiscontinuedProducts` entity set. An association set is required to clarify which entity set is used for any association end that refers to `ODataDemo.Product`.
+An association set is a nominal type that disambiguates the entity set used by an association end. In the preceding example an `Self.Product` could be exposed through the `Products` entity set or the `DiscontinuedProducts` entity set. An association set is required to clarify which entity set is used for any association end that refers to `Self.Product`.
 
 A function import is used to expose functions that are defined in a data store. For example, the following function import exposes a stored procedure that returns the top ten revenue generating products for a given fiscal year:
 
-	<FunctionImport Name="TopTenProductsByRevenue" EntitySet="Products" ReturnType="Collection(ODataDemo.Product)">
-	 <Parameter Name="fiscalYear" Mode="In" Type="String" />
+	<FunctionImport Name="TopTenProductsByRevenue" EntitySet="Products" ReturnType="Collection(Self.Product)">
+	 <Parameter Name="fiscalYear" Mode="In" Type="Edm.String" />
 	</FunctionImport>
 
 An entity container is the entity model equivalent of a single data store. An entity container aggregates entity sets, association sets and function imports.
@@ -1117,18 +1084,18 @@ An entity container is the entity model equivalent of a single data store. An en
 A full example of an entity container is as follows:
 
 	<EntityContainer Name="DemoService">
-	 <EntitySet Name="Products" EntityType="ODataDemo.Product"/>
-	 <EntitySet Name="Categories" EntityType="ODataDemo.Category"/>
-	 <EntitySet Name="Suppliers" EntityType="ODataDemo.Supplier"/>
-	 <AssociationSet Name="ProductCategorySet" Association="ODataDemo.ProductCategory">
+	 <EntitySet Name="Products" EntityType="Self.Product"/>
+	 <EntitySet Name="Categories" EntityType="Self.Category"/>
+	 <EntitySet Name="Suppliers" EntityType="Self.Supplier"/>
+	 <AssociationSet Name="ProductCategorySet" Association="Self.ProductCategory">
 	  <End Role="Product" EntitySet="Products"/>
 	  <End Role="Category" EntitySet="Categories"/>
 	 </AssociationSet>
-	 <AssociationSet Name="ProductSupplierSet" Association="ODataDemo.ProductSupplier">
+	 <AssociationSet Name="ProductSupplierSet" Association="Self.ProductSupplier">
 	  <End Role="Product" EntitySet="Products"/>
 	  <End Role="Supplier" EntitySet="Suppliers"/>
 	 </AssociationSet>
-	 <FunctionImport Name="GetProductsByRating" EntitySet="Products" ReturnType="Collection(ODataDemo.Product)">
+	 <FunctionImport Name="GetProductsByRating" EntitySet="Products" ReturnType="Collection(Self.Product)">
 	  <Parameter Name="rating" Type="Edm.Int32" Mode="In"/>
 	 </FunctionImport>
 	</EntityContainer>
@@ -1143,7 +1110,7 @@ An entity container MAY provide a [`<qualifiedIdentifier`][csdl19] value for the
 
 ## 12.2	The `edm:EntitySet` Element[csdl12.2]
 
-The `edm:EntitySet` element is a nominal element that represents an entity set in an entity model.
+The `edm:EntitySet` element is a nominal type that represents an entity set in an entity model.
 
 An entity set MUST provide a [`<simpleIdentifier>`][csdl19] value for the `edm:Name` attribute. An entity set also has an `edm:EntityType` attribute that MUST be provided with a [`<singleEntityTypeReference>`][csdl19] that resolves to an entity type in the model. Each entity type in the model may have zero or more entity sets that reference the entity type.
 
@@ -1151,7 +1118,7 @@ An entity set MUST contain only the entity type specified by the `edm:EntityType
 
 ## 12.3	The `edm:AssociationSet` Element[csdl12.3]
 
-The `edm:AssociationSet` element is a nominal element that represents an association set in an entity model.
+The `edm:AssociationSet` element is a nominal type that represents an association set in an entity model.
 
 An association set MUST provide a [`<simpleIdentifier>`][csdl19] value for the `edm:Name` attribute. An association set also has an `edm:Association` attribute that MUST be provided with a [`<qualifiedIdentifier>`][csdl19] that resolves to an association in the entity model.
 
@@ -1167,7 +1134,7 @@ The `edm:End` element MUST also provide a [`<simpleIdentifier>`][csdl19] or [`<q
 
 ## 12.4	The `edm:FunctionImport` Element[csdl12.4]
 
-The `edm:FunctionImport` element is a nominal element that represents a store function in an entity model. The function may return a single or collection of primitive types or nominal structured types.
+The `edm:FunctionImport` element is a nominal type that represents a store function in an entity model. The function may return a single or collection of primitive types or nominal structured types.
 
 A function import MUST provide a [`<simpleIdentifier>`][csdl19] value for the `edm:Name` attribute.
 
@@ -1312,7 +1279,7 @@ The value term MUST provide a [`<simpleIdentifier>`][csdl19] value for the `edm:
 
 # 15	Vocabulary Annotations[csdl15]
 
-Vocabulary terms are used to annotate other model elements. The following model elements may be annotated with a vocabulary term:
+Vocabulary terms are used to annotate other parts of the model. The following model elements may be annotated with a vocabulary term:
 
 - [`edm:Annotations`][csdl15.1]
 - [`edm:ComplexType`][csdl7.1]
@@ -1328,7 +1295,7 @@ Vocabulary terms are used to annotate other model elements. The following model 
 
 The most common usage of a type term is to annotate an entity type or complex type. In this situation, an instance of the type term may be created for each instance of the entity type or complex type the term is applied to.
 
-Type terms can also be used to annotate a variety of other model elements including an entity set, a function import, or a navigation property.
+Type terms can also be used to annotate a variety of other parts of the model, for example: an entity set, a function import, or a navigation property.
 
 In contrast to type annotations, which allow the instantiation of new types, a value annotation extends an existing type instance with additional information.
 
@@ -1342,9 +1309,9 @@ An annotations element MAY contain zero or more `edm:TypeAnnotation` and `edm:Va
 
 ## 15.2	The `edm:TypeAnnotation` Element[csdl15.2]
 
-The `edm:TypeAnnotation` element represents a type annotation. A type annotation binds a type term to a model element.
+The `edm:TypeAnnotation` element represents a type annotation. A type annotation binds a type term to a part of the entity model.
 
-A type annotation MUST be used as a child of the model element it annotates or a child of an `edm:Annotations` element that targets the appropriate model element.
+A type annotation MUST be used as a child of the part of the model it annotates or a child of an `edm:Annotations` element that targets the appropriate part of the model.
 
 A type annotation MUST provide a [`<simpleIdentifier>`][csdl19] or [`<qualifiedIdentifier>`][csdl19] value for the `edm:Term` attribute. The value of the term attribute SHOULD resolve to an entity type or complex type.
 
@@ -1372,7 +1339,7 @@ A value annotation MUST contain at most one expression. The expression MAY be pr
 
 The qualifier attribute allows service authors a means of conditionally applying a type annotation. For instance, the following value annotation hints that it should only be applied to slate devices:
 
-	<ValueAnnotation Term="org.odata.display.DisplayName" Path="FirstName" Qualifier="org.odata.formfactor.Slate">
+	<ValueAnnotation Term="org.example.display.DisplayName" Path="FirstName" Qualifier="org.example.formfactor.Slate">
 
 The value of the `edm:Qualifier` attribute is an arbitrary string.
 
@@ -1386,13 +1353,13 @@ Values for a value term or properties of a type term are obtained by calculating
 
 All vocabulary expressions may be specified as an element, for example:
 
-	<ValueAnnotation Term="org.odata.display.DisplayName">
+	<ValueAnnotation Term="org.example.display.DisplayName">
 	 <String>Customers</String>
 	</ValueAnnotation>
 
 The constant expressions and the [`edm:Path`][csdl16.2.13] expression also support attribute notation:
 
-	<ValueAnnotation Term="org.odata.display.DisplayName" String="Customers" />
+	<ValueAnnotation Term="org.example.display.DisplayName" String="Customers" />
 
 ## 16.1	Constant Expressions[csdl16.1]
 
@@ -1400,12 +1367,12 @@ Constant expressions allow the service author to supply an unchanging value to a
 
 The following examples show two value annotations intended as user interface hints:
 
-	<EntitySet Name="Products" EntityType="ODataDemo.Product">
-	 <ValueAnnotation Term="org.odata.display.DisplayName" String="Product Catalog" />
+	<EntitySet Name="Products" EntityType="Self.Product">
+	 <ValueAnnotation Term="org.example.display.DisplayName" String="Product Catalog" />
 	</EntitySet>
 
-	<EntitySet Name="Suppliers" EntityType="ODataDemo.Supplier">
-	 <ValueAnnotation Term="org.odata.display.DisplayName" String="Supplier Directory" />
+	<EntitySet Name="Suppliers" EntityType="Self.Supplier">
+	 <ValueAnnotation Term="org.example.display.DisplayName" String="Supplier Directory" />
 	</EntitySet>
 
 ### 16.1.1	The `edm:Binary` Constant Expression[csdl16.1.1]
@@ -1414,9 +1381,9 @@ The `edm:Binary` constant expression evaluates to a primitive binary value. A bi
 
 A binary expression may be written with either element notation or attribute notation, as shown in the following examples:
 
-	<ValueAnnotation Term="org.odata.display.Thumbnail" Binary="3f3c6d78206c" />
+	<ValueAnnotation Term="org.example.display.Thumbnail" Binary="3f3c6d78206c" />
 
-	<ValueAnnotation Term="org.odata.display.Thumbnail">
+	<ValueAnnotation Term="org.example.display.Thumbnail">
 	 <Binary>3f3c6d78206c</Binary>
 	</ValueAnnotation>
 
@@ -1426,9 +1393,9 @@ The `edm:Bool` constant expression evaluates to a primitive boolean value. A boo
  
 A boolean expression may be written with either element notation or attribute notation, as shown in the following examples:
 
-	<ValueAnnotation Term="org.odata.display.ReadOnly" Bool="true" />
+	<ValueAnnotation Term="org.example.display.ReadOnly" Bool="true" />
 
-	<ValueAnnotation Term="org.odata.display.ReadOnly">
+	<ValueAnnotation Term="org.example.display.ReadOnly">
 	 <Bool>true</Bool>
 	</ValueAnnotation>
 
@@ -1438,9 +1405,9 @@ The `edm:DateTime` constant expression evaluates to a primitive date/time value.
 
 A date/time expression may be written with either element notation or attribute notation, as shown in the following examples:
 
-	<ValueAnnotation Term="org.odata.display.LastUpdated" DateTime="2000-01-01T16:00:00.000" />
+	<ValueAnnotation Term="org.example.display.LastUpdated" DateTime="2000-01-01T16:00:00.000" />
 
-	<ValueAnnotation Term="org.odata.display.LastUpdated">
+	<ValueAnnotation Term="org.example.display.LastUpdated">
 	 <DateTime>2000-01-01T16:00:00.000</DateTime>
 	</ValueAnnotation>
 
@@ -1450,9 +1417,9 @@ The `edm:DateTimeOffset` constant expression evaluates to a primitive date/time 
 
 An `edm:DateTimeOffset` expression may be written with either element notation or attribute notation, as shown in the following examples:
 
-	<ValueAnnotation Term="org.odata.display.LastUpdated" DateTimeOffset="2000-01-01T16:00:00.000Z-09:00" />
+	<ValueAnnotation Term="org.example.display.LastUpdated" DateTimeOffset="2000-01-01T16:00:00.000Z-09:00" />
 
-	<ValueAnnotation Term="org.odata.display.LastUpdated">
+	<ValueAnnotation Term="org.example.display.LastUpdated">
 	 <DateTime>2000-01-01T16:00:00.000Z-09:00</DateTime>
 	</ValueAnnotation>
 
@@ -1462,9 +1429,9 @@ The `edm:Decimal` constant expression evaluates to a primitive decimal value. A 
 
 A decimal expression may be written with either element notation or attribute notation, as shown in the following examples:
 
-	<ValueAnnotation Term="org.odata.display.Width" Decimal="3.14" />
+	<ValueAnnotation Term="org.example.display.Width" Decimal="3.14" />
 
-	<ValueAnnotation Term="org.odata.display.Width">
+	<ValueAnnotation Term="org.example.display.Width">
 	 <Decimal>3.14</Decimal>
 	</ValueAnnotation>
 
@@ -1474,9 +1441,9 @@ The `edm:Float` constant expression evaluates to a primitive floating point (or 
 
 A floating point expression may be written with either element notation or attribute notation, as shown in the following examples:
 
-	<ValueAnnotation Term="org.odata.display.Width" Float="3.14" />
+	<ValueAnnotation Term="org.example.display.Width" Float="3.14" />
 
-	<ValueAnnotation Term="org.odata.display.Width">
+	<ValueAnnotation Term="org.example.display.Width">
 	 <Float>3.14</Float>
 	</ValueAnnotation>
 
@@ -1486,9 +1453,9 @@ The `edm:Guid` constant expression evaluates to a primitive 32-character string 
 
 A guid expression may be written with either element notation or attribute notation, as shown in the following examples:
 
-	<ValueAnnotation Term="org.odata.display.Id" Guid="21EC2020-3AEA-1069-A2DD-08002B30309D" />
+	<ValueAnnotation Term="org.example.display.Id" Guid="21EC2020-3AEA-1069-A2DD-08002B30309D" />
 
-	<ValueAnnotation Term="org.odata.display.Id">
+	<ValueAnnotation Term="org.example.display.Id">
 	 <Guid>21EC2020-3AEA-1069-A2DD-08002B30309D</Guid>
 	</ValueAnnotation>
 
@@ -1498,9 +1465,9 @@ The `edm:Int` constant expression evaluates to a primitive integral value. An in
 
 An integral expression may be written with either element notation or attribute notation, as shown in the following examples:
 
-	<ValueAnnotation Term="org.odata.display.Width" Int="42" />
+	<ValueAnnotation Term="org.example.display.Width" Int="42" />
 
-	<ValueAnnotation Term="org.odata.display.Width">
+	<ValueAnnotation Term="org.example.display.Width">
 	 <Int>42</Int>
 	</ValueAnnotation>
 
@@ -1510,9 +1477,9 @@ The `edm:String` constant expression evaluates to a primitive string value. A st
 
 A string expression may be written with either element notation or attribute notation, as shown in the following examples:
 
-	<ValueAnnotation Term="org.odata.display.DisplayName" String="Product Catalog" />
+	<ValueAnnotation Term="org.example.display.DisplayName" String="Product Catalog" />
 
-	<ValueAnnotation Term="org.odata.display.DisplayName">
+	<ValueAnnotation Term="org.example.display.DisplayName">
 	 <String>Product Catalog</String>
 	</ValueAnnotation>
 
@@ -1522,9 +1489,9 @@ The `edm:Time` constant expression evaluates to a primitive time value. On platf
 
 A time expression may be written with either element notation or attribute notation, as shown in the following examples:
 
-	<ValueAnnotation Term="org.odata.display.EndTime" Time="21:00:00-08:00" />
+	<ValueAnnotation Term="org.example.display.EndTime" Time="21:00:00-08:00" />
 
-	<ValueAnnotation Term="org.odata.display.EndTime">
+	<ValueAnnotation Term="org.example.display.EndTime">
 	 <Time>21:00:00-08:00</Time>
 	</ValueAnnotation>
 
@@ -1537,8 +1504,8 @@ The `edm:Apply` expression MUST contain zero or more expressions. The expression
 
 The apply expression MUST be written with element notation, as shown in the following example:
 
-	<ValueAnnotation Term="org.odata.display.DisplayName">
-	 <Apply Function="org.odata.commonfunctions.StringConcat">
+	<ValueAnnotation Term="org.example.display.DisplayName">
+	 <Apply Function="org.example.commonfunctions.StringConcat">
 	 <String>Product</String>
 	 <String> </String>
 	 <String>Catalog</String>
@@ -1555,7 +1522,7 @@ The `edm:AssertType` expression MUST contain exactly one expression. The express
 
 The `edm:AssertType` expression MUST be written with element notation, as shown in the following example:
 
-	<ValueAnnotation Term="org.odata.display.DisplayName">
+	<ValueAnnotation Term="org.example.display.DisplayName">
 	 <AssertType Type="Edm.String">
 	 <String>Product Catalog</String>
 	 </AssertType>
@@ -1569,7 +1536,7 @@ A collection expression MUST contain zero or more child expressions. The values 
 
 A collection expression MUST be written with element notation, as shown in the following example:
 
-	<ValueAnnotation Term="org.odata.seo.SeoTerms">
+	<ValueAnnotation Term="org.example.seo.SeoTerms">
 	 <Collection>
 	 <String>Product</String>
 	 <String>Supplier</String>
@@ -1585,7 +1552,7 @@ The `edm:EntitySetReference` expression MUST contain a value of the type [`<qual
 
 The `edm:EntitySetReference` expression MUST be written with element notation, as shown in the following example:
 
-	<ValueAnnotation Term="org.odata.seo.SaleProducts">
+	<ValueAnnotation Term="org.example.seo.SaleProducts">
 	 <EntitySetReference>Self.SaleProducts</EntitySetReference>
 	</ValueAnnotation>
 
@@ -1597,13 +1564,13 @@ The `edm:EnumMemberReference` expression MUST contain a value of the type [`<qua
 
 The `edm:EnumMemberReference` expression MUST be written with element notation, as shown in the following example:
 
-	<ValueAnnotation Term="org.odata.address.Type">
-	 <EnumMemberReference>org.odata.address.Type.Mailing</EnumMemberReference>
+	<ValueAnnotation Term="org.example.address.Type">
+	 <EnumMemberReference>org.example.address.Type.Mailing</EnumMemberReference>
 	</ValueAnnotation>
 
 ### 16.2.6	The `edm:FunctionReference` Expression[csdl16.2.6]
 
-The value of a `edm:FunctionReference is a reference to the return type of a function.
+The value of a `edm:FunctionReference` is a reference to the return type of a function.
 
 The `edm:FunctionReference` expression MUST contain a value of the type [`<qualifiedName>`][csdl19]. The value of the function reference expression MUST resolve to a valid signature of a function.
 
@@ -1611,8 +1578,8 @@ The `edm:FunctionReference` expression MUST contain zero or more expressions. Th
 
 The `edm:FunctionReference` expression MUST be written with element notation, as shown in the following example:
 
-	<ValueAnnotation Term="org.odata.person.Age">
-	 <FunctionReference Function="org.odata.person.GetAge">
+	<ValueAnnotation Term="org.example.person.Age">
+	 <FunctionReference Function="org.example.person.GetAge">
 	 <Path>BirthDate</Path>
 	 </FunctionReference>
 	</ValueAnnotation>
@@ -1629,7 +1596,7 @@ The second child expression MUST return a value that is type compatible with the
 
 The `edm:If` expression MUST be written with element notation, as shown in the following example:
 
-	<ValueAnnotation Term="org.odata.person.Gender">
+	<ValueAnnotation Term="org.example.person.Gender">
 	 <If>
 	 <Path>IsFemale</Path>
 	 <String>Female</String>
@@ -1659,7 +1626,7 @@ A labeled element expression MUST contain exactly one child expression written e
 
 A labeled element expression MUST be written with element notation, as shown in the following example:
 
-	<ValueAnnotation Term="org.odata.display.DisplayName">
+	<ValueAnnotation Term="org.example.display.DisplayName">
 	 <LabeledElement Name="CustomerFirstName">
 	  <Path>FirstName</Path>
 	 </LabeledElement>
@@ -1673,7 +1640,7 @@ The labeled element reference expression MUST contain a value of the type [`<sim
 
 The `edm:LabeledElementReference` expression MUST be written with element notation, as shown in the following example:
 
-	<ValueAnnotation Term="org.odata.display.DisplayName">
+	<ValueAnnotation Term="org.example.display.DisplayName">
 	 <LabeledElementReference>DisplayName</LabeledElement>
 	</ValueAnnotation>
 
@@ -1683,7 +1650,7 @@ The `edm:Null` expression returns an untyped null value. The `edm:Null` expressi
 
 The `edm:Null` expression MUST be written with element notation, as shown in the following example:
 
-	<ValueAnnotation Term="org.odata.display.DisplayName">
+	<ValueAnnotation Term="org.example.display.DisplayName">
 	 <Null />
 	</ValueAnnotation>
 
@@ -1705,9 +1672,9 @@ If the `edm:Path` expression is an empty string or an empty element, the path MU
 
 The `edm:Path` expression may be written with either element notation or attribute notation, as shown in the following examples:
 
-	<ValueAnnotation Term="org.odata.display.DisplayName" Path="FirstName" />
+	<ValueAnnotation Term="org.example.display.DisplayName" Path="FirstName" />
 
-	<ValueAnnotation Term="org.odata.display.DisplayName">
+	<ValueAnnotation Term="org.example.display.DisplayName">
 	 <Path>FirstName</Path>
 	</ValueAnnotation>
 
@@ -1721,8 +1688,8 @@ The `edm:FunctionReference` expression MUST contain zero or more expressions. Th
 
 The `edm:FunctionReference` expression MUST be written with element notation, as shown in the following example:
 
-	<ValueAnnotation Term="org.odata.person.Age">
-	 <FunctionReference Function="org.odata.person.GetAge">
+	<ValueAnnotation Term="org.example.person.Age">
+	 <FunctionReference Function="org.example.person.GetAge">
 	 <Path>BirthDate</Path>
 	 </FunctionReference>
 	</ValueAnnotation>
@@ -1737,7 +1704,7 @@ A record expression MUST contain zero or more [`edm:PropertyValue`][csdl15.3] el
 
 A record expression MUST be written with element notation, as shown in the following example:
 
-	<ValueAnnotation Term="org.odata.person.Employee">
+	<ValueAnnotation Term="org.example.person.Employee">
 	 <Record>
 	  <PropertyValue Property="GivenName" Path="FirstName" />
 	  <PropertyValue Property="Surname" Path="LastName" />
@@ -1750,7 +1717,7 @@ A record expression MUST be written with element notation, as shown in the follo
 
 # 17	CSDL Examples[csdl17]
 
-<!-- TODO: Say something about these two examples. -->
+Following are two basic examples of valid EDM models as represented in CSDL. These examples demonstrate many of the topics covered above.
 
 ## 17.1	Title for example[csdl17.1]
 
@@ -1847,51 +1814,51 @@ A record expression MUST be written with element notation, as shown in the follo
 		<Key>
 		  <PropertyRef Name="CustomerId" />
 		</Key>
-		<Property Name="CustomerId" Type="Int32" Nullable="false" />
-		<Property Name="FirstName" Type="String" Nullable="true" />
-		<Property Name="LastName" Type="String" Nullable="true" />
-		<Property Name="AccountNumber" Type="Int32" Nullable="true" />
+		<Property Name="CustomerId" Type="Edm.Int32" Nullable="false" />
+		<Property Name="FirstName" Type="Edm.String" Nullable="true" />
+		<Property Name="LastName" Type="Edm.String" Nullable="true" />
+		<Property Name="AccountNumber" Type="Edm.Int32" Nullable="true" />
 		<Property Name="Address" Type="Self.Address" Nullable="false" />
 		<NavigationProperty Name="Orders" Relationship="Model1.CustomerOrder" FromRole="Customer" ToRole="Order" />
 		<TypeAnnotation Term="Vocabulary1.Person">
-		  <ValueAnnotation Term="DisplayName">
+		  <PropertyValue Property="DisplayName">
 			<Apply Function="String.Concat">
 			  <Path>FirstName</Path>
 			  <Path>LastName</Path>
 			</Apply>
-		  </ValueAnnotation>
+		  </PropertyValue>
 		</TypeAnnotation>
 	  </EntityType>
 	  <EntityType Name="Order">
 		<Key>
 		  <PropertyRef Name="OrderId" />
 		</Key>
-		<Property Name="OrderId" Type="Int32" Nullable="false" />
-		<Property Name="OrderDate" Type="Int32" Nullable="true" />
-		<Property Name="Description" Type=" String" Nullable="true" />
+		<Property Name="OrderId" Type="Edm.Int32" Nullable="false" />
+		<Property Name="OrderDate" Type="Edm.Int32" Nullable="true" />
+		<Property Name="Description" Type="Edm.String" Nullable="true" />
 		<NavigationProperty Name="Customer" Relationship="Model1.CustomerOrder" FromRole="Order" ToRole="Customer" />
 	  </EntityType>
 	  <EntityType Name="SalesOrder" BaseType="Self.Order">
-		<Property Name="Paid" Type="Boolean" Nullable="false" />
+		<Property Name="Paid" Type="Edm.Boolean" Nullable="false" />
 	  </EntityType>
 	  <EntityType OpenType="true" Name="Product">
 		<Key>
 		  <PropertyRef Name="ProductId" />
 		</Key>
-		<Property Name="ProductId" Type="Int32" Nullable="false" />
-		<Property Name="Name" Type="String" Nullable="false" />
-		<Property Name="Description" Type="String" Nullable="true" />
+		<Property Name="ProductId" Type="Edm.Int32" Nullable="false" />
+		<Property Name="Name" Type="Edm.String" Nullable="false" />
+		<Property Name="Description" Type="Edm.String" Nullable="true" />
 	  </EntityType>
 	  <Association Name="CustomerOrder">
 		<End Type="Model1.Customer" Role="Customer" Multiplicity="1" />
 		<End Type="Model1.Order" Role="Order" Multiplicity="*" />
 	  </Association>
 	  <ComplexType Name="Address">
-		<Property Name="Street" Type="String" Nullable="false" />
-		<Property Name="City" Type="String" Nullable="false" />
-		<Property Name="State" Type="String" Nullable="false" />
-		<Property Name="Zip" Type="String" Nullable="false" />
-		<Property Name="Position" Type="GeographyPoint" Nullable="false" SRID="4326" />
+		<Property Name="Street" Type="Edm.String" Nullable="false" />
+		<Property Name="City" Type="Edm.String" Nullable="false" />
+		<Property Name="State" Type="Edm.String" Nullable="false" />
+		<Property Name="Zip" Type="Edm.String" Nullable="false" />
+		<Property Name="Position" Type="Edm.GeographyPoint" Nullable="false" SRID="4326" />
 	  </ComplexType>
 	</Schema>
 
@@ -2907,75 +2874,3 @@ A record expression MUST be written with element notation, as shown in the follo
 		</xs:restriction>
 	  </xs:simpleType>
 	</xs:schema>
-
-# 19	ABNF for CSDL[csdl19]
-
-<!-- TODO: This ABSOLUTELY needs to be reworked. -->
-
-	identifierLeadingCharacter 	= ; Any character from the Unicode classes L or Nl
-	identifierCharacter 		= ; Any character from the Unicode classes L, Nl, Nd, Mn, Mc, Pc or Cf
-	simpleIdentifier 			= identifierLeadingCharacter *identifierCharacter 
-	qualifiedIdentifier 		= namespaceQualifiedIdentifier /
-						 aliasQualifiedIdentifier 
-	anyTypeReference			= "collection(" anySingleTypeReference ")" /
-							anySingleTypeReference
-	anyKeylessTypeReference	= "collection(" singleKeylessTypeReference ")" /
-							singleKeylessTypeReference
-	anySingleTypeReference		= singleEntityTypeReference /
-							singleKeylessTypeReference
-	singleEntityTypeReference	= qualifiedIdentifier / simpleIdentifier
-							; identifies an EntityType by name
-	singleKeylessTypeReference	= qualifiedIdentifier / simpleIdentifier
-							; identifies a primitive, ComplexType or EnumType by name
-	namespaceSegment	 		= simpleIdentifier
-	alias					= simpleIdentifier 
-	namespaceQualifiedIdentifier	= namespace "." simpleIdentifier
-	aliasQualifiedIdentifier	= alias "." simpleIdentifier
-	namespace		 		= namespaceSegment *("." namespaceSegment)
-	coreModel				= "edm." 
-	true					= "true" / "1"
-	false					= "false" / "0"
-	boolean				= true / false
-	integralPrimitive			= [coreModel] (
-							"byte" /
-							"int16" /
-							"int32" /
-							"int64" /
-							"sbyte"
-							)
-	spatialPrimitive			= [coreModel] (
-							"geography" /
-							"geographypoint" /
-							"geographylinestring" /
-							"geographypolygon" /
-							"geographymultipoint" /
-							"geographymultilinestring" /
-							"geographymultipolygon" /
-							"geographycollection" /
-							"geometry" /
-							"geometrypoint" /
-							"geometrylinestring" /
-							"geometrypolygon" /
-							"geometrymultipoint" /
-							"geometrymultilinestring" /
-							"geometrymultipolygon" /
-							"geometrycollection" /
-							)
-	nonNegativeInt32			= 1*10DIGIT ; 0-2147483647
-	primitive 				= ["edm."] (
-							integralPrimitive /
-							spatialPrimitive /
-							"" /
-							"" /
-							"" /
-							"" /
-							"" /
-							"" /
-							"" /
-							"" /
-							"" /
-							"" /
-							"" /
-							"" /
-							"" /
-							)

@@ -6,7 +6,7 @@ The OData Protocol is an application-level protocol for interacting with data vi
 
 - Metadata: a machine-readable description of the data model exposed by a particular data provider.
 - Data: sets of data entities and the relationships between them.
-- Querying: requesting that the server perform a set of filtering and other transformations to its data, then return the results.
+- Querying: requesting that the service perform a set of filtering and other transformations to its data, then return the results.
 - Editing: creating, editing, and deleting data.
 - Operations: invoking custom logic
 - Vocabularies: attaching custom semantics
@@ -50,7 +50,7 @@ An OData *resource* is anything in the model that can be addressed (an entity se
 
 Refer to the [CSDL specification][OData CSDL Specification] for more information on the data model.
 
-## 2.4 Annotations ##
+## 2.1 Annotations ##
 
 Model and instance elements may be annotated with type annotations or value annotations.
 
@@ -78,7 +78,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 Some sections of this specification are illustrated with non-normative example OData request and response payloads. However, the text of this specification provides the definition of conformance.
 
-OData payloads are representable in multiple formats. Those formatgits are specified in separate documents. In this document, when an example is necessary, it will be given in the [JSON][OData JSON Format] format.
+OData payloads are representable in multiple formats. Those formats are specified in separate documents. In this document, when an example is necessary, it will be given in the [JSON][OData JSON Format] format.
 
 ## 4.3. Interpreting Examples ##
 
@@ -120,7 +120,7 @@ OData supports extensibility in the payload, according to the specific format.
 
 Regardless of the format, additional content MUST NOT be present if it needs to be understood by the receiver in order to correctly interpret the payload. Thus, clients and services MAY safely ignore any content not specifically defined in the version of the payload specified by the DataServiceVersion header.
 
-### 6.3. Action/Function Extensibility ###
+## 6.3. Action/Function Extensibility ##
 
 Actions and functions extend the set of operations that can be performed on or with a service or resource. Actions MAY have side-effects. For example actions may be used to extend CUD operations or to invoke custom operations. Functions MUST NOT have side-effects. Functions can be invoked:
 
@@ -132,7 +132,7 @@ Fully qualified action and function names include a namespace prefix. The `odata
 
 Services MUST fail any request that contains actions or functions that it does not understand.
 
-### 6.4. Vocabulary Extensibility ###
+## 6.4. Vocabulary Extensibility ##
 
 Vocabularies provide the ability to annotate metadata as well as instance data, and define a powerful extensibility point for OData.
 
@@ -143,7 +143,7 @@ Instance annotations can be used to define additional information associated wit
 Annotations that apply across instances SHOULD be specified within the metadata. Where the same annotation is defined at both the metadata and instance level, the instance-level annotation overrides the annotation specified at the metadata level.
 
 A service SHOULD NOT require a client to interpret annotations it uses.
-``
+
 ## 6.5. Header Field Extensibility
 
 OData defines semantics around certain HTTP request and response headers. Services that support a version of OData MUST understand and comply with the headers defined by that version. Compliance means either honoring the semantics of the header field or failing the request.
@@ -154,7 +154,7 @@ Individual services MAY define custom headers. These headers MUST NOT begin with
 
 An OData Service MUST support at least the [OData:Atom](Atom_format) format, and MAY support additional formats for both request and response bodies.
 
-# n. Formats #
+# 7. Formats #
 
 The client may request a particular response format through the `Accept` header, as specified in [RFC2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html), or through the [`$format` System Query Option](#the$formatsystemqueryoption). In the case that both are `Accept` header and the `$format` query option are used, the value specified in the `$format` query option SHOULD be used.
 
@@ -162,176 +162,187 @@ If the service does not support the requested format, it SHOULD reply with a `40
 
 See the format-specific specifications ([[JSON](JSON)], [[JSON Verbose](JSON_Verbose_format)], [[Atom](Atom_Format)]) for details.
 
-# 7. Header Fields #
+# 8. Header Fields #
 
 OData defines semantics around the following request and response headers. Additional headers MAY be specified, but have no unique semantics defined in OData.
 
-## 7.1. Common Headers##
+## 8.1. Common Headers##
 
 The DataServiceVersion and Content-Type headers may be used on any OData request or response.
 
-### 7.1.1. The `DataServiceVersion` Header ###
+### 8.1.1. The `DataServiceVersion` Header ###
 
-OData clients MAY use the DataServiceVersion header on a request to specify the version of the protocol used to generate the request. 
+OData clients MAY use the `DataServiceVersion` header on a request to specify the version of the protocol used to generate the request. 
 
 If present on a request, the service MUST interpret the request according to the rules defined in the specified version of the protocol, or fail the request with a 4xx response code. If not specified, the service MUST assume the request is generated using the maximum version of the protocol that the service understands. 
 
-OData services SHOULD specify the DataServiceVersion header on a response to specify the version of the protocol used to generate the response. If present on a response, the client MUST interpret the response according to the rules defined in the specified version of the protocol. If not specified, the client MUST assume the request is generated using version 1.0 of the OData Protocol. 
+OData services SHOULD specify the `DataServiceVersion` header on a response to specify the version of the protocol used to generate the response. If present on a response, the client MUST interpret the response according to the rules defined in the specified version of the protocol. If not specified, the client MUST assume the request is generated using version 1.0 of the OData Protocol. 
 
 For more details see [Versioning](#versioning).
 
-#### 7.1.2. The `Content-Type` Header ####
+#### 8.1.2. The `Content-Type` Header ####
 
 The format of an individual request or response body MUST be specified in the `Content-Type` header of the request or response.
 
-## 7.2. Common Request Headers ##
+## 8.2. Common Request Headers ##
 
 In addition to the [Common Headers](#commonheaders), a client MAY specify any combination of the following request headers.
 
-### 7.2.1.	The MaxDataServiceVersion Request Header
+### 8.2.1.	The `MaxDataServiceVersion` Request Header
 
-Clients SHOULD specify a MaxDataServiceVersion request field.
+Clients SHOULD specify a `MaxDataServiceVersion` request field.
 
-If specified, the service MUST generate a response with a [DataServiceVersion](#dataserviceversion) less than or equal to the specified MaxDataServiceVersion. If MaxDataServiceVersion is not specified, then the service SHOULD interpret the request as having a MaxDataServiceVersion equal to the maximum version supported by the service.
-
-For more details see [Versioning](#versioning).
-
-### 7.2.2.	The MinDataServiceVersion Request Header
-
-Clients SHOULD specify a MinDataServiceVersion request field.
-
-If specified, the service MUST generate a response with a [DataServiceVersion](#dataserviceversion) greater than or equal to the specified MinDataServiceVersion.
-
-The service SHOULD respond with the maximum version supported by the service that is less than or equal to the specified MaxDataServiceVersion. 
+If specified, the service MUST generate a response with a [DataServiceVersion](#dataserviceversion) less than or equal to the specified `MaxDataServiceVersion`. If `MaxDataServiceVersion` is not specified, then the service SHOULD interpret the request as having a `MaxDataServiceVersion` equal to the maximum version supported by the service.
 
 For more details see [Versioning](#versioning).
 
-### 7.2.3.	The Accept Request Header
+### 8.2.2.	The `MinDataServiceVersion` Request Header
 
-As specified in [RFC2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html), the client MAY specify the set of accepted [formats](#formats) through the use of the Accept Header.
+Clients SHOULD specify a `MinDataServiceVersion` request field.
 
-### 7.2.4.	The If-Match Request Header
+If specified, the service MUST generate a response with a [DataServiceVersion](#dataserviceversion) greater than or equal to the specified `MinDataServiceVersion`.
 
-A client MAY include an If-Match header in a request to GET, PUT, MERGE, PATCH or DELETE an entity or entity property, or to invoke an action bound to an entity. The value of the If-Match request header MUST be an ETag value previously retrieved for the entity.
+The service SHOULD respond with the maximum version supported by the service that is less than or equal to the specified `MaxDataServiceVersion`. 
 
-If specified, the request MUST only be invoked if the specified value matches the current ETag value of the entity. If the value does not match the current ETag value of the entity for a [Data Modification](#datamodification) or [Action](#actions) request, the server MUST respond with '412 Precondition Failed' and MUST ensure that no data is modified as a result of the request.
+For more details see [Versioning](#versioning).
 
-### 7.2.5.	The If-None-Match Request Header
+### 8.2.3.	The `Accept` Request Header
 
-A client MAY include an If-None-Match header in a request to GET, PUT, MERGE, PATCH or DELETE an entity or entity property, or to invoke an action bound to an entity. The value of the If-None-Match request header MUST be an ETag value previously retrieved for the entity.
+As specified in [RFC2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html), the client MAY specify the set of accepted [formats](#formats) through the use of the `Accept` Header.
 
-If specified, the request MUST only be invoked if the specified value does not match the current ETag value of the entity. If the value does match the current ETag value of the entity for a [Data Modification](#datamodification) or [Action](#actions) request, the server MUST respond with '412 Precondition Failed' and MUST ensure that no data is modified as a result of the request.
- 
+### 8.2.4.	The `If-Match` Request Header
 
-## 7.3. Common Response Headers ##
+A client MAY include an `If-Match` header in a request to GET, PUT, MERGE, PATCH or DELETE an entity or entity property, or to invoke an action bound to an entity. The value of the `If-Match` request header MUST be an ETag value previously retrieved for the entity.
+
+If specified, the request MUST only be invoked if the specified value matches the current ETag value of the entity. If the value does not match the current ETag value of the entity for a [Data Modification](#datamodification) or [Action](#actions) request, the service MUST respond with '412 Precondition Failed' and MUST ensure that no data is modified as a result of the request.
+
+### 8.2.5.	The `If-None-Match` Request Header
+
+A client MAY include an `If-None-Match` header in a request to GET, PUT, MERGE, PATCH or DELETE an entity or entity property, or to invoke an action bound to an entity. The value of the `If-None-Match` request header MUST be an ETag value previously retrieved for the entity.
+
+If specified, the request MUST only be invoked if the specified value does not match the current ETag value of the entity. If the value does match the current ETag value of the entity for a [Data Modification](#datamodification) or [Action](#actions) request, the service MUST respond with '412 Precondition Failed' and MUST ensure that no data is modified as a result of the request.
+
+## 8.3. Common Response Headers ##
 
 In addition to the [Common Headers](#commonheaders), a service MAY specify the following response headers.
 
-### 7.3.1. The `ETag` Header ###
+### 8.3.1. The `ETag` Header ###
 
-A request that returns an individual entity MAY inclue an `ETag` header. 
+A request that returns an individual entity MAY include an `ETag` header. 
 
 The value specified in the `ETag` header may be specified in the `If-Match` header of a subsequent [Data Modification](#datamodification) or [Action](#actions) Request in order to apply optimistic concurrency in updating, deleting, or invoking the action bound to, the entity.
 
-### 7.3.2. The `Location` Header Field ###
+### 8.3.2. The `Location` Header Field ###
 
 The Location header is used to specify the URL of an entity modified through a [Data Modification](#datamodification) Request, or the request URL to check on the status of an asynchronous operation as described in [`202 Accepted`](#202accepted).
 
-## 7.4. Data Modification Request Headers ##
+## 8.4. Data Modification Request Headers ##
 
 In addition to the [Common Headers](#commonheaders), a client MAY specify the following  headers on a [Data Modification](#datamodification) request.
 
-### 7.4.1. The `Prefer` Header ###
+### 8.4.1. The `Prefer` Header ###
 
 The client MAY specify a `Prefer` header on [Data Modification](#datamodification) or [Action](#actions) request.
 
-A Prefer header with a value of `return-no-content` requests that the server invoke the request but not return content in the response. The server MAY honor this request by returning [`204 No Content`](#204nocontent).
+A Prefer header with a value of `return-no-content` requests that the service invoke the request but not return content in the response. The service MAY honor this request by returning [`204 No Content`](#204nocontent).
 
-A Prefer header with a value of `return-content` requests that the server invoke the request and return the modified entity. The server MAY honor this request by returning the successfully modified entity in the body of the response, formatted according to the rules specified for the requested [format](#formats).
+A Prefer header with a value of `return-content` requests that the service invoke the request and return the modified entity. The service MAY honor this request by returning the successfully modified entity in the body of the response, formatted according to the rules specified for the requested [format](#formats).
 
-In response to a request containing a `Prefer` header, the server MAY return the [`Preference-Applied`](#preference-applied) Header.
+In response to a request containing a `Prefer` header, the service MAY return the [`Preference-Applied`](#preference-applied) Header.
 
-## 7.5. Data Modification Response Headers ##
+## 8.5. Data Modification Response Headers ##
 
 In addition to the [Common Headers](#commonheaders), a service MAY specify the following headers on a [Data Modification](#datamodification) response.
 
-### 7.5.1. The `DataServiceId` Header ###
+### 8.5.1. The `DataServiceId` Header ###
 
-A response to a PUT, POST, or PATCH request that returns `404 No Content` MUST include a DataServiceId response header. The value of the header is the URI identifier of the entity that was acted on by the request.
+A response to a PUT, POST, MERGE, or PATCH request that returns `404 No Content` MUST include a DataServiceId response header. The value of the header is the URI identifier of the entity that was acted on by the request.
 
-### 7.5.2. The `Preference-Applied` Header ###
+### 8.5.2. The `Preference-Applied` Header ###
 
-In response to a [Data Modification](#datamodification) or [Action](#actions) request containing a [`Prefer header`](#preferheader), the server may include a `Preference-Applied` response header to specify the `prefer` header value that was honored.
+In response to a [Data Modification](#datamodification) or [Action](#actions) request containing a [`Prefer header`](#preferheader), the service may include a `Preference-Applied` response header to specify the `prefer` header value that was honored.
 
-If the server has returned content in response to a request including a `Prefer` header with a value of `return-content`, it MAY include a `Preference-Applied` response header with a value of `return-content`.
+If the service has returned content in response to a request including a `Prefer` header with a value of `return-content`, it MAY include a `Preference-Applied` response header with a value of `return-content`.
 
-If the server has returned content in response to a request including a `Prefer` header with a value of `return-content`, it MAY include a `Preference-Applied` response header with a value of `return-no-content`.
+If the service has returned content in response to a request including a `Prefer` header with a value of `return-content`, it MAY include a `Preference-Applied` response header with a value of `return-no-content`.
 
-### 7.5.3. The `Retry-After` Header ###
+### 8.5.3. The `Retry-After` Header ###
 
 A service MUST include a `Retry-After` header in a [`202 Accepted`](#202accepted) response. 
 
 The Retry-After header specifies the suggested length of time, in seconds, after which the client SHOULD use the URL returned in the [`Location Header`](#locationheader) to check on the status of the operation.
 
-## 7.6. Common Response Semantics ##
+# 9. Common Response Semantics #
 
 An OData service MAY respond to any request using any valid HTTP status code appropriate for the request. A service SHOULD be as specific as possible in its choice of HTTP status codes. 
 
 The following represent the most common success response codes. In some cases, a service MAY respond with a more specific success code.
 
-### 7.6.1. `200 OK`
+## 9.1. Success Response Codes
 
-A GET, PUT, or PATCH request MAY return `200 OK` if the operation is completed successfully. In this case, the response body MUST contain the value of the entity or property specified in the request URL.
+The following response codes represent successful requests.
 
-### 7.6.2. `201 Created`
+### 9.1.1. `200 OK` Response Code
 
-A POST request MAY return `201 Created` if the entity or link was successfully created. In this case, the response body MUST contain the udpated entity.
+A GET, PUT, MERGE, or PATCH request MAY return `200 OK` if the operation is completed successfully. In this case, the response body MUST contain the value of the entity or property specified in the request URL.
 
-### 7.6.3. `202 Accepted`
+### 9.1.2. `201 Created` Response Code
 
-A server MAY reply to a Data Modification Request with `202 Accepted`, indicating that the request has been accepted but has not yet completed. In this case, the response body MUST contain a [`Location` header](#locationheader) in addition to a [`Retry-After` header](#retry-afterheader), and the response body MUST be empty.
+A POST request MAY return `201 Created` if the entity or link was successfully created. In this case, the response body MUST contain the updated entity.
+
+### 9.1.3. `202 Accepted` Response Code
+
+A service MAY reply to a Data Modification Request with `202 Accepted`, indicating that the request has been accepted but has not yet completed. In this case, the response body MUST contain a [`Location` header](#locationheader) in addition to a [`Retry-After` header](#retry-afterheader), and the response body MUST be empty.
 
 Once the request has successfully completed, the service MUST return `303 See Other` with a [`Location` header](#locationheader) specifying the final URL to retrieve the outcome of the operation. The response body and headers from this final URL MUST be formatted as would the completion of the initial Data Modification Request.
 
-### 7.6.4. `204 No Content`
+### 9.1.4. `204 No Content` Response Code
 
 A service may reply to a Data Modification Request with `204 No Content`. In this case, the response body MUST be empty.
 
-### 7.6.5. `3xx Redirect`
+### 9.1.5. `3xx Redirect` Response Code
 
-As per [RFC2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3), an OData service MAY respond to any Data Modification request with a response code of `3xx Redirection`.  In this case, the response MUST include a [`Location` header](#locationheader) with the URL from which the result can be obtained, and the response body MUST be empty.
+As per [RFC2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3), an OData service MAY respond to any Data Modification request with a response code of `3xx Redirection`.  In this case, the response SHOULD include a [`Location` header](#locationheader) with the URL from which the result can be obtained.
 
-The service MUST ensure that no observable change has occured to the state of the service as a result of any request that returns a `3xx`. 
+The service MUST ensure that no observable change has occurred to the state of the service as a result of any request that returns a `3xx`. 
 
-### 7.6.6. `404 Not Found`
+#### 9.1.5.1. `302 Found` Response Code
+
+An OData Service MAY return a `302 Found` response if additional authentication information is required to connect to the service. In this case, the body SHOULD contain an html page to prompt the user for authentication information.
+
+### 9.1.6. `404 Not Found` Response Code
 
 If the entity or collection specified by the request URL does not exist, the service SHOULD respond with `404 Not Found` and an empty response body.
 
-### 7.6.6. Response Errors ###
+## 9.2. Response Errors
 
 In all failure responses, the service MUST provide an accurate failure HTTP status code. The response body SHOULD contain a human-readable, possibly localized description of the problem, and SHOULD contain suggested resolution steps, if the service knows what those are. 
 
 The service SHOULD return "top-level" errors, in the appropriate format, when an error is detected prior to sending the status line or any response headers to the client. When an error is detected after sending a partial response to the client, including a success code, the service MUST generate an [Instream Error](#instreamerrors).
 
-The service MUST ensure that no observable change has occured to the state of the service as a result of any request that returns an error status code.
+The service MUST ensure that no observable change has occurred to the state of the service as a result of any request that returns an error status code.
 
-#### 7.6.6.1 InStream Errors ####
+### 9.2.1 InStream Errors ###
 
 In the case that the service encounters an error after sending a success status to the client, the service MUST generate an in-stream error which SHOULD leave the response malformed. Clients MUST assume that any malformed responses are invalid and results SHOULD be discarded.
 
 This specification does not prescribe a particular format for such instream errors. 
 
-## 8.1. Metadata Requests ##
+# 10. OData Service Request
+
+An OData Service MAY support the following types of requests.
+
+## 10.1. Metadata Requests ##
 
 An OData service is a self-describing service that exposes metadata defining the entity sets, relationships, entity types, and operations.
 
-### 8.1.1. Service Document Request ###
+### 10.1.1. Service Document Request ###
 
 To request a `Service Document` describing the set of entity collections (i.e., entity sets) that can be queried from a service, the client issues a GET request to the root URL of the service (the *Service Root*).
 
 The format of the Service Document is dependent upon the format selected. For example, in Atom the Service Document is an AtomPub Service Document (as specified in [RFC5023]). 
 
-### 8.1.2. Metadata Document Request ###
+### 10.1.2. Metadata Document Request ###
 
 An OData *Metadata Document* is a representation of the [data model](#DataModel) that describes the data and operations exposed by an OData service.
 
@@ -341,7 +352,7 @@ OData services MUST expose a Metadata Document which defines all data exposed by
 
 If a request for metadata does not specify a format preference (via Accept header or [$format](#FormatSystemQueryOption)) then the XML representation MUST be returned.
 
-## 8.2. Requesting Data ##
+## 10.2. Requesting Data ##
 
 OData services support requesting data through the use of HTTP GET requests.
 
@@ -351,7 +362,7 @@ The format of the returned data is dependent upon the request and the format spe
 
 This section describes the types of data requests defined by OData. For complete details on the syntax for building requests, see [[OData URL Conventions](ODataURLConventions)].
 
-### 8.2.1. Requesting Individual Entities ###
+### 10.2.1. Requesting Individual Entities ###
 
 To retrieve an individual entity, a client makes a GET request to an `entity request URL`.
 
@@ -359,19 +370,23 @@ The entity request URL MAY be returned in a response payload containing that ins
 
 Services MAY support conventions for constructing an entity request URL using the entity's Key Value(s), as described in [OData URL Conventions](ODataURLConventions).
 
-### 8.2.2. Requesting Individual Properties ###
+### 10.2.2. Requesting Individual Properties ###
 
-A server SHOULD support retrieving an individual property value. 
+A service SHOULD support retrieving an individual property value. 
 
-To retrieve an individual property, a client issues a GET request to the property URL. The property URL is the entity request URL with "`/`" and the property name appended. See the [OData:URL](OData URL Conventions) document for details.
+To retrieve an individual property, a client issues a GET request to the property URL. The property URL is the entity request URL with "`/`" and the property name appended. 
+
+For complex typed properties, the path MAY be further extended with the name of the individual property of the complex type. 
+
+See the [OData:URL](OData URL Conventions) document for details.
 
 For example:
 
     http://services.odata.org/OData/OData.svc/Products(1)/Name
 
-#### 8.2.2.1. Requesting a Property's Raw Value using `$value` ####
+#### 10.2.2.1. Requesting a Property's Raw Value using `$value` ####
 
-A server SHOULD support retrieving the raw value of a primitive type property. To retrieve this value, a client sends a GET request to the property value URL. See the [OData:URL](OData URL Conventions) document for details.
+A service SHOULD support retrieving the raw value of a primitive type property. To retrieve this value, a client sends a GET request to the property value URL. See the [OData:URL](OData URL Conventions) document for details.
 
 For example:
 
@@ -381,9 +396,9 @@ The raw value of an Edm.Binary property MUST be serialized as an unencoded byte 
 
 The raw value of other properties SHOULD be represented using the text/plain media type. See [OData:ABNF](OData ABNF) for details.
 
-A $value request for a property that is NULL SHOULD result in a "404 Not Found" response. 
+A `$value` request for a property that is NULL SHOULD result in a `404 Not Found`. response. 
 
-### 8.2.3. Querying Collections ###
+### 10.2.3. Querying Collections ###
 
 OData services support querying collections of entities. 
 
@@ -391,7 +406,7 @@ The target collection is specified through a URL, and query operations such as f
 
 An OData service may support some or all of the System Query Options defined. If a data service does not support a System Query Option, it MUST fail any request that contains the unsupported option.
 
-#### 8.2.3.1. The `$filter` System Query Option ####
+#### 10.2.3.1. The `$filter` System Query Option ####
 
 The set of entities returned may be restricted through the use of the `$filter` System Query Option. 
 
@@ -403,7 +418,7 @@ Returns all Products whose Price is less than $10.00.
 
 The value of the `$filter` option is a boolean expression as defined in [[OData URL Conventions](OData URL Conventions)].
 
-##### 8.2.3.1.1. Built-in Filter Operations #####
+##### 10.2.3.1.1. Built-in Filter Operations #####
 
 OData supports a set of built-in filter operations, as described in this section. For a full description of the syntax used when building requests, see [OData URL Conventions](OData_URL_Conventions).
 
@@ -499,7 +514,7 @@ OData supports a set of built-in filter operations, as described in this section
       </tr>
   </table>
 
-##### 8.2.3.1.2. Built-in Query Functions #####
+##### 10.2.3.1.2. Built-in Query Functions #####
 
 OData supports a set of built-in functions that can be used within `$filter` operations. The following table lists the available functions. For a full description of the syntax used when building requests, see [OData URL Conventions](OData URL Conventions).
 
@@ -629,11 +644,11 @@ Note: No ISNULL or COALESCE operators are defined. Instead, there is a null lite
   </tr>
 </table>
 
-##### 8.2.3.n The `$expand` System Query Option #####
+##### 10.2.3.1.3 The `$expand` System Query Option #####
 
 The presence of the `$expand` system query option indicates that entities related to the entity, or collection of entities, identified by the resource path section of the URL MUST be represented inline.
 
-The value of the `$expand` query option MUST be a comma seperated list of navigation property paths.
+The value of the `$expand` query option MUST be a comma separated list of navigation property paths.
 
 The service MUST include any actions or functions that are bound to the associated entities that are introduced via an expandClause, unless a `$select` system query option is also included in the request and that `$select` requests that the actions/functions be omitted.
 
@@ -654,9 +669,9 @@ For each Order within the Orders entity set, the following should be represented
 
 	http://host/service.svc/Customers?$expand=SampleModel.VipCustomer/InHouseStaff
 
-For each Customer entity in the Customers entity set, the value of all associated InHouseStaff are represented inline if the entity is of type VipCustomer or a subtype of that. For entities that are not of type VipCustomer, or any of its subtypes, that entity is returned with no inline representation for the expanded NavigationProperty.
+For each Customer entity in the Customers entity set, the value of all associated InHouseStaff are represented inline if the entity is of type VipCustomer or a subtype of that. For entities that are not of type VipCustomer, or any of its subtypes, that entity is returned with no inline representation for the expanded navigation property.
 
-##### 8.2.3.2 The `$select` System Query Option #####
+#### 10.2.3.2 The `$select` System Query Option ####
 
 The `$select` system query option requests that the service return only the properties, open properties, related properties, actions and functions explicitly requested by the client. The service MUST return the specified content, and MAY choose to return additional information.
 
@@ -680,9 +695,9 @@ It is also possible to request all actions and functions available for each retu
 
 	http://services.odata.org/OData/OData.svc/Products?$select=DemoService.*
 
-For AtomPub formatted responses, the value of a selectClause applies only to the properties returned within the m:properties element. For example, if a property of an entity type is mapped with the Customizable Feeds attribute KeepInContent=false, then that property MUST always be included in the response according to its customizable feed mapping.
+For AtomPub formatted responses, the value of a `$select` clause applies only to the properties returned within the m:properties element. For example, if a property of an entity type is mapped to an Atom element, then that property MUST always be included in the response according to its customizable feed mapping.
 
-#### 8.2.3.3 The `$orderby` System Query Option ####
+#### 10.2.3.3 The `$orderby` System Query Option ####
 
 The `$orderby` System Query option specifies the order in which entities are returned from the service.
 
@@ -696,7 +711,7 @@ For example:
 
     http://services.odata.org/OData/OData.svc/Products?$orderby=ReleaseDate asc, Rating desc
 
-#### 8.2.3.4. The `$top` System Query Option ####
+#### 10.2.3.4. The `$top` System Query Option ####
 
 The `$top` System Query Option specifies that only the first n records should be returned, where n is a non-negative integer value specified in by `$top` query option.
 
@@ -708,7 +723,7 @@ Would return only the first five Products in the Products entity set.
 
 If no unique ordering is imposed through an `$orderby` query option, the service MUST impose a stable ordering across requests that include `$top`.
 
-#### 8.2.3.5. The `$skip` System Query Option ####
+#### 10.2.3.5. The `$skip` System Query Option ####
 
 The `$skip` System Query Option specifies that only the records after the first n should be returned, where n is a non-negative integer value specified in by `$skip` query option.
 
@@ -728,7 +743,7 @@ Would return the third through seventh Products in the Products entity set.
 
 If no unique ordering is imposed through an `$orderby` query option, the service MUST impose a stable ordering across requests that include `$skip`.
 
-#### 8.2.3.6. The `$inlinecount` System Query Option ####
+#### 10.2.3.6. The `$inlinecount` System Query Option ####
 
 The `$inlinecount` system query option with a value of `allpages` specifies that the total count of entities matching the request should be returned along with the result.
 
@@ -746,7 +761,7 @@ The service MUST return an HTTP Status code of 404 (Bad Request) if a value othe
 
 How the count is returned is dependent upon the selected format.
 
-#### 8.2.3.7. The  `$format` System Query Option ####
+#### 10.2.3.7. The  `$format` System Query Option ####
 
 A request with a `$format` system query option specifies that the response SHOULD use the media type specified by the query option.
 
@@ -768,7 +783,7 @@ The `$format` query option MAY be used in conjunction with `$value` to specify w
 
 The raw value of the ShipCountry property of the matching Order using the JSON media type.
 
-### 8.2.4. Requesting `$links` between Entities ####
+### 10.2.4. Requesting `$links` between Entities ####
 
 To request the links (URLs) of related entities according to a particular relationship, the client issues a GET request. The path of the request is the source entity's request URL with `/$links/` appended to the path of an entity's request URL, followed by the name of the navigation property representing the relationship.
 
@@ -782,7 +797,7 @@ For example:
 
 Returns the URLs of each Order related to the Product with `ID=0`.
 
-### 8.2.5. Requesting the `$count` of an Entity Collection ####
+### 10.2.5. Requesting the `$count` of an Entity Collection ####
 
 To request only the count of an entity collection, the client issues a GET request with `/$count` appended to the path of the request URL.
 
@@ -794,7 +809,7 @@ For example:
 
 Returns the count of Products in the Products entity set.
 
-## 8.3. Data Modification ##
+## 10.3. Data Modification ##
 
 An OData service MAY support Create, Update, and Delete operations for some or all of the Entities that it exposes. Additionally, services MAY support one or more [Actions](#actions) which may affect the state of the system.
 
@@ -802,7 +817,13 @@ A successfully completed Data Modification request must not violate the integrit
 
 A client may request whether content be returned from a Create, Update, or Delete request, or the invocation of an Action, by specifying the [`Prefer` Header](#preferheader).
 
-#### 8.3.1. Differential Update
+### 10.3.1. Use of ETags for Avoiding Update Conflicts
+
+A client MAY include an ETag value in a the [`if-match`](#theif-matchrequestheader) or the [`if-none-match`](#theif-none-matchrequestheader) request header of a Data Modification or Operation request. If specified, the operation MUST only be invoked if the `if-match` or `if-none-match` condition is satisfied.
+
+The ETag value specified in the `if-match` or `if-none-match` request header may be obtained from an [`ETag` header](#theetagheader) of a request for an individual entity, or may be included for an individual entry in a format-specific manner.
+
+### 10.3.2. Differential Update
 
 Some update requests support 2 types of update: replace and merge. The client chooses which to execute and specifies this by which HTTP verb it sends in the request.
 
@@ -810,35 +831,35 @@ A PUT request indicates a replacement update. The service MUST replace all prope
 
 A PATCH or MERGE indicates a differential update. The service MUST replace exactly those property values that are specified in the request body. Missing properties, including dynamic properties, MUST NOT be altered.
 
-The semantics of PATCH are defined in <ref>[[RFC 5789]][]</ref>. The service MUST be compliant with that definition.
+The semantics of PATCH are defined in [RFC 5789](http://tools.ietf.org/html/rfc5789). The service MUST be compliant with that definition.
 
 The HTTP MERGE verb is defined by this document. The remainder of this section defines the semantics for the MERGE verb. All the semantics for HTTP PUT apply to HTTP MERGE. The only difference is client intent.
 
 Because PATCH is a standard verb and MERGE is not, a client SHOULD prefer PATCH.
 
-The semantics of a MERGE request on a data service entity is to merge the content in the request payload with the entity's current state. The merging is done by comparing each component of the request body to the entity as it exists on the server.
+The semantics of a MERGE request on a data service entity is to merge the content in the request payload with the entity's current state. The merging is done by comparing each component of the request body to the entity as it exists in the service.
 
 If a component in the request body is not defined on the entity that is to be updated the request MAY be considered malformed.
 
 If a component in the request body does match a component on the entity that is to be updated, the value of the component in the request body MUST replace the matching component of the entity to be updated and the matching process continues with the children of the component from the request body.
 
-### 8.3.2. Create an Entity ###
+### 10.3.2. Create an Entity ###
 
 To create an entity in a collection, send a POST request to that collection's URL. The POST body MUST contain a single valid entity representation.
 
 To create an *open entity* (an instance of an open type), additional property values beyond those specified in the metadata MAY be sent in the request body. The service MUST treat these as dynamic properties and add them to the created instance.
 
-If the entity being created is not an open entity, additional property values beyond those specified in the metadata SHOULD NOT be sent in the request body. The server SHOULD ignore any such values supplied.
+If the entity being created is not an open entity, additional property values beyond those specified in the metadata SHOULD NOT be sent in the request body. The service SHOULD ignore any such values supplied.
 
 Upon successful completion, the response MUST contain a [`Location` header](#locationheader) that contains the edit URL of the created entity. 
 
-Upon successful completion the server MUST respond with either [`201 Created`](#201created), or ['204 No Content'](#204nocontent) if the request included a [`Prefer` header](#preferheader) with a value of "return-no-content'.
+Upon successful completion the service MUST respond with either [`201 Created`](#201created), or ['204 No Content'](#204nocontent) if the request included a [`Prefer` header](#preferheader) with a value of "return-no-content'.
 
-#### 8.3.2.1. Link to Related Entities When Creating Entity ####
+#### 10.3.2.1. Link to Related Entities When Creating Entity ####
 
 A service SHOULD support linking new entities to existing entities upon creation.
 
-A request to create an entity MAY specify that the entity should be linked to existing entities. To bind the new entity to existing entities, include the required <ref>binding information</ref> in the appropriate navigation property in the request body.
+A request to create an entity MAY specify that the entity should be linked to existing entities. To bind the new entity to existing entities, include the required relationship link in the appropriate navigation property in the request body.
 
 The representation for binding information is format specific.
 
@@ -846,7 +867,7 @@ On success, the service MUST create the requested entity and relate it to the re
 
 On failure, the service MUST NOT create the new entity. In particular, the service MUST never create an entity in a partially-valid state (with the navigation property unset).
 
-#### 7.3.2.2. Create Related Entities When Creating Entity ####
+#### 10.3.2.2. Create Related Entities When Creating Entity ####
 
 A service that supports creating entities SHOULD support creating related entities as part of the same request.
 
@@ -856,7 +877,7 @@ On success, the service MUST create each entity and relate them.
 
 On failure, the service MUST NOT create any of the entities.
 
-### 7.3.3. Update an Entity ###
+### 10.3.3. Update an Entity ###
 
 To update an existing entity, send a PUT, PATCH, or MERGE request to that entity's edit URL. The request body MUST contain a single valid entity representation.
 
@@ -870,25 +891,25 @@ If the entity being updated is not open, then additional values for properties b
 
 On success, the response must be a valid [update response](#responsesforupdates).
 
-### 7.3.4. Delete an Entity ###
+### 10.3.4. Delete an Entity ###
 
 To delete an existing entity, send a DELETE request to that entity's edit URL. The request body SHOULD be empty.
 
-On success, the response MUST be 204 (No Content).
+On success, the response MUST be `204 No Content`.
 
-### 7.3.5. Modifying Relationships Between Entities ###
+### 10.3.5. Modifying Relationships Between Entities ###
 
-Relationships between entities are represented by navigation properties. Navigation properties are described in <ref>[Section ??](#navigationproperties)</ref>. URL conventions for navigation properties are described in [URL Conventions](URL_conventions).
+Relationships between entities are represented by navigation properties. Navigation properties are described in [Data Model](#datamodel). URL conventions for navigation properties are described in [URL Conventions](URL_conventions).
 
-#### 7.3.5.1. Create a New Link Between Two Existing Entities in a One to Many NavigationProperty ####
+#### 10.3.5.1. Create a New Link Between Two Existing Entities in a One to Many Navigation Property ####
 
 To relate an existing entity to another entity, send a POST request to the URL for the appropriate navigation property's links collection. The request body MUST contain a URL that identifies the entity to be added.
 
 The body MUST be formatted as a single link. See the appropriate format document for details.
 
-On success, the response MUST be 204 and contain an empty body.
+On success, the response MUST be `204 No Content` and contain an empty body.
 
-##### 7.3.5.2. Remove a Relationship Between Two Entities
+#### 10.3.5.2. Remove a Relationship Between Two Entities
 
 To remove a relationship to a related entity, send a `DELETE` request to a URL that represents the link to the related entity.
 
@@ -896,13 +917,13 @@ The `DELETE` request MUST follow the requirements for integrity constraints abov
 
 On success, the response MUST be `204 No Content` and contain an empty body.
 
-#### 7.3.5.3. Change the Relation in a One to One Navigation Property ####
+#### 10.3.5.3. Change the Relation in a One to One Navigation Property ####
 
-If the navigation property is nullable, then a change MAY be perfomed by first removing the existing relationship and then adding the new one. Use the approach described for adding and removing links.
+If the navigation property is nullable, then a change MAY be performed by first removing the existing relationship and then adding the new one. Use the approach described for adding and removing links.
 
 Alternatively, a relationship MAY be updated as part of an update to the source entity by including the required binding information for the new target entity. This binding information MUST be formatted as for a deferred navigation property in a response.
 
-### 7.3.6 Managing Media Entities ###
+### 10.3.6 Managing Media Entities ###
 
 A `media entity` is an entity that represents an out-of-band stream, such as a photograph.
 
@@ -912,63 +933,63 @@ A media entity has a `source url` that can be used to read the media stream, and
 
 Because a media entity has both a media stream and standard entity properties special handling is required.
 
-#### 7.3.6.1. Creating a Media Entity ####
+#### 10.3.6.1. Creating a Media Entity ####
 
-To create a media entity, send a POST request to the media entitie's entity set. The request body MUST contain the media value (for example, the photograph) in the appropriate media type.
+To create a media entity, send a POST request to the media entity's entity set. The request body MUST contain the media value (for example, the photograph) in the appropriate media type.
 
 On successful creation of the media, the service MUST respond with `201 Created` and a response body containing the newly created media entity.
 
-#### 7.3.6.2 Editing a Media Entity Stream ####
+#### 10.3.6.2 Editing a Media Entity Stream ####
 
 To change the data for a media entity stream, the client sends a PUT request to the edit URL of the media entity.
 
-If the entity includes an ETag value, the client SHOULD include an If-Match header with the ETag value.
+If the entity includes an ETag value, the client SHOULD include an `If-Match` header with the ETag value.
 
 The request MUST contain a Content-Type header, set to the correct value.
 
 The body of the request MUST be the binary data that will be the new value for the stream.
 
-#### 7.3.6.3. Deleting a Media Entity ####
+#### 10.3.6.3. Deleting a Media Entity ####
 
 To delete a media entity, send a DELETE request to the entity's edit link as described in [Delete An Entity](#deleteanentity).
 
 Deleting a media entity also deletes the media associated with the entity.
 
-### 7.3.7. Managing Named Stream Properties ###
+### 10.3.7. Managing Named Stream Properties ###
 
 An entity may have one or `named stream properties`. Named stream properties are properties of type Edm.Stream.
 
-The values for named stream properties do not appear in the entity payload. Instead, the values are read or writen through URLs.
+The values for named stream properties do not appear in the entity payload. Instead, the values are read or written through URLs.
 
 Named streams are not deletable or directly creatable by the client. The service owns their lifetime. The client can request to set the stream data to empty (0 bytes).
 
-#### 7.3.7.1. Editing Named Stream Values ####
+#### 10.3.7.1. Editing Named Stream Values ####
 
 To change the data for a named stream, the client sends a PUT request to the edit URL.
 
-If the stream metadata includes an ETag value, the client SHOULD include an If-Match header with the ETag value.
+If the stream metadata includes an ETag value, the client SHOULD include an `If-Match` header with the ETag value.
 
-The request MUST contain a Content-Type header, set to the correct value.
+The request MUST contain a `Content-Type` header, set to the correct value.
 
 The body of the request MUST be the binary data that will be the new value for the stream.
 
-### 7.3.8. Managing Values and Properties Directly ###
+### 10.3.8. Managing Values and Properties Directly ###
 
-Values and properties can be explicitly addressed with URLs. This allows them to be individually modified. See <ref>URL conventions</ref> for details on addressing.
+Values and properties can be explicitly addressed with URLs. This allows them to be individually modified. See [OData:URL][odataurlconventions] for details on addressing.
 
-#### 7.3.8.1. Update a Primitive Property ####
+#### 10.3.8.1. Update a Primitive Property ####
 
 To update a value, the client MAY send a PUT, MERGE, or PATCH request to an edit URL for a primitive property. The message body MUST contain the new value, formatted as a single property.
-
+9
 Primitive properties do not support differential update. Regardless of which verb is used the service MUST replace the entire value with the value supplied in the request body.
 
 The same rules apply whether this is a regular property or a dynamic property.
 
 On success, the response must be a valid [update response](#responsesforupdates).
 
-#### 7.3.8.2. Null a Value ####
+#### 10.3.8.2. Null a Value ####
 
-There are two ways to set a primitive value to NULL. The client may [Update a PrimitiveProperty](#updateaprimitiveproperty), specifying a NULL value. Alternatively, the client MAY send a DELETE request with an empty message body to the property URL.
+There are two ways to set a primitive value to NULL. The client may [Update a Primitive Property](#updateaprimitiveproperty), specifying a NULL value. Alternatively, the client MAY send a DELETE request with an empty message body to the property URL.
 
 The service SHOULD consider a DELETE request to a non-nullable value to be malformed.
 
@@ -976,7 +997,7 @@ The same rules apply whether the target is the value of a regular property or th
 
 On success, the service MUST respond with 204 and an empty body.
 
-#### 7.3.7.3. Update a Complex Type ####
+#### 10.3.7.3. Update a Complex Type ####
 
 To update a complex type, send a PUT, PATCH, or MERGE request to that property's URL. The request body MUST contain a single valid representation for that type.
 
@@ -984,19 +1005,19 @@ A service MUST support [Differential Update](#differentialupdate) for complex ty
 
 On success, the response must be a valid [update response](#responsesforupdates).
 
-#### 7.3.7.4. Update a Collection Property ####
+#### 10.3.7.4. Update a Collection Property ####
 
-To update a value, send a PUT request to the collection property's URL. The message body MUST contain the desired new value, formatted as a <ref>collection property</ref>.
+To update a value, send a PUT request to the collection property's URL. The message body MUST contain the desired new value, formatted as a collection property according to the specified format.
 
 The service MUST replace the entire value with the value supplied in the request body.
 
 On success, the response must be a valid [update response](#responsesforupdates).
 
-## 7.4. Operations ##
+## 10.4. Operations ##
 
 Services MAY support custom operations. Operations (actions, functions and legacy service operations) are represented as function import elements in [OData CSDL](OData CSDL Definition.html).
 
-### 7.4.1 Common rules for all operations ###
+### 10.4.1 Common rules for all operations ###
 
 All operations MUST follow the rules outlined in [OData CSDL](OData CSDL Definition.html), in addition operations:
 
@@ -1005,7 +1026,7 @@ All operations MUST follow the rules outlined in [OData CSDL](OData CSDL Definit
 
 The [OData CSDL](OData CSDL Definition.html) specifies how syntactically this information, and information specific to each kind of operation, is specified.
 
-### 7.4.1.1. Entity Set Path Expression ###
+#### 10.4.1.1. Entity Set Path Expression ####
 
 For functions or actions that return an entity or collection of entities, the entity set associated with the returned entity or collection of entities MAY depend upon the entity set of one of the parameter values used to invoke the operation.
 
@@ -1015,9 +1036,9 @@ The actual entity set transitions may be deduced by finding the association set 
 
 The entity set of the results of an operation invocation with an entity set path expression can only be established once the entity set of the parameter that begins the entity set path expression is known.
 
-For example this entity set path expression: "p1/Orders/Customer" can only be evaluted once the entity set of the p1 parameter value is known.
+For example this entity set path expression: "p1/Orders/Customer" can only be evaluated once the entity set of the p1 parameter value is known.
 
-### 7.4.1.2. Common Rules for Binding Operations ###
+#### 10.4.1.2. Common Rules for Binding Operations ####
 
 Actions and functions MAY be bound to an entity or a collection of entities. The first parameter of a bound operation is the *binding parameter*. 
 
@@ -1039,11 +1060,11 @@ Which invokes the `MostRecentOrder` function with the 'customer' or binding para
 
 Which again invokes the `MostRecentOrder` function, this time with the 'customer' or binding parameter value being the entity identified by http://server/Contacts(23123)/Company/. 
 
-### 7.4.1. Actions ####
+### 10.4.1. Actions ####
 
-Actions are operations exposed by an OData server that MAY have side effects when invoked and optionally return some data.
+Actions are operations exposed by an OData service that MAY have side effects when invoked and optionally return some data.
 
-#### 7.4.1.1. Declaring Actions in Metadata ####
+#### 10.4.1.1. Declaring Actions in Metadata ####
 
 Actions SHOULD be declared in $metadata using a FunctionImport element that indicates the signature (Name, ReturnType and Parameters) of the Action. 
 
@@ -1069,7 +1090,7 @@ For example this FunctionImport represents an Action that Creates an Order for a
 		<Parameter Name="discountCode" Type="Edm.String" Mode="In">
 	</FunctionImport>
 
-#### 7.4.1.2. Advertising Currently Available Actions ####
+#### 10.4.1.2. Advertising Currently Available Actions ####
 
 OData application/atom+xml and application/json;odata=verbose formats require all actions that are available for the current entity or current collection of entities to be advertised inside any representation of the entity or collection entities returned from the service.
 
@@ -1104,9 +1125,9 @@ The service might respond with a Customer entity that advertises a binding of th
 
 When the resource retrieved represents a collection, the 'Target Url' of any Actions advertised MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
 
-An efficient format that assumes client knowledge of metadata SHOULD NOT advertise Actions whose availability ('IsAlwaysBindable' is set to 'true') and the target url can be established via metadata. 
+An efficient format that assumes client knowledge of metadata SHOULD NOT advertise Actions that are available on all instances and whose target url can be established via metadata. 
 
-### 7.4.1.3. Invoking an Action ###
+### 10.4.1.3. Invoking an Action ###
 
 To invoke an Action a client MUST make a POST request to the 'Target Url' of the Action. 
 
@@ -1131,17 +1152,17 @@ Example: The following request invokes the `SampleEntities.CreateOrder` action u
           "discountCode": "BLACKFRIDAY"
        }
 
-#### 7.4.1.4 Action Overload Resolution ####
+#### 10.4.1.4 Action Overload Resolution ####
 Actions support overloads, meaning a service MAY expose multiple actions with the same name that take a different set of parameters.
 
-The combination of the action name, the binding parameter type and the unordered list of non binding parameter names MUST be sufficient to uniquely identify a specific action overload. 
+The combination of the action name, the binding parameter type and the unordered list of non-binding parameter names MUST be sufficient to uniquely identify a specific action overload. 
 
-### 7.4.2. Functions ###
+### 10.4.2. Functions ###
 Functions are operations exposed by an OData service that MUST return data and MUST have no observable side effects.
 
-#### 7.4.2.1. Declaring Functions in Metadata ####
+#### 10.4.2.1. Declaring Functions in Metadata ####
 
-Functions SHOULD be declared in $metadata. Function declarations indicate the signature (Name, ReturnType and Parameters) and semantics (composability, bindability and result entityset) of the Function. 
+Functions SHOULD be declared in $metadata. Function declarations indicate the signature (Name, ReturnType and Parameters) and semantics (composability, bindability and result entity set) of the Function. 
 
 In addition to the [Common Rules for All Operations](#Common Rules for All Operations) the following rules apply for Functions:
 
@@ -1158,14 +1179,14 @@ In addition to the [Common Rules for All Operations](#Common Rules for All Opera
 The [OData CSDL](OData CSDL Definition.html) specifies how syntactically this information, and information specific to each kind of operation is specified.
 
 For Example:
-The following FunctionImport describes a Function called MostRecent that returns the 'MostRecent' Order within a collection of Orders:
+The following FunctionImport describes a Function called MostRecent that returns the most recent Order within a collection of Orders:
 
 	<FunctionImport Name="MostRecent" EntitySet="Orders" ReturnType="SampleModel.Order" 
 		IsBindable="true" IsSideEffecting="false" m:IsAlwaysBindable="true">
 		<Parameter Name="orders" Type="Collection(SampleModel.Order)" Mode="In"/>
 	</FunctionImport>
 
-#### 7.4.2.2. Advertising Currently Available Functions within a Payload ####
+#### 10.4.2.2. Advertising Currently Available Functions within a Payload ####
 
 Functions may be bound to an entity or collection of entities. Services may choose whether to advertise functions within the entities or collections of entities returned from the Server. 
 
@@ -1196,19 +1217,19 @@ Example: Given a GET request to `http://server//Orders`, the service might respo
  
 When the resource retrieved represents a collection, the 'Target Url' of any Functions advertised MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
 
-An efficient format that assumes client knowledge of metadata SHOULD NOT advertise Functions whose availability ('IsAlwaysBindable' is set to 'true') and whose target url can be established via metadata.
+An efficient format that assumes client knowledge of metadata SHOULD NOT advertise Functions that are available on all instances and whose target url can be established via metadata. 
 
-#### 7.4.2.3. Invoking a Function ####
+#### 10.4.2.3. Invoking a Function ####
 
 To invoke a Function directly a client MUST issue a GET request to a Url that identifies the Function and that specifies any parameter values required by the Function. 
 
-It is also possible to invoke a Function indirectly using GET, PUT, POST, PATCH or DELETE requests by formulating a URL that identifies a Function and its parameters and then appending further path segments to create a Request URL that identifies resources related to the results of the Function.
+It is also possible to invoke a Function indirectly using GET, PUT, POST, PATCH, MERGE or DELETE requests by formulating a URL that identifies a Function and its parameters and then appending further path segments to create a Request URL that identifies resources related to the results of the Function.
 
-Parameter Values passed to Functions MUST be specified either as a URL Literal (for Primitive Types) or as a JSON formatted OData object (for ComplexTypes or Collections of Primitive Types or ComplexTypes). 
+Parameter Values passed to Functions MUST be specified either as a URL Literal (for Primitive Types) or as a JSON formatted OData object (for Complex Types or Collections of Primitive Types or Complex Types). 
 
 Functions calls MAY be present in the Request URL Path or the Request URL Query inside either the $filter or $orderby Query Options. 
 
-##### 7.4.2.3.1. Inline Parameter Syntax #####
+##### 10.4.2.3.1. Inline Parameter Syntax #####
 
 The simplest way to pass parameter values to a Function is using inline parameter syntax.
 
@@ -1230,7 +1251,7 @@ Filters `Customers` to those in the `Western` sales region, calculated for each 
 
 Primitive parameters values may be provided to Functions in the Request URL path using inline syntax. All other parameter types MUST be provided externally. 
 
-##### 7.4.2.3.2. Parameter Aliases #####
+##### 10.4.2.3.2. Parameter Aliases #####
 
 Parameters may be specified by substituting a `parameter alias` in place of an inline parameter to a function call. Parameters aliases are names beginning with an ampersand (`@`).
 
@@ -1244,7 +1265,7 @@ Parameter aliases allow the same parameter value to be used multiple times in a 
 
 If a Parameter Alias referenced by a Function call is not given a value in the Query part of the Request URL, the value MUST be assumed to be null.
 
-##### 7.4.2.3.3. Parameter Name Syntax #####
+##### 10.4.2.3.3. Parameter Name Syntax #####
 
 The OData protocol allows parameter values for the last Function call in a Request URL Path to be specified by appending Name/Value pairs, representing each parameter Name and Value for that Function, as query strings to the Query part of the Request URL. 
 
@@ -1254,13 +1275,13 @@ For example:
 
 	GET http://server/Sales.GetEmployeesByManager?ManagerID=3
 
-#### 7.4.2.4. Function overload resolution ####
+#### 10.4.2.4. Function overload resolution ####
 
 Functions overloads are supported in OData, meaning a service MAY expose multiple Functions with the same name that take a different set of parameters.
 
 When a function is invoked (using any of the three parameter syntaxes) the parameter names and parameter values are specified in the URL, and the parameter types can be deduced from each parameter value. The combination of the Function name and the unordered list of parameter types and names is always sufficient to identify a particular Function overload. 
 
-### 7.4.3. Legacy Service Operations ###
+### 10.4.3. Legacy Service Operations ###
 
 Service Operations are Operations like Actions and Functions. However use of Service Operations is now discouraged because they are legacy and have a number of disadvantages:
 
@@ -1268,9 +1289,9 @@ Service Operations are Operations like Actions and Functions. However use of Ser
 - Service Operations are not bindable.
 - Unlike Functions, composing Multiple Service Operations calls in the same request is not supported.
 
-#### 7.4.3.1. Declaring Service Operations in Metadata ####
+#### 10.4.3.1. Declaring Service Operations in Metadata ####
 
-Legacy Service Operations MUST declared in $metadata. Service Operation declarations indicate the signature (Name, ReturnType and Parameters) and semantics (http verb and result entityset) of the Service Operation. 
+Legacy Service Operations MUST declared in $metadata. Service Operation declarations indicate the signature (Name, ReturnType and Parameters) and semantics (http verb and result entity set) of the Service Operation. 
 
 In addition to the [Common Rules for All Operations](#Common Rules for All Operations) the following rules apply for Service Operations:
 
@@ -1281,9 +1302,9 @@ In addition to the [Common Rules for All Operations](#Common Rules for All Opera
 
 The [OData CSDL](OData CSDL Definition.html) specifies how syntactically this information, and information specific to each kind of operation is specified.
 
-#### 7.4.3.2. Invoking a Service Operation ####
+#### 10.4.3.2. Invoking a Service Operation ####
 
-To invoke a ServiceOperation the Request URL used MUST begin with the URL of the Service Document, followed by a path segment containing the Name or Namespace Qualified Name of the ServiceOperation and optionally parentheses.
+To invoke a service operation the Request URL used MUST begin with the URL of the Service Document, followed by a path segment containing the Name or Namespace Qualified Name of the service operation and optionally parentheses.
 
 For example:
 
@@ -1291,9 +1312,9 @@ For example:
 or 
 	http://server/service.svc/ServiceOperation()
 
-The HttpMethod (either GET or POST) used to invoke the ServiceOperation MUST match the HttpMethod specified by the FunctionImport that defines the ServiceOperation. 
+The HttpMethod (either GET or POST) used to invoke the service operation MUST match the HttpMethod specified by the FunctionImport that defines the service operation. 
 
-The body of a request to invoke a Service Operation SHOULD be empty. 
+The body of a request to invoke a service operation SHOULD be empty. 
 
 Any Parameter Values MUST be encoded into the Query part of the Request URL, as individual Query string Name/Value pairs, where the Name is the Parameter Name and the Value is a URLLiteral representing the parameter value.
 
@@ -1307,13 +1328,13 @@ Invokes the `CreatePerson` ServiceOperation with the following Parameter values:
 - Surname: `"Smith"`
 - DateOfBirth: `datetime'1971-07-07T13:03:00'`
 
-If the ServiceOperation specifies a ReturnType it MAY be possible to compose further OData path and/or Query Options after the segment that identifies the ServiceOperation. 
+If the service operation specifies a return yype it MAY be possible to compose further OData path and/or Query Options after the segment that identifies the service operation. 
 
 For example:
 
 	GET http://server/service.svc/GetOrdersByDate/$filter=Customer/Name eq 'ACME'&OrderDate=datetime'2012-07-07T01:03:00'
 
-Invokes the `GetOrdersByDate` ServiceOperation with the `OrderDate` parameter value of `datetime'2012-07-07T01:03:00` and then further filters the results so only the Orders for `ACME` on that date are returned.
+Invokes the `GetOrdersByDate` service operation with the `OrderDate` parameter value of `datetime'2012-07-07T01:03:00` and then further filters the results so only the Orders for `ACME` on that date are returned.
 
 ------
 

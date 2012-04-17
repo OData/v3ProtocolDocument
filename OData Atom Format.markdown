@@ -6,26 +6,59 @@ The OData protocol is comprised of a set of specifications for representing and 
 
 An OData payload may represent:
 
-* a single Primitive value  
-* a sequence of Primitive values  
-* a single structured ("Complex") value  
-* a sequence of structured ("Complex") values  
-* an Entity (a structured type with an identity)  
-* a sequence of Entities  
+* a single primitive value  
+* a sequence of primitive values  
+* a single structured ("complex") value  
+* a sequence of structured ("complex") values  
+* an entity (a structured type with an identity)  
+* a sequence of entities  
 * a media resource  
 * a single instance of a mime type  
+<<<<<<< HEAD
+* a single link to a related entity
+* a collection of links to related entities
 * a service document describing the collections (EntitySets) exposed by the service  
+=======
+* a service document describing the collections (entity sets) exposed by the service  
+>>>>>>> ee5bef7821721cf60da4843113b70c3e773fd82e
 * an xml document describing the entity model exposed by the service  
 * an error  
 * a batch of requests to be executed in a single request  
 * a set of responses returned from a batch request  
 
-For a description of batch requests and responses please see [OData:Batch](ODataBatchProcessingFormat).
-
+For a description of batch requests and responses please see [OData:Batch][].
 
 # 2. Notational Conventions #
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[RFC2119](http://tools.ietf.org/html/rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")].
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC2119], "Key words for use in RFCs to Indicate Requirement Levels")].
+
+## 2.1 Normative References ##
+
+This document references the following related documents:
+
+- [OData:Core][]. Core OData semantics and concepts.
+- [OData:CSDL][]. Detailed description of the OData Entity Data Model.
+- [OData:URL][]. Conventions for constructing OData requests.
+- [OData:ABNF][] Full ABNF rules for OData requests.
+- [OData:JSON][] A JSON encoding for OData payloads. OData services SHOULD support a JSON encoding.
+- [OData:Batch][] Support for grouping multiple OData requests in a single batch.
+- [RFC2616][] HTTP 1.1 Specification
+- [RFC5023][] The Atom Publishing Protocol
+- [RFC2119][] Keywords for use in RFCs to Indicate Requirement Levels
+- [RFC4287][] The Atom Syndication Format.
+- [RFC3987][] Internationalized Resource Identifiers (IRIs)
+
+[OData:CSDL]: /OData%20CSDL%20Definition.html
+[OData:URL]: /OData%20URL%20Conventions.html
+[OData:ABNF]: /OData%20ABNF.html
+[OData:ATOM]: /OData%20Atom%20Format.html
+[OData:JSON]: /OData%20JSON%20Verbose%20Format.html
+[OData:BATCH]: /OData%20Batch%20Processing%20Format.html
+[RFC2616]: http://www.w3.org/Protocols/rfc2616/rfc2616.html
+[RFC5023]: http://tools.ietf.org/html/rfc5023
+[RFC2119]: http://tools.ietf.org/html/rfc2119
+[RFC4287]: http://www.ietf.org/rfc/rfc4287
+[RFC3987]: http://www.ietf.org/rfc/rfc3987
 
 # 3. xml:base Attribute #
 
@@ -218,7 +251,7 @@ For full syntax rules, see [OData:ABNF](odatabnf):
 
 # 5. Use of Atom #
 
-The Atom Syndication Format [RFC4287](http://www.ietf.org/rfc/rfc4287) defines an XML-based format for describing collections ("feeds") made up of individual "entries". The Atom Publishing Protocol [RFC5023](http://www.ietf.org/rfc/rfc5023.txt) defines an application-level protocol based on HTTP transfer of Atom-formatted representations.
+The Atom Syndication Format [RFC4287][] defines an XML-based format for describing collections ("feeds") made up of individual "entries". The Atom Publishing Protocol [RFC5023][] defines an application-level protocol based on HTTP transfer of Atom-formatted representations.
 
 # 5.1 Namespaces #
 OData defines meaning for elements and attributes defined in the following namespaces.
@@ -285,7 +318,7 @@ An `atom:entry` element is used to represent a single entity, which is an instan
 The `atom:entry` element MAY contain a `metadata:etag` attribute, representing an opaque string value that can be used in a subsequent request to determine if the value of the entity has changed.  For details on how ETags are used, refer to the <todo:insert reference here> spec.
 
 ### 6.1.2.	The `atom:id` Element ###
-The `atom:id` element defines a durable, opaque, globally unique identifier for the entry. Its content must be an IRI as defined in [RFC3987](http://www.ietf.org/rfc/rfc3987). The consumer of the feed must not assume this IRI can be de-referenced, nor assume any semantics from its structure.
+The `atom:id` element defines a durable, opaque, globally unique identifier for the entry. Its content must be an IRI as defined in [RFC3987][]. The consumer of the feed must not assume this IRI can be de-referenced, nor assume any semantics from its structure.
 
 ### 6.1.3.	Self and Edit Links as `atom:link` Elements ###
 Atom defines two types of links within an entry that represent retrieve or update/delete operations on the entry. `atom:link` elements with a rel attribute of `"self"` can be used to retrieve the entity (via the URL specified in the `href` attribute). `atom:link` elements with a rel attribute of `"edit"` can be used to retrieve, update, or delete the entity (via the URL specified in the `href` attribute).
@@ -295,7 +328,7 @@ An `atom:entry` element representing an OData entity SHOULD contain a self link,
 #### 6.1.5 Stream Properties as `atom:link` Elements ####
 An entity may have one or stream properties (for example, a photo property of an employee entity). Properties that represent streams have a type of "Edm.Stream".
 
-OData uses `atom:link` elements to represent named stream properties of an Entity.
+OData uses `atom:link` elements to represent named stream properties of an entity.
 
 For example, a stream property named "Photo" be represented through an `atom:link` element as a child of the `atom:entry` element as follows:
 
@@ -331,7 +364,11 @@ For example, the set of related products for a particular catagory may be repres
 		type="application/atom+xml;type=feed" 
 		title="Products" />
 
-The related data for the relationship MAY be included in the Entity using a single child [`metadata:inline`](#InlineContentwithina`metadata:inline`Element) element.
+<<<<<<< HEAD
+The related data for the relationship MAY be included in the Entity using a single child [`metadata:inline`](#InlineContentwithinametadatainlineElement) element.
+=======
+The related data for the relationship MAY be included in the entity using a single child [`metadata:inline`](#InlineContentwithina`metadata:inline`Element) element.
+>>>>>>> ee5bef7821721cf60da4843113b70c3e773fd82e
 	
 #### 6.1.6.1. The `rel` attribute of an `atom:link` element Representing a Relationship ####
 The `rel` attribute for an `atom:link` element that represents a relationship MUST be present and is made up of the name of the [OData Data Namespace](#ODataDataNamespace), followed by the string "`/related/`" followed by the name of the navigation property on the entity.  
@@ -392,7 +429,7 @@ The entry MAY contain additional `atom:category` elements with different scheme 
 ### 6.1.12.	Entity Content within an `atom:content` Element ###
 The `atom:content` element defines the content of the entry.
 
-#### 6.1.12.1. Streamed Entities As Media Link Entries using the `src` Attribute ####
+#### 6.1.12.1. Media Entities As Media Link Entries using the `src` Attribute ####
 The `atom:content` element MAY contain a `src` attribute, in which case the entry is a Media Link Entry, used to represent a Media Resource (for example, a photo). The value of the `src` attribute MUST be a URI that can be used to retrieve the content of the Media Resource.
 
 For Media Link Entries the `atom:content` element MUST be empty. In this case, Properties of the Media Resource (other than the stream) are represented by the [`metadata:properties`](#EntityPropertieswithinametadata:propertiesElement) element  as a sibling to, rather than a child of, the `atom:content` element. 
@@ -446,7 +483,7 @@ For example, the collection typed property "Emails" would be respresented as:
 
 For properties that represent a collection of complex types, the `data:[propertyName]` element may include a `metdata:type` attribute with a value of `"Collection([ComplexTypeName])`" attribute. The content of the element consists of nested child elements named "`element`", in the Data Service namespace, for each complex typed value in the collection. 
 
-The `<data:element>` element representing the instance may include a `metadata:type` attribute to specify the type of the individual element. The value of each complex-typed `<data:element>` follows the syntax for Complex Typed Properties <todo:insert link>. 
+The `<data:element>` element representing the instance may include a `metadata:type` attribute to specify the type of the individual element. The value of each complex-typed `<data:element>` follows the syntax for complex-typed properties <todo:insert link>. 
 
 <data:element> elements MUST NOT be empty and MUST NOT contain the metadata:null="true" attribute.
 
@@ -565,7 +602,7 @@ Functions are represented as `metadata:function` elements that appear as direct 
 ### 8.1.1. The `metadata:metadata` Attribute ###
 A `metadata:function` element MUST have a `metadata:metadata` attribute which specifies the container qualified name of the function import describing the function, preceded by a "#". For example, "#MyEntityContainer.MyFunctionName".
 
-The named function may have multiple overloads (multiple function imports) within the container. If the metadata:function cannot be used to invoke all overloads for the function, then it must further be distinguished by appending a comma separated list of parameter type names, enclosed in parenthesis (). For example, "#MyEntityContainer.MyFunctionName(Edm.Integer, Edm.String)".
+The named function may have multiple overloads (multiple function imports) within the container. If the metadata:function cannot be used to invoke all overloads for the function, then it must further be distinguished by appending a comma separated ordered list of parameter type names, enclosed in parenthesis (). For example, "#MyEntityContainer.MyFunctionName(Edm.Integer, Edm.String)".
 
 If the metadata cannot be retrieved by appending $metadata to the service root, then this name must additionally be prefixed by a URL that can be used to retrieve the metadata document containing the function import that describes the function.
 
@@ -697,7 +734,7 @@ Similarly, the following payload represents a collection of full names.
 	
 # 13.	Entity Container as a Workspace within a Service Document #
 
-Atom defines the concept of a Service Document to represent the set of available collections. OData uses Service Documents to describe the set of EntitySets available through the service.
+Atom defines the concept of a Service Document to represent the set of available collections. OData uses Service Documents to describe the set of entity sets available through the service.
 
 ## 13.2. The `app:service` element ##
 
@@ -705,21 +742,21 @@ The atom ServiceDocument is represented by the app:service element.  The app:ser
 
 ### 13.2.1.	EntityContainer as an `app:workspace` element ###
 
-OData represents EntityContainers as `app:workspace` elements.  An `app:workspace` element contains zero or more `app:collections`. 
+OData represents entity containers as `app:workspace` elements.  An `app:workspace` element contains zero or more `app:collections`. 
 
-#### 13.2.1.1.	EntitySets as an `app:collection` elements ####
+#### 13.2.1.1.	Entity Sets as an `app:collection` elements ####
 
-OData describes available EntitySets as `app:collection` elements.
-The app:collection element contains an href attribute which represents a URI that can be used to retrieve the members of the EntitySet.
+OData describes available collections of entities as `app:collection` elements.
+The app:collection element contains an href attribute which represents a URI that can be used to retrieve the members of the entity set.
 
 ##### 13.2.1.1.1	EntitySet Name as an `atom:title` element #####
 
-The `atom:title` element within the app:collection contains the name of the EntitySet.
+The `atom:title` element within the app:collection contains the name of the entity set.
 
 # 14. Links 
 Links represent the relationships between an entity and related entity(s). The link(s) available from a particular entity for a particular relationship can be retrieved from the service as a colleciton of URIs within a [`data:link`](#Linkswithinadata:linkselement) element.
 
-## 14.1 Links within a `data:links` Element ##
+## 14.1 Collection of Links as a `data:links` Element ##
 A `data:link` element represents the set of references from one entity to all related entities according to a particular relationship.
 
 The reference for each related entity is represented as a `data:uri` element that appears as a direct child of the `data:link` element.
@@ -739,7 +776,7 @@ might return the following XML response:
 		<uri>http://services.odata.org/OData/OData.svc/Products(6)</uri> 
 	</links>
 	
-## 14.1 Individual Links as `data:uri` Elements ##
+## 14.2 Link as `data:uri` Element ##
 Each related entity is represented as a `data:uri` element, which appears as a direct child of a [`data:link`](#linkswithinadata:linkselement) element.
 
 The content of the `data:uri` element is the URI of the related entity.

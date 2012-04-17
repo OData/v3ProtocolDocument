@@ -42,7 +42,7 @@ Processors of batch requests MAY choose to disallow additional HTTP constructs i
 The example below shows a sample batch request that contains the following operations in the order listed:
 * query request
 * Change Set that contains the following requests:
-	- Insert Entity 
+	- Insert entity 
 	- Update request
 * second query request 
 
@@ -146,7 +146,7 @@ The order of ChangeSets and query operations in a Batch request is significant a
   
 All operations in a ChangeSet represent a single change unit so a service MUST successfully process and apply all the requests in the ChangeSet or else apply none of them. It is up to the service implementation to define rollback semantics to undo any requests within a ChangeSet that may have been applied before another request in that same ChangeSet failed and thereby honor this all-or-nothing requirement.
 
-If the set of request headers of a Batch request are valid (the Content-Type is set to multipart/mixed, etc) the MUST server return a 202 Accepted HTTP response code to indicate that the request was accepted for processing, but the processing yet to be completed. The requests within the body of the batch may subsequently fail or be malformed; however, this enables batch implementatios to stream the results.
+If the set of request headers of a Batch request are valid (the Content-Type is set to multipart/mixed, etc) the service MUST return a 202 Accepted HTTP response code to indicate that the request was accepted for processing, but the processing yet to be completed. The requests within the body of the batch may subsequently fail or be malformed; however, this enables batch implementatios to stream the results.
 
 If the service receives a Batch request with an invalid set of headers it MUST return a 4xx response code and perform no further processing of the request.   
 

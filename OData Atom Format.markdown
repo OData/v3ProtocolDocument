@@ -48,7 +48,7 @@ Table of Contents
         6.1.12. [Nulls represented using the metadata:null Attribute]()  
         6.1.13. [Data Type represented using the metadata:type Attribute]()  
     6.2. [Collections of Entities]()  
-        6.2.1 Collection of Entities as an atom:feed Element]()  
+        6.2.1. [Collection of Entities as an atom:feed Element]()  
         6.2.2. [The atom:id Element within an atom:feed]()  
         6.2.3. [Count as a metadata:count Element]()  
         6.2.4. [Self Links as atom:link Elements]()  
@@ -76,12 +76,17 @@ Table of Contents
     13.1. [The app:service element]()  
         13.1.1. [EntityContainer as an app:workspace element]()  
         13.1.2. [Entity Sets as an app:collection element]()  
-        13.1.3 EntitySet Name as an atom:title element]()  
+        13.1.3. [EntitySet Name as an atom:title element]()  
 14. [Links]()  
     14.1 [Collection of Links as a data:links Element]()  
     14.2 [Link as data:uri Element]()  
-15. [Extensibility]()  
-
+15. [Errors as XML]()  
+	15.1. [The metadata:error Element]()  
+	15.2. [The metadata:code Element]()  
+	15.3. [The metadata:message Element]()  
+		15.3.1 [The xml:lang Attribute]()  
+	15.4 [The metadata:innererror Element]() 
+16. [Extensibility]()  
 
 # 1. Overview #
 
@@ -736,7 +741,7 @@ The `metadata:function` element MUST have a `metadata:title` attribute that cont
 # 9. Annotations #
 
 In OData V3, Annotations may be appear as a child to any of the following elements:
-`<atom:feed>`, `<atom:entry>`, `<metadata:properties>`, `<metadata:function>`, `<metadata:action>`, or `<atom:link>` where `rel` indicates a navigation link or named stream. 
+`<atom:feed>`, `<atom:entry>`, `<metadata:properties>`, `<metadata:function>`, `<metadata:action>`, `<metadata:error>`, or `<atom:link>` where `rel` indicates a navigation link or named stream. 
 
 There are two types of annotation terms in OData; ValueTerms and TypeTerms.
 
@@ -873,7 +878,7 @@ OData represents entity containers as `app:workspace` elements.  An `app:workspa
 OData describes available collections of entities as `app:collection` elements.
 The `app:collection` element contains an `href` attribute which represents a URI that can be used to retrieve the members of the entity set.
 
-### 13.1.3	EntitySet Name as an `atom:title` element ###
+### 13.1.3.	EntitySet Name as an `atom:title` element ###
 
 The `atom:title` element within the [`app:collection`](#entitysetsasanapp:collectionelement) contains the name of the entity set.
 
@@ -908,6 +913,42 @@ Each related entity is represented as a `data:uri` element, which appears as a d
 
 The content of the `data:uri` element is the URI of the related entity.
 
-#15. Extensibility#
+# 15. Errors as XML #
+
+In case of an error in response to a request specifying an `Accept` header of `application/xml` or `application/atom+xml`, or that does not specify an `Accept` header, the service MUST respond with with an error formatted as XML.
+
+When formatting error responses as XML, servers SHOULD include a `Content-Type` response header with the value "application/xml".
+
+## 15.1 The `metadata:error` Element
+
+Errors formatted as XML have a root `metadata:error` element. The `metadata:error` element MUST have two child elements: [`metadata:code`](#themetadata:codeelement) and [`metadata:message`](#themetadata:messageelement).
+
+In addition, errors may be annotated using custom [annotations](#Annotations)
+
+For example: 
+	<error xmlns="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">
+	  <code>BDRQST</code>
+	  <message xml:lang="en-US">Bad Request - Error in query syntax.</message>
+	</error>
+	
+##15.2 The `metadata:code` Element
+
+The `metadata:code` element specifies a service-defined string which serves as a substatus to the HTTP response code.
+
+##15.3 The `metadata:message` Element
+
+The required `metadata:message` element specifies a human readable message describing the error.
+
+### 15.3.1 The xml:lang Attribute
+
+The `metadata:message` element MAY contain an `xml:lang` attribute to specify the language of the error message.
+
+##15.4 The `metadata:innererror` Element
+
+The optional `metadata:innererror` element contains data service specific debugging information that might assist a service implementer in determining the cause of an error.
+
+The `metadata:innererror` element SHOULD only be used in development environments in order to guard against potential information disclosure security concerns.
+
+#16. Extensibility #
 
 Implementations may add custom content anywhere allowed by [RFC4287](http://www.ietf.org/rfc/rfc4287), Section 6, "Extending Atom"; however, custom elements and attributes MUST NOT be defined in the [OData Data Namespace](#odatadatanamespace) nor the [OData Metadata Namespace](#odatametadatanamespace).

@@ -22,17 +22,39 @@ An OData payload may represent:
 * a batch of requests to be executed in a single request  
 * a set of responses returned from a batch request  
 
-For a description of batch requests and responses please see [OData:Batch](ODataBatchProcessingFormat).
+For a description of batch requests and responses please see [OData:Batch][].
 
 # 2. Notational Conventions #
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [[RFC2119](http://tools.ietf.org/html/rfc2119 "Key words for use in RFCs to Indicate Requirement Levels")].
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC2119], "Key words for use in RFCs to Indicate Requirement Levels")].
 
 ## 2.1 Normative References ##
 
-- Normative reference to ATOM
-- Normative reference to ATOMPUB
-- Normative reference to OData:Core
+This document references the following related documents:
+
+- [OData:Core][]. Core OData semantics and concepts.
+- [OData:CSDL][]. Detailed description of the OData Entity Data Model.
+- [OData:URL][]. Conventions for constructing OData requests.
+- [OData:ABNF][] Full ABNF rules for OData requests.
+- [OData:JSON][] A JSON encoding for OData payloads. OData services SHOULD support a JSON encoding.
+- [OData:Batch][] Support for grouping multiple OData requests in a single batch.
+- [RFC2616][] HTTP 1.1 Specification
+- [RFC5023][] The Atom Publishing Protocol
+- [RFC2119][] Keywords for use in RFCs to Indicate Requirement Levels
+- [RFC4287][] The Atom Syndication Format.
+- [RFC3987][] Internationalized Resource Identifiers (IRIs)
+
+[OData:CSDL]: /OData%20CSDL%20Definition.html
+[OData:URL]: /OData%20URL%20Conventions.html
+[OData:ABNF]: /OData%20ABNF.html
+[OData:ATOM]: /OData%20Atom%20Format.html
+[OData:JSON]: /OData%20JSON%20Verbose%20Format.html
+[OData:BATCH]: /OData%20Batch%20Processing%20Format.html
+[RFC2616]: http://www.w3.org/Protocols/rfc2616/rfc2616.html
+[RFC5023]: http://tools.ietf.org/html/rfc5023
+[RFC2119]: http://tools.ietf.org/html/rfc2119
+[RFC4287]: http://www.ietf.org/rfc/rfc4287
+[RFC3987]: http://www.ietf.org/rfc/rfc3987
 
 # 3. xml:base Attribute #
 
@@ -225,7 +247,7 @@ For full syntax rules, see [OData:ABNF](odatabnf):
 
 # 5. Use of Atom #
 
-The Atom Syndication Format [RFC4287](http://www.ietf.org/rfc/rfc4287) defines an XML-based format for describing collections ("feeds") made up of individual "entries". The Atom Publishing Protocol [RFC5023](http://www.ietf.org/rfc/rfc5023.txt) defines an application-level protocol based on HTTP transfer of Atom-formatted representations.
+The Atom Syndication Format [RFC4287][] defines an XML-based format for describing collections ("feeds") made up of individual "entries". The Atom Publishing Protocol [RFC5023][] defines an application-level protocol based on HTTP transfer of Atom-formatted representations.
 
 # 5.1 Namespaces #
 OData defines meaning for elements and attributes defined in the following namespaces.
@@ -292,7 +314,7 @@ An `atom:entry` element is used to represent a single entity, which is an instan
 The `atom:entry` element MAY contain a `metadata:etag` attribute, representing an opaque string value that can be used in a subsequent request to determine if the value of the entity has changed.  For details on how ETags are used, refer to the <todo:insert reference here> spec.
 
 ### 6.1.2.	The `atom:id` Element ###
-The `atom:id` element defines a durable, opaque, globally unique identifier for the entry. Its content must be an IRI as defined in [RFC3987](http://www.ietf.org/rfc/rfc3987). The consumer of the feed must not assume this IRI can be de-referenced, nor assume any semantics from its structure.
+The `atom:id` element defines a durable, opaque, globally unique identifier for the entry. Its content must be an IRI as defined in [RFC3987][]. The consumer of the feed must not assume this IRI can be de-referenced, nor assume any semantics from its structure.
 
 ### 6.1.3.	Self and Edit Links as `atom:link` Elements ###
 Atom defines two types of links within an entry that represent retrieve or update/delete operations on the entry. `atom:link` elements with a rel attribute of `"self"` can be used to retrieve the entity (via the URL specified in the `href` attribute). `atom:link` elements with a rel attribute of `"edit"` can be used to retrieve, update, or delete the entity (via the URL specified in the `href` attribute).
@@ -338,7 +360,7 @@ For example, the set of related products for a particular catagory may be repres
 		type="application/atom+xml;type=feed" 
 		title="Products" />
 
-The related data for the relationship MAY be included in the Entity using a single child [`metadata:inline`](#InlineContentwithina`metadata:inline`Element) element.
+The related data for the relationship MAY be included in the Entity using a single child [`metadata:inline`](#InlineContentwithinametadatainlineElement) element.
 	
 #### 6.1.6.1. The `rel` attribute of an `atom:link` element Representing a Relationship ####
 The `rel` attribute for an `atom:link` element that represents a relationship MUST be present and is made up of the name of the [OData Data Namespace](#ODataDataNamespace), followed by the string "`/related/`" followed by the name of the navigation property on the entity.  

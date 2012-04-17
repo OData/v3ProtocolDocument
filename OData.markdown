@@ -172,7 +172,39 @@ A set of related type annotation terms or value annotation terms in a common nam
 Applied *annotations* have a term (the namespace-qualified name of the annotation being applied), a target (the model or instance element to which the term is applied), and a value. The value may be a static value, or an expression which may contain a path to one or more properties of an annotated entity.
 
 # 3. Service Model
-<todo or delete (Arlo?)>
+
+An OData service exposes a data model. The service defines what is possible. A client consumes that model. The client defines what is interesting (to that client).
+
+OData allows automated clients to discover the capabilities of automated servers. This is possible because the service is defined in a uniform way, using the data model defined above. The service advertises its concrete data model in a machine-readable form.
+
+An OData service consists of 2 well-defined, static resources and a set of dynamic resources. The two static resources allow machines to ask a service about its data model. The dynamic resources are ways to manipulate that model.
+
+The most important part of an OData service is its metadata document. The *metadata document* describes the entire data model and type system understood by that particular OData service.
+
+Clients can use the metadata document to understand how to query and navigate between the entities in the system.
+
+The metadata document is typically served at `$metadata`, relative to the root of the service. For example, `http://example.com/some.svc/$metadata` would be the metadata document for `some.svc` running on `example.com`.
+
+The second static resource in an OData service is the service document. The *service document* lists all of the top-level entity sets exposed by the service.
+
+The service document is always available at the root URL for the service. For example, a GET request to `http://example.com/some.svc/` would return the service document if `some.svc` were an OData service running on `example.com`.
+
+The rest of an OData service consists of dynamic resources. The URLs for many of these resources can be computed from the information in the metadata document.
+
+A typical OData interaction proceeds as follows:
+
+ 1. Client has an intent
+ 2. Client asks for and parses the metadata document.
+ 3. Client uses metadata to determine how to form a request for its intent.
+ 4. Client performs request(s) to interact with data.
+ 5. Each response provides additional options to the client, in terms of both links and instance metadata.
+ 6. Client can follow links or combine instance metadata with service metadata to determine new entry points.
+
+In this way, the service always remains in control. It defines what is allowed at any moment and how that will be requested.
+
+However, the service can describe those operations in terms of composable chunks. This allows the client wide flexibility in how it composes resources to achieve its intent.
+
+See [Requesting Data](#requestingdata) and [Data Modification](#datamodification) for details.
 
 # 4. Notational Conventions
 

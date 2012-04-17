@@ -98,13 +98,13 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
 	namespace				 	= 	namespacePart *("." namespacePart)
 
     entitySetName 				=	odataIdentifier
-									; identifies by name an EntitySet
+									; identifies by name an entity set
 
 	entityTypeName				= 	odataIdentifier
-									; identifies by name an EntityType
+									; identifies by name an entity type
 
 	complexTypeName				= 	odataIdentifier	
-									; identifies by name a ComplexType
+									; identifies by name a complex type
 
 	operationQualifier			= 	[ namespace "." ] entityContainerName "."
 
@@ -164,22 +164,22 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
                            			"geometry"      
 
 	primitiveKeyProperty		=	odataIdentifier
-									; that identifies a primitive property of an EntityType that is part of the EntityKey of that EntityType
+									; that identifies a primitive property of an entity type that is part of the key of that entity type
 
 	primitiveNonKeyProperty		= 	odataIdentifier
-									; that identifies a primitive Property on the current EntityType or ComplexType.
+									; that identifies a primitive Property on the current entity type or complex type.
 	
 	primitiveColProperty		= 	odataIdentifier
 									; that identifies a property that is a collection of primitive types.
 
 	complexProperty				= 	odataIdentifier
-									; that identifies a ComplexType property on the current EntityType or ComplexType
+									; that identifies a complex type property on the current entity type or complex type
 
 	complexColProperty			=	odataIdentifier
-									; that identifies a property that is a collection of a ComplexType
+									; that identifies a property that is a collection of a complex type
 
 	streamProperty				= 	odataIdentifier
-									; that identifies a stream Property on the current EntityType
+									; that identifies a stream Property on the current entity type
 
 	propertyName				= 	primitiveKeyProperty / 
 									primitiveNonKeyProperty /
@@ -216,22 +216,22 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
 	navigationProperty	 		= 	entityNavigationProperty / entityColNavigationProperty  
 
 	entityFunction				= 	odataIdentifier
-									; identifies by name a Function that returns an Entity
+									; identifies by name a function that returns an entity
 
 	entityColFunction			=	odataIdentifier
-									; identifies by name a Function that returns a Collection of Entities
+									; identifies by name a function that returns a collection of entities
 
 	complexFunction				= 	odataIdentifier
-									; identifies by name a Function that returns a ComplexType instance
+									; identifies by name a function that returns a complex type instance
 
 	complexColFunction			= 	odataIdentifier
-									; identifies by name a Function that returns a Collection of ComplexType instances
+									; identifies by name a function that returns a collection of complex type instances
 
 	primitiveFunction			= 	odataIdentifier
-									; identifies by name a Function that returns a Primitive value
+									; identifies by name a function that returns a primitive value
 
 	primitiveColFunction		= 	odataIdentitier
-									; identifies by name a Function that returns a Collection of Primitive values
+									; identifies by name a function that returns a collection of primitive values
 
 	function					=	entityFunction / 
 									entityColFunction /
@@ -266,25 +266,25 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
 									fullPrimitiveColFunction            
 
 	entityAction				=	odataIdentifier
-									; identifies by name an Action that returns an Entity
+									; identifies by name an action that returns an entity
 
 	entityColAction				=	odataIdentifier
-									; identifies by name an Action that returns a Collection of Entities
+									; identifies by name an action that returns a collection of entities
 
 	complexAction				=	odataIdentifier
-									; identifies by name an Action that returns a ComplexType instance
+									; identifies by name an action that returns a complex type instance
 
 	complexColAction			=	odataIdentifier
-									; identifies by name an Action that returns a Collection of ComplexType instances
+									; identifies by name an action that returns a collection of complex type instances
 
 	primitiveAction				=	odataIdentifier
-									; identifies by name an Action that returns a Primitive value
+									; identifies by name an action that returns a primitive value
 
 	primitiveColAction			=	odataIdentifier
-									; identifies by name an Action that returns a Collection of Primitive values
+									; identifies by name an action that returns a collection of primitive values
 
 	voidAction					=	odataIdentifier
-									; identifies by name an Action
+									; identifies by name an action
 
 	action						=	entityAction / 
 									entityColAction /
@@ -308,7 +308,7 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
 
 	parameterTypeNames    		= 	[ parameterTypeName *( "," parameterTypeName ) ]
                       				; the types of all the parameters to the corresponding functionImport 
-                      				; in the order they are declared in the FunctionImport
+                      				; in the order they are declared in the function import
 
 	parameterTypeName     		= 	qualifiedTypeName 
 
@@ -449,7 +449,7 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
 
     segment-nz 					= 	; section 3.3 of [RFC3986]
 								  	; the non empty sequence of characters
-                         			; outside the set of URI reserved
+                         			; outside the set of URL reserved
                          			; characters as specified in [RFC3986]
 
 	odataRelativeUri			= 	resourcePath ["?" queryOptions ]
@@ -571,7 +571,7 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
 									)
                                     ; boundOperation segments can only be composed if the type of the previous segment matches 
                                     ; the type of the first parameter of the action or function being called.
-									; NOTE: the qualifiedEntityTypeName is only permitted if the previous segment is an Entity or Collection of Entities.
+									; NOTE: the qualifiedEntityTypeName is only permitted if the previous segment is an entity or collection of entities.
 
     primitivePropertyPath       = 	[ "/ qualifiedEntityTypeName" ] "/" ( primitiveKeyProperty / primitiveNonKeyProperty ) [ value ]
     
@@ -602,8 +602,8 @@ The following Augmented Backus–Naur Form (ABNF) details the construction rules
 	actionCall					= 	[ operationQualifier ] action [ "()" ]
 
 	boundActionCall				= 	[ operationQualifier ] action [ "()" ]
-									; with the added restriction that the binding parameter MUST be either an Entity or Collection of Entities
-                                    ; and is specified by reference using the Uri immediately preceding (to the left) of the boundActionCall
+									; with the added restriction that the binding parameter MUST be either an entity or collection of entities
+                                    ; and is specified by reference using the URL immediately preceding (to the left) of the boundActionCall
 
 	entityFunctionCall			= 	fullEntityFunctionCall functionParameters
 

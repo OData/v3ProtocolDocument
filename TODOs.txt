@@ -1,39 +1,18 @@
 Find and replace: (Mark)
-- service instead of server
 - consistently use client
-- casing of entity type rather than EntityType (for example)
-- make sure Edm.Stream is everywhere it needs to be
-- make sure JSON Light is JSON
-- URI is URL
 - file names are right (Appendix A is ABNF)
-- references to Microsoft
-- structured with structural
-- model elements with something
-- renumber sections
-Handle all CSDL TODOs (Mark)
 
 Make sure every header is mentioned somewhere (Mike)
 Deal with EPM (Mike)
 Rewrite media resources section (Mike)
-Common section for PATCH and MERGE (Arlo)
 Add error information to Atom format doc (Mike)
 Add single property to Atom format doc (Mike)
-Add error information to JSON-V format doc (Arlo)
-Add single property to JSON-V format doc (Arlo)
 Review JSON-V actions (Alex)
 Check that everything talks about what the error codes are (multiple)
 Dealing with accepted (Mike)
 Dealing with redirects (Mike)
 
-  C:\git\specs\OData JSON Verbose Format.markdown (8 hits) (Arlo)
-	Line 139: -- TODO: MUSTHAVE verify. Is this correct for collection types? Does a collection value contain the same object & metadata?
-	Line 143: -- TODO: MUSTHAVE write NamedResourceStreamProperty.
-	Line 348: -- TODO: MUSTHAVE write 6.1 Response body. Talk about the d object, etc.
-	Line 393: -- TODO: MUSTHAVE Find other reference to this same content and copy (functions bound to multiple entities)
-	Line 416: -- TODO: MUSTHAVE 6.5 Errorswrite this.
-	Line 420: -- TODO: MUSTHAVE 6.6 Next Links write this.
-	Line 424: -- TODO: MUSTHAVE Inline Count write this.
-	Line 428: -- TODO: MUSTHAVE Service Document write this.
+
   C:\git\specs\OData URL Conventions.markdown (1 hits) (Alex)
 	Line 647: TODO: MUSTHAVE figure out how to actually do a cast!
   C:\git\specs\OData.markdown (12 hits)
@@ -42,6 +21,5 @@ Dealing with redirects (Mike)
 	Line 60: <!-- TODO: MUSTHAVE Add a definition for resource (anything in a model that can be addressed). --> (Mark)
 	Line 700: <!-- TODO: MUSTHAVE Add a section in the common requirements that indicates that a request or batch request must not modify data such that integrity constraints are violated. --> (Mike)
 	Line 830: - TODO: MUSTHAVE overload rules (i.e. unordered combination of parameter names & types must be unique). (Alex)
-	Line 850: <!-- TODO: MUSTHAVE Scan for "version 3.0" --> (Mark)
 	Line 884: <!-- TODO: MUSTHAVE Remove any redundant attributes here with CSDL. --> (Alex)
 	Line 944: <!-- TODO: MUSTHAVE Add etags to common update section and just refer to it from here. (Mike)

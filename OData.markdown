@@ -117,7 +117,7 @@
 Appendix A: [Terminology](#terminology)  
 
 
-# 1. Overview  #
+# 1. Overview
 
 The OData Protocol is an application-level protocol for interacting with data via RESTful web services. The protocol supports the description of data models and the editing and querying of data according to those models. It provides facilities for:
 
@@ -137,7 +137,7 @@ Towards that end, the OData Protocol follows these design principles:
 - Follow REST principles unless there is a good and specific reason not to.
 - OData should degrade gracefully. It should be easy to build a very basic but compliant OData service, with additional work necessary only to support additional capabilities.
 
-# 2. Data Model  #
+# 2. Data Model
 
 This section provides a high-level description of the Entity Data Model (EDM): the abstract data model that MUST be used to describe the data exposed by an OData service. An [OData Metadata Document](#metadatadocument) is a representation of a service's data model exposed for client consumption.  
 
@@ -179,14 +179,46 @@ A set of related type annotation terms or value annotation terms in a common nam
 
 Applied *annotations* have a term (the namespace-qualified name of the annotation being applied), a target (the model or instance element to which the term is applied), and a value. The value may be a static value, or an expression which may contain a path to one or more properties of an annotated entity.
 
-# 3. Service Model  #
-<todo or delete (Arlo?)>
+# 3. Service Model
 
-# 4. Notational Conventions  #
+An OData service exposes a data model. The service defines what is possible. A client consumes that model. The client defines what is interesting (to that client).
+
+OData allows automated clients to discover the capabilities of automated servers. This is possible because the service is defined in a uniform way, using the data model defined above. The service advertises its concrete data model in a machine-readable form.
+
+An OData service consists of 2 well-defined, static resources and a set of dynamic resources. The two static resources allow machines to ask a service about its data model. The dynamic resources are ways to manipulate that model.
+
+The most important part of an OData service is its metadata document. The *metadata document* describes the entire data model and type system understood by that particular OData service.
+
+Clients can use the metadata document to understand how to query and navigate between the entities in the system.
+
+The metadata document is typically served at `$metadata`, relative to the root of the service. For example, `http://example.com/some.svc/$metadata` would be the metadata document for `some.svc` running on `example.com`.
+
+The second static resource in an OData service is the service document. The *service document* lists all of the top-level entity sets exposed by the service.
+
+The service document is always available at the root URL for the service. For example, a GET request to `http://example.com/some.svc/` would return the service document if `some.svc` were an OData service running on `example.com`.
+
+The rest of an OData service consists of dynamic resources. The URLs for many of these resources can be computed from the information in the metadata document.
+
+A typical OData interaction proceeds as follows:
+
+ 1. Client has an intent
+ 2. Client asks for and parses the metadata document.
+ 3. Client uses metadata to determine how to form a request for its intent.
+ 4. Client performs request(s) to interact with data.
+ 5. Each response provides additional options to the client, in terms of both links and instance metadata.
+ 6. Client can follow links or combine instance metadata with service metadata to determine new entry points.
+
+In this way, the service always remains in control. It defines what is allowed at any moment and how that will be requested.
+
+However, the service can describe those operations in terms of composable chunks. This allows the client wide flexibility in how it composes resources to achieve its intent.
+
+See [Requesting Data](#requestingdata) and [Data Modification](#datamodification) for details.
+
+# 4. Notational Conventions
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC2119], "Key words for use in RFCs to Indicate Requirement Levels")].
 
-## 4.1 Normative References ##
+## 4.1. Normative References
 
 This document references the following related documents:
 
@@ -214,8 +246,6 @@ This document references the following related documents:
 
 Some sections of this specification are illustrated with non-normative example OData request and response payloads. However, the text of this specification provides the definition of conformance.  
 
-OData payloads are representable in multiple formats. Those formats are specified in separate documents. In this document, when an example is necessary, it will be given in the [OData:JSON][] format.
-
 ## 4.3. Interpreting Examples ##
 
 All code examples with the exception of the XSD and the BNF are non-normative.
@@ -238,11 +268,11 @@ DataServiceVersion, MinDataServiceVersion, and MaxDataServiceVersion header fiel
 
 This version of the specification defines the following valid data service version values: "1.0", "2.0", and "3.0", corresponding to OData versions 1.0, 2.0, and 3.0, respectively.
 
-# 6. Extensibility 
+# 6. Extensibility
 
 The OData protocol supports both user- and version-driven extensibility through a combination of versioning, convention, and explicit extension points.
 
-## 6.1. Query Option Extensibility ##
+## 6.1. Query Option Extensibility
 
 Query options within the request URL can control how a particular request is processed by the service. 
 
@@ -250,13 +280,13 @@ OData-defined system query options are prefixed with "$". Services MAY support a
 
 OData services SHOULD NOT require any query options to be specified in a request, and SHOULD fail any request that contains query options that it does not understand. 
 
-## 6.2. Payload Extensibility  ##
+## 6.2. Payload Extensibility
 
 OData supports extensibility in the payload, according to the specific format.
 
 Regardless of the format, additional content MUST NOT be present if it needs to be understood by the receiver in order to correctly interpret the payload. Thus, clients and services MAY safely ignore any content not specifically defined in the version of the payload specified by the DataServiceVersion header.
 
-## 6.3. Action/Function Extensibility ##
+## 6.3. Action/Function Extensibility
 
 Actions and functions extend the set of operations that can be performed on or with a service or resource. Actions MAY have side-effects. For example actions may be used to extend CUD operations or to invoke custom operations. Functions MUST NOT have side-effects. Functions can be invoked:
 
@@ -286,13 +316,13 @@ OData defines semantics around certain HTTP request and response headers. Servic
 
 Individual services MAY define custom headers. These headers MUST NOT begin with `OData-`. Custom headers SHOULD be optional when making requests to the service. A service MUST NOT require a client to understand custom headers to accurately interpret the response.
 
-## 6.6. Format Extensibility ##
+## 6.6. Format Extensibility
 
-An OData Service MUST support at least the [OData:Atom](Atom_format) format, and MAY support additional formats for both request and response bodies.
+An OData Service MUST support at least the [OData:Atom][] format, and MAY support additional formats for both request and response bodies.
 
-# 7. Formats #
+# 7. Formats
 
-The client may request a particular response format through the `Accept` header, as specified in [RFC2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html), or through the [`$format` System Query Option](#the$formatsystemqueryoption). In the case that both are `Accept` header and the `$format` query option are used, the value specified in the `$format` query option SHOULD be used.
+The client may request a particular response format through the `Accept` header, as specified in [RFC2616][], or through the [`$format` System Query Option](#the$formatsystemqueryoption). In the case that both are `Accept` header and the `$format` query option are used, the value specified in the `$format` query option SHOULD be used.
 
 If the service does not support the requested format, it SHOULD reply with a `406 Not Acceptable` error response.
 
@@ -302,59 +332,59 @@ See the format-specific specifications ([[OData:JSON][]], [[OData:Atom][]) for d
 
 OData defines semantics around the following request and response headers. Additional headers MAY be specified, but have no unique semantics defined in OData.
 
-## 8.1. Common Headers ##
+## 8.1. Common Headers##
 
 The `DataServiceVersion` and `Content-Type` headers may be used on any OData request or response.
 
-### 8.1.1. The `DataServiceVersion` Header  <ref id="thedataserviceversionheader"/> ###
+### 8.1.1. The `DataServiceVersion` Header ###
 
-OData clients MAY use the `DataServiceVersion` header on a request to specify the version of the protocol used to generate the request. 
+OData clients MAY use the DataServiceVersion header on a request to specify the version of the protocol used to generate the request. 
 
 If present on a request, the service MUST interpret the request according to the rules defined in the specified version of the protocol, or fail the request with a 4xx response code. If not specified, the service MUST assume the request is generated using the maximum version of the protocol that the service understands. 
 
-OData services SHOULD specify the `DataServiceVersion` header on a response to specify the version of the protocol used to generate the response. If present on a response, the client MUST interpret the response according to the rules defined in the specified version of the protocol. If not specified, the client MUST assume the request is generated using version 1.0 of the OData Protocol. 
+OData services SHOULD specify the DataServiceVersion header on a response to specify the version of the protocol used to generate the response. If present on a response, the client MUST interpret the response according to the rules defined in the specified version of the protocol. If not specified, the client MUST assume the request is generated using version 1.0 of the OData Protocol. 
 
 For more details see [Versioning](#versioning).
 
-#### 8.1.2. The `Content-Type` Header ####
+### 8.1.2. The `Content-Type` Header
 
 The format of an individual request or response body MUST be specified in the `Content-Type` header of the request or response.
 
-## 8.2. Common Request Headers ##
+## 8.2. Common Request Headers
 
 In addition to the [Common Headers](#commonheaders), a client MAY specify any combination of the following request headers.
 
-### 8.2.1.	The `MaxDataServiceVersion` Request Header ###
+### 8.2.1.	The `MaxDataServiceVersion` Request Header
 
-Clients SHOULD specify a `MaxDataServiceVersion` request field.
+Clients SHOULD specify a `MaxDataServiceVersion` request header.
 
-If specified, the service MUST generate a response with a [DataServiceVersion](#dataserviceversion) less than or equal to the specified `MaxDataServiceVersion`. If `MaxDataServiceVersion` is not specified, then the service SHOULD interpret the request as having a `MaxDataServiceVersion` equal to the maximum version supported by the service.
-
-For more details see [Versioning](#versioning).
-
-### 8.2.2.	The `MinDataServiceVersion` Request Header ###
-
-Clients SHOULD specify a `MinDataServiceVersion` request field.
-
-If specified, the service MUST generate a response with a [DataServiceVersion](#dataserviceversionheader) greater than or equal to the specified `MinDataServiceVersion`.
-
-The service SHOULD respond with the maximum version supported by the service that is less than or equal to the specified `MaxDataServiceVersion`. 
+If specified, the service MUST generate a response with a [DataServiceVersion](#dataserviceversion) less than or equal to the specified MaxDataServiceVersion. If MaxDataServiceVersion is not specified, then the service SHOULD interpret the request as having a MaxDataServiceVersion equal to the maximum version supported by the service.
 
 For more details see [Versioning](#versioning).
 
-### 8.2.3.	The `Accept` Request Header ###
+### 8.2.2.	The `MinDataServiceVersion` Request Header
 
-As specified in [RFC2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html), the client MAY specify the set of accepted [formats](#formats) through the use of the `Accept` Header.
+Clients SHOULD specify a `MinDataServiceVersion` request header.
 
-### 8.2.4.	The `If-Match` Request Header ###
+If specified, the service MUST generate a response with a [DataServiceVersion](#dataserviceversion) greater than or equal to the specified MinDataServiceVersion.
 
-A client MAY include an `If-Match` header in a request to GET, PUT, MERGE, PATCH or DELETE an entity or entity property, or to invoke an action bound to an entity. The value of the `If-Match` request header MUST be an ETag value previously retrieved for the entity.
+The service SHOULD respond with the maximum version supported by the service that is less than or equal to the specified MaxDataServiceVersion. 
+
+For more details see [Versioning](#versioning).
+
+### 8.2.3.	The `Accept` Request Header
+
+As specified in [RFC2616][], the client MAY specify the set of accepted [formats](#formats) through the use of the Accept Header.
+
+### 8.2.4.	The `If-Match` Request Header
+
+A client MAY include an If-Match header in a request to GET, PUT, MERGE, PATCH or DELETE an entity or entity property, or to invoke an action bound to an entity. The value of the If-Match request header MUST be an ETag value previously retrieved for the entity.
 
 If specified, the request MUST only be invoked if the specified value matches the current ETag value of the entity. If the value does not match the current ETag value of the entity for a [Data Modification](#datamodification) or [Action](#actions) request, the service MUST respond with '412 Precondition Failed' and MUST ensure that no data is modified as a result of the request.
 
-### 8.2.5.	The `If-None-Match` Request Header ###
+### 8.2.5.	The `If-None-Match` Request Header
 
-A client MAY include an `If-None-Match` header in a request to GET, PUT, MERGE, PATCH or DELETE an entity or entity property, or to invoke an action bound to an entity. The value of the `If-None-Match` request header MUST be an ETag value previously retrieved for the entity.
+A client MAY include an If-None-Match header in a request to GET, PUT, MERGE, PATCH or DELETE an entity or entity property, or to invoke an action bound to an entity. The value of the If-None-Match request header MUST be an ETag value previously retrieved for the entity.
 
 If specified, the request MUST only be invoked if the specified value does not match the current ETag value of the entity. If the value does match the current ETag value of the entity for a [Data Modification](#datamodification) or [Action](#actions) request, the service MUST respond with '412 Precondition Failed' and MUST ensure that no data is modified as a result of the request.
 
@@ -368,7 +398,7 @@ A request that returns an individual entity MAY include an `ETag` header.
 
 The value specified in the `ETag` header may be specified in the `If-Match` header of a subsequent [Data Modification](#datamodification) or [Action](#actions) Request in order to apply optimistic concurrency in updating, deleting, or invoking the action bound to, the entity.
 
-### 8.3.2. The `Location` Header ###
+### 8.3.2. The `Location` Header Field ###
 
 The Location header is used to specify the URL of an entity modified through a [Data Modification](#datamodification) Request, or the request URL to check on the status of an asynchronous operation as described in [`202 Accepted`](#202accepted).
 
@@ -450,10 +480,6 @@ An OData Service MAY return a `302 Found` response if additional authentication 
 
 Services SHOULD return `4xx Client Error` in response to client errors such as malformed requests, in addition to requests for non-existent resources such as entity collections, entities, or properties.
 
-In all failure responses, the service MUST provide an accurate failure HTTP status code. The response body SHOULD contain a human-readable, possibly localized description of the problem, and SHOULD contain suggested resolution steps, if the service knows what those are. 
-
-The service SHOULD return "top-level" errors, in the appropriate format, when an error is detected prior to sending the status line or any response headers to the client. When an error is detected after sending a partial response to the client, including a success code, the service MUST generate an [Instream Error](#instreamerrors).
-
 The service MUST ensure that no observable change has occurred to the state of the service as a result of any request that returns an error status code.
 
 ### 9.2.1. `404 Not Found` Response Code
@@ -462,9 +488,7 @@ If the entity or collection specified by the request URL does not exist, the ser
 
 ### 9.3 InStream Errors ###
 
-In the case that the service encounters an error after sending a success status to the client, the service MUST generate an in-stream error which SHOULD leave the response malformed. Clients MUST assume that any malformed responses are invalid and results SHOULD be discarded.
-
-This specification does not prescribe a particular format for such instream errors. 
+The service MUST ensure that no observable change has occured to the state of the service as a result of any request that returns an error status code.
 
 # 10. OData Service Requests #
 
@@ -480,7 +504,7 @@ To request a `Service Document` describing the set of entity collections (i.e., 
 
 The format of the Service Document is dependent upon the format selected. For example, in Atom the Service Document is an AtomPub Service Document (as specified in [RFC5023][]). 
 
-### 10.1.2. Metadata Document Request  <ref id="metadatadocumentrequest"/>###
+### 10.1.2. Metadata Document Request ###
 
 An OData *Metadata Document* is a representation of the [data model](#DataModel) that describes the data and operations exposed by an OData service.
 
@@ -1067,8 +1091,6 @@ Alternatively, a relationship MAY be updated as part of an update to the source 
 
 A `media entity` is an entity that represents an out-of-band stream, such as a photograph.
 
-<todo: in csdl, tie the m:hasstream property to the entity being a media entity>
-
 A media entity has a `source url` that can be used to read the media stream, and may have an `edit-media` URL that can be used to write to the media stream.
 
 Because a media entity has both a media stream and standard entity properties special handling is required.
@@ -1206,9 +1228,9 @@ Actions are operations exposed by an OData service that MAY have side effects wh
 
 #### 10.4.1.1. Declaring Actions in Metadata ####
 
-Actions SHOULD be declared in $metadata using a FunctionImport element that indicates the signature (Name, ReturnType and Parameters) of the Action. 
+Actions SHOULD be declared in $metadata using a FunctionImport element that indicates the signature (name, return type and parameters) of the action. 
 
-In addition to the [Common Rules for All Operations](#Common Rules for All Operations) the following rules apply for Actions:
+In addition to the [Common Rules for All Operations](#Common Rules for All Operations) the following rules apply for actions:
 
 - Actions MUST NOT specify the HttpMethod as this is reserved for ServiceOperations.
 - Actions MUST be marked as side effecting.
@@ -1221,7 +1243,7 @@ In addition to the [Common Rules for All Operations](#Common Rules for All Opera
 
 The [OData CSDL](OData CSDL Definition.html) specifies how syntactically this information, and information specific to each kind of operation is specified.
 
-For example this FunctionImport represents an Action that Creates an Order for a customer using the specified quantity and discountCode. This action can be bound to any resource path that represents a Customer entity:
+For example this FunctionImport represents an action that creates an order for a customer using the specified quantity and discount code. This action can be bound to any resource path that represents a `Customer` entity:
 
 	<FunctionImport Name="CreateOrder" IsBindable="true" IsSideEffecting="true" 
 					m:IsAlwaysBindable="true">
@@ -1238,9 +1260,9 @@ A service SHOULD advertise only those actions that are available for a given ent
 
 The following information MUST be included when an action is advertised: 
 
-- A 'Target Url' that MUST identify the resource that accepts requests to invoke the Action.
-- A 'Metadata Url' that MUST identify the FunctionImport that declares the Action. This Url can be either relative or absolute, but when relative it MUST be assumed to be relative to the $metadata Url of the current service.
-- A 'Title' that SHOULD contain a human readable description of the Action.
+- A 'Target Url' that MUST identify the resource that accepts requests to invoke the action.
+- A 'Metadata Url' that MUST identify the FunctionImport that declares the action. This URL can be either relative or absolute, but when relative it MUST be assumed to be relative to the $metadata URL of the current service.
+- A 'Title' that SHOULD contain a human readable description of the action.
 
 Example: Given a GET request to http://server/Customers('ALFKI')
 
@@ -1263,15 +1285,15 @@ The service might respond with a Customer entity that advertises a binding of th
 	 }
 	}
 
-When the resource retrieved represents a collection, the 'Target Url' of any Actions advertised MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
+When the resource retrieved represents a collection, the 'Target Url' of any actions advertised MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
 
 An efficient format that assumes client knowledge of metadata SHOULD NOT advertise Actions that are available on all instances and whose target url can be established via metadata. 
 
 ### 10.4.1.3. Invoking an Action ###
 
-To invoke an Action a client MUST make a POST request to the 'Target Url' of the Action. 
+To invoke an action a client MUST make a POST request to the 'Target Url' of the action. 
 
-If the Action supports binding the binding parameter value MUST be encoded in the 'Target Url'. It is not possible to specify an entity or a collection of entities as a parameter value in the request body.
+If the action supports binding the binding parameter value MUST be encoded in the 'Target Url'. It is not possible to specify an entity or a collection of entities as a parameter value in the request body.
 
 If the invoke request contains any non-binding parameter values, the `Content-Type` of the request MUST be `'application/json'`, and the parameter values MUST be encoded in a single JSON object in the request body. 
 
@@ -1279,7 +1301,7 @@ Each non-binding parameter value specified MUST be encoded as a separate 'name/v
 
 If the action returns results the client SHOULD use content type negotiation to request the results in the desired format, otherwise the default content type will be used.
 
-If a client only wants an action to be processed when the binding parameter value, an entity or collection of entities, is unmodified, the client SHOULD include the [`If-Match`](#theif-matchrequestheader) header with the latest known ETag value for the Entity or collection of Entities.
+If a client only wants an action to be processed when the binding parameter value, an entity or collection of entities, is unmodified, the client SHOULD include the [`If-Match`](#theif-matchrequestheader) header with the latest known ETag value for the entity or collection of entities.
 
 On success, the response SHOULD be 200 for actions with a return type or 204 for action without a return type. The client can request whether any results from the action be returned using the [`Prefer` header](#thepreferheader).
 
@@ -1355,27 +1377,27 @@ Example: Given a GET request to `http://server//Orders`, the service might respo
 	}
  
  
-When the resource retrieved represents a collection, the 'Target Url' of any Functions advertised MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
+When the resource retrieved represents a collection, the 'Target Url' of any functions advertised MUST encode every System Query Option used to retrieve the collection. In practice this means that any of these System Query Options should be encoded: $filter, $expand, $orderby, $skip and $top.
 
 An efficient format that assumes client knowledge of metadata SHOULD NOT advertise Functions that are available on all instances and whose target url can be established via metadata. 
 
 #### 10.4.2.3. Invoking a Function ####
 
-To invoke a Function directly a client MUST issue a GET request to a Url that identifies the Function and that specifies any parameter values required by the Function. 
+To invoke a function directly a client MUST issue a GET request to a Url that identifies the function and that specifies any parameter values required by the function. 
 
 It is also possible to invoke a Function indirectly using GET, PUT, POST, PATCH, MERGE or DELETE requests by formulating a URL that identifies a Function and its parameters and then appending further path segments to create a Request URL that identifies resources related to the results of the Function.
 
 Parameter Values passed to Functions MUST be specified either as a URL Literal (for Primitive Types) or as a JSON formatted OData object (for Complex Types or Collections of Primitive Types or Complex Types). 
 
-Functions calls MAY be present in the Request URL Path or the Request URL Query inside either the $filter or $orderby Query Options. 
+Functions calls MAY be present in the request URL path or the request URL query inside either the $filter or $orderby Query Options. 
 
 ##### 10.4.2.3.1. Inline Parameter Syntax #####
 
-The simplest way to pass parameter values to a Function is using inline parameter syntax.
+The simplest way to pass parameter values to a function is using inline parameter syntax.
 
-To use Inline Parameter Syntax, where-ever a Function is called, parameter values MUST be specified inside the parenthesis, i.e. `()`, appended directly to the Function name. 
+To use Inline Parameter Syntax, whereever a function is called, parameter values MUST be specified inside the parenthesis, i.e. `()`, appended directly to the function name. 
 
-The parameter values MUST be specified as a comma separated list of Name/Value pairs in the format `Name=Value`, where `Name` is the Name of the parameter to the Function and `Value` is the parameter value.
+The parameter values MUST be specified as a comma separated list of Name/Value pairs in the format `Name=Value`, where `Name` is the name of the parameter to the function and `Value` is the parameter value.
 
 For example this request:
 
@@ -1387,9 +1409,9 @@ And this request:
 
 	GET http://server/Customers?$filter=Sales.GetSalesRegion(City=$it/City) eq "Western"
 
-Filters `Customers` to those in the `Western` sales region, calculated for each Customer in the Collection by passing the Customer's City as the `City` parameter value to the `Sales.GetSalesRegion` function. 
+Filters `Customers` to those in the `Western` sales region, calculated for each Customer in the collection by passing the Customer's City as the `City` parameter value to the `Sales.GetSalesRegion` function. 
 
-Primitive parameters values may be provided to Functions in the Request URL path using inline syntax. All other parameter types MUST be provided externally. 
+Primitive parameters values may be provided to functions in the request URL path using inline syntax. All other parameter types MUST be provided externally. 
 
 ##### 10.4.2.3.2. Parameter Aliases #####
 
@@ -1423,11 +1445,11 @@ When a function is invoked (using any of the three parameter syntaxes) the param
 
 ### 10.4.3. Legacy Service Operations ###
 
-Service Operations are Operations like Actions and Functions. However use of Service Operations is now discouraged because they are legacy and have a number of disadvantages:
+Service operations are operations like actions and functions. However use of service operations is now discouraged because they are legacy and have a number of disadvantages:
 
-- Service Operations only support primitive parameter types.
-- Service Operations are not bindable.
-- Unlike Functions, composing Multiple Service Operations calls in the same request is not supported.
+- Service operations only support primitive parameter types.
+- Service operations are not bindable.
+- Unlike functions, composing multiple service operations calls in the same request is not supported.
 
 #### 10.4.3.1. Declaring Service Operations in Metadata ####
 
@@ -1462,13 +1484,13 @@ For example:
 
 	POST http://server/service.svc/CreatePerson?Firstname="John"&Surname="Smith"&DateOfBirth=datetime'1971-07-07T13:03:00' HTTP/1.1
  
-Invokes the `CreatePerson` ServiceOperation with the following Parameter values:
+Invokes the `CreatePerson` service operation with the following Parameter values:
 
 - Firstname: `"John"`
 - Surname: `"Smith"`
 - DateOfBirth: `datetime'1971-07-07T13:03:00'`
 
-If the service operation specifies a return yype it MAY be possible to compose further OData path and/or Query Options after the segment that identifies the service operation. 
+If the service operation specifies a return type it MAY be possible to compose further OData path and/or Query Options after the segment that identifies the service operation. 
 
 For example:
 
@@ -1478,39 +1500,37 @@ Invokes the `GetOrdersByDate` service operation with the `OrderDate` parameter v
 
 ------
 
-# Appendix A: Terminology #
+# Appendix A: Terminology
 
-------
+bound Action invocation URL
+: the URL that can be used to invoke a particular action bound to a particular entity or collection of entities.
 
-- ASSIGNED TO: Everyone
+bound Function invocation URL
+: the URL that can be used to invoke a particular function bound to a particular entity or collection of entities.
 
-------
+Action title
+: a descriptive name used for an action. This is intended to be presented to an end user.
 
-*bound Action invocation URL*: the URL that can be used to invoke a particular Action bound to a particular Entity or collection of Entities.
-
-*bound Function invocation URL*: the URL that can be used to invoke a particular Function bound to a particular Entity or collection of Entities.
-
-Action *title*: a descriptive name used for an Action. This is intended to be presented to an end user.
-
-Function *title*: a descriptive name used for a Function. This is intended to be presented to an end user.
+Function title
+: a descriptive name used for a function. This is intended to be presented to an end user.
 
 alias
 : A simple identifier that is typically used as a short name for a **namespace**.
 
 alias qualified name
-: A qualified name that is used to refer to a **StructuralType**, except that the 
-**namespace** is replaced by the alias for the **namespace**. For example, if an **EntityType** called "Person" is defined in the "Model.Business" **namespace**, and that **namespace** has been given the **alias** "Self", the alias qualified name for the person **EntityType** is "Self.Person".
+: A qualified name that is used to refer to a **structural type**, except that the 
+**namespace** is replaced by the alias for the **namespace**. For example, if an **entity type** called "Person" is defined in the "Model.Business" **namespace**, and that **namespace** has been given the **alias** "Self", the alias qualified name for the person **entity type** is "Self.Person".
 
 annotation
 : Any custom, application-specific extension that is applied to an instance of **CSDL** through the use of custom attributes and elements that are not a part of this **CSDL** specification.
 
 association
-: A named independent relationship between two **EntityType** definitions. Associations in the 
+: A named independent relationship between two **entity type** definitions. Associations in the 
 **Entity Data Model (EDM)** are first-class concepts and are always bidirectional. Indeed, the first-class nature of associations helps distinguish the **EDM** from the relational model. Every association includes exactly two association ends.
 
 association end
-: A term that specifies the **EntityType** elements that are related, the roles of each of those 
-**EntityType** elements in the **association**, and the **cardinality** rules for each end of the **association**.
+: A term that specifies the **entity type** elements that are related, the roles of each of those 
+**entity type** elements in the **association**, and the **cardinality** rules for each end of the **association**.
 
 cardinality
 : The measure of the number of elements in a set.
@@ -1524,35 +1544,20 @@ conceptual schema definition language (CSDL)
 conceptual schema definition language (CSDL) document
 : A document that contains a conceptual model that is described by using the **CSDL** code.
 
-CSDL 1.0
-: A version of **CSDL** that has a slightly reduced set of capabilities, which are called out in this document. CSDL 1.0 documents reference this XML namespace: http://schemas.microsoft.com/ado/2006/04/edm.
-
-CSDL 1.1
-: The version of **CSDL** that is defined immediately prior to **CSDL 1.2**. **CSDL 1.1** documents reference this XML namespace: http://schemas.microsoft.com/ado/2007/05/edm.
-
-CSDL 1.2
-: The version of **CSDL** that is defined immediately prior to **CSDL 2.0**. **CSDL 1.2** documents reference this XML namespace: http://schemas.microsoft.com/ado/2008/01/edm. The **ADO.NET Entity Framework** does not support CSDL 1.2.
-
-CSDL 2.0
-: The version of **CSDL** that is defined immediately prior to **CSDL 3.0**. **CSDL 2.0** documents reference this XML namespace: http://schemas.microsoft.com/ado/2008/09/edm.
-
-CSDL 3.0
-: The version of **CSDL** that is the focus of this document. **CSDL 3.0** documents reference this XML namespace: http://schemas.microsoft.com/ado/2009.11/edm.
-
 declared property
-: A property that is statically declared by a **Property** element as part of the definition of a **StructuralType**. For example, in the context of an **EntityType**, a declared property includes all properties of an **EntityType** that are represented by the **Property** child elements of the **EntityType** element that defines the **EntityType**.
+: A property that is statically declared by a **Property** element as part of the definition of a **structural type**. For example, in the context of an **entity type**, a declared property includes all properties of an **entity type** that are represented by the **Property** child elements of the **entity type** element that defines the **entity type**.
 
 derived type
-: A type that is derived from the **BaseType**. Only **ComplexType** and **EntityType** can define a **BaseType**.
+: A type that is derived from the **base type**. Only **complex type** and **entity type** can define a **base type**.
 
 dynamic property
-: A designation for an instance of an **OpenEntityType** that includes additional nullable properties (of a **scalar type** or **ComplexType**), or navigation properties, beyond its **declared properties**. The set of additional properties, and the type of each, may vary between instances of the same **OpenEntityType**. Such additional properties are referred to as dynamic properties and do not have a representation in a **CSDL document**.
+: A designation for an instance of an **open entity type** that includes additional nullable properties (of a **scalar type** or **complex type**), or navigation properties, beyond its **declared properties**. The set of additional properties, and the type of each, may vary between instances of the same **open entity type**. Such additional properties are referred to as dynamic properties and do not have a representation in a **CSDL document**.
 
 EDM type
-: A categorization that includes all the following types: **EDMSimpleType**, **ComplexType**, **EntityType**, **enumeration**, and **association**.
+: A categorization that includes all the following types: **EDMSimpleType**, **complex type**, **entity type**, **enumeration**, and **association**.
 
 entity
-: An instance of an **EntityType** that has a unique identity and an independent existence. An entity is an operational unit of consistency.
+: An instance of an **entity type** that has a unique identity and an independent existence. An entity is an operational unit of consistency.
 
 entity request URL
 : A URL for requesting a single entity as a top-level object (as opposed to a collection containing a single entity). An entity request URL MAY be obtained from a response payload containing that instance (for example, as a self-link in an [Atom Payload](ODataAtomPayload)). Services MAY support conventions for constructing an entity request URL using the entity's Key Value(s), as described in [OData:URL][]. 
@@ -1570,19 +1575,19 @@ identifier
 : A string value that is used to uniquely identify a component of the **CSDL** and is of type **SimpleIdentifier**.
 
 in scope
-: A designation that is applied to an XML construct that is visible or can be referenced, assuming that all other applicable rules are satisfied. Types that are in scope include all **scalar types** and **StructuralType** types that are defined in **namespaces** that are in scope. **Namespaces** that are in scope include the **namespace** of the current **schema** and other **namespaces** that are referenced in the current **schema** by using the **Using** element.
+: A designation that is applied to an XML construct that is visible or can be referenced, assuming that all other applicable rules are satisfied. Types that are in scope include all **scalar types** and **structural type** types that are defined in **namespaces** that are in scope. **Namespaces** that are in scope include the **namespace** of the current **schema** and other **namespaces** that are referenced in the current **schema** by using the **Using** element.
 
 namespace
-: A name that is defined on the **schema** and that is subsequently used to prefix **identifiers** to form the **namespace qualified name** of a **StructuralType**. **CSDL** enforces a maximum length of 512 characters for namespace values.
+: A name that is defined on the **schema** and that is subsequently used to prefix **identifiers** to form the **namespace qualified name** of a **structural type**. **CSDL** enforces a maximum length of 512 characters for namespace values.
 
 namespace qualified name
-: A qualified name that refers to a **StructuralType** by using the name of the **namespace**, followed by a period, followed by the name of the **StructuralType**.
+: A qualified name that refers to a **structural type** by using the name of the **namespace**, followed by a period, followed by the name of the **structural type**.
 
 nominal type
 : A designation that applies to the types that can be referenced. Nominal types include all primitive types and named **EDM types**. Nominal types are frequently used inline with collection in the following format: collection(nominal_type).
 
 property
-: An **EntityType** can have one or more properties of the specified **scalar type** or **ComplexType**. A property can be a **declared property** or a **dynamic property**. (In **CSDL 1.2**, **dynamic properties** are defined only for use with **OpenEntityType** instances.)
+: An **entity type** can have one or more properties of the specified **scalar type** or **complex type**. A property can be a **declared property** or a **dynamic property**. (In **CSDL 1.2**, **dynamic properties** are defined only for use with **open entity type** instances.)
 
 referential constraint
 : A constraint on the keys contained in the **associatio**n type. The ReferentialConstraint **CSDL** construct is used for defining referential constraints.
@@ -1596,8 +1601,8 @@ schema
 schema level named element
 : An element that is a child element of the **schema** and contains a **Name** attribute that must have a unique value.
 
-StructuralType
-: A type that has members that define its structure. **ComplexType**, **EntityType**, and **Association** are all StructuralTypes.
+structural type
+: A type that has members that define its structure. **complex type**, **entity type**, and **association** are all StructuralTypes.
 
 type annotation
 : An **annotation** of a model element that allows a term and provision of zero or more values for the properties of the term.

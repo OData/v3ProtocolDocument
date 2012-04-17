@@ -1,6 +1,6 @@
 # OData #
 
-# Table of Contents #
+Table of Contents
 
 1. [Overview](#overview)
 2. [Data Model](#datamodel)  
@@ -181,21 +181,15 @@ Applied *annotations* have a term (the namespace-qualified name of the annotatio
 
 # 3. Service Model
 
-An OData service exposes a data model. The service defines what is possible. A client consumes that model. The client defines what is interesting (to that client).
+OData allows automated clients to discover the capabilities of automated services. This is possible because the service is defined in a uniform way, using the data model defined above. The service advertises its concrete data model in a machine-readable form.
 
-OData allows automated clients to discover the capabilities of automated servers. This is possible because the service is defined in a uniform way, using the data model defined above. The service advertises its concrete data model in a machine-readable form.
+An OData service consists of two well-defined, static resources and a set of dynamic resources. The two static resources allow machines to ask a service about its data model. The dynamic resources are ways to manipulate that model.
 
-An OData service consists of 2 well-defined, static resources and a set of dynamic resources. The two static resources allow machines to ask a service about its data model. The dynamic resources are ways to manipulate that model.
-
-The most important part of an OData service is its metadata document. The *metadata document* describes the entire data model and type system understood by that particular OData service.
+The [*metadata document*](#metadatadocumentrequest) describes the entire data model and type system understood by that particular OData service.
 
 Clients can use the metadata document to understand how to query and navigate between the entities in the system.
 
-The metadata document is typically served at `$metadata`, relative to the root of the service. For example, `http://example.com/some.svc/$metadata` would be the metadata document for `some.svc` running on `example.com`.
-
-The second static resource in an OData service is the service document. The *service document* lists all of the top-level entity sets exposed by the service.
-
-The service document is always available at the root URL for the service. For example, a GET request to `http://example.com/some.svc/` would return the service document if `some.svc` were an OData service running on `example.com`.
+The second static resource in an OData service is the service document. The [*service document*](#servicedocumentrequest) lists all of the top-level entity sets exposed by the service.
 
 The rest of an OData service consists of dynamic resources. The URLs for many of these resources can be computed from the information in the metadata document.
 

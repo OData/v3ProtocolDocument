@@ -8,7 +8,7 @@ Table of Contents
 3. [xml:base Attribute](@xml:baseattribute)  
 4. [Primitive Types in Atom](#primitivetypesinatom)  
 5. [Use of Atom](#useofatom)  
-    5.1 .[Namespaces](#namespaces)  
+    5.1 .[Namespaces](#namespaces)   
         5.1.1. [Atom Namespace](#atomnamespace)  
         5.1.2. [Atom Publishing Protocol Namespace](@atompublishingprotocolnamespace)  
         5.1.3. [OData Data Namespace](#odatadatanamespace)  
@@ -16,6 +16,7 @@ Table of Contents
 6. [Atom Element Definition](#atomelementdefinition)  
     6.1. [Entity Instances](#entityinstances)  
         6.1.1. [The `atom:entry` Element](#theatom:entryelement)  
+			6.1.1.1. [The `metadata:etag` Attribute](#themetadata:etagattribute)  
         6.1.2. [The `atom:id` Element](#theatom:idelement)  
         6.1.3. [Self and Edit Links as `atom:link` Elements](#selfandeditlinksasatom:linkelements)  
         6.1.4. [Stream Properties as `atom:link` Elements](#streampropertiesasatom:linkelements)  
@@ -390,15 +391,15 @@ For example, the following `atom:entry` element describes a Product:
 	  <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Supplier" type="application/atom+xml;type=entry" title="Supplier" href="Products(0)/Supplier" /> 
 	  <category term="ODataDemo.Product" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" /> 
 	  <content type="application/xml">
-	    <m:properties>
-	      <d:ID m:type="Edm.Int32">0</d:ID> 
-          <d:Name>Bread</d:Name>
-          <d:Description>Whole grain bread</d:Description>
-	      <d:ReleaseDate m:type="Edm.DateTime">1992-01-01T00:00:00</d:ReleaseDate> 
-	      <d:DiscontinuedDate m:type="Edm.DateTime" m:null="true" /> 
-	      <d:Rating m:type="Edm.Int32">4</d:Rating> 
-	      <d:Price m:type="Edm.Decimal">2.5</d:Price> 
-	    </m:properties>
+	    <metadata:properties>
+	      <data:ID m:type="Edm.Int32">0</data:ID> 
+          <data:Name>Bread</data:Name>
+          <data:Description>Whole grain bread</data:Description>
+	      <data:ReleaseDate metadata:type="Edm.DateTime">1992-01-01T00:00:00</data:ReleaseDate> 
+	      <data:DiscontinuedDate metadata:type="Edm.DateTime" metadata:null="true" /> 
+	      <data:Rating metadata:type="Edm.Int32">4</data:Rating> 
+	      <data:Price metadata:type="Edm.Decimal">2.5</data:Price> 
+	    </metadata:properties>
 	  </content>
 	</entry>
 
@@ -408,7 +409,9 @@ This section defines the elements and attributes within an `atom:entry` element 
 
 An `atom:entry` element is used to represent a single entity, which is an instance of a structured type with an identity.
 
-The `atom:entry` element MAY contain a `metadata:etag` attribute, representing an opaque string value that can be used in a subsequent request to determine if the value of the entity has changed.  For details on how ETags are used, refer to [OData:Core][].
+#### 6.1.1.1. The `metadata:etag` Attribute ####
+
+The `atom:entry` element MAY contain a `metadata:etag` attribute, representing an opaque string value that can be used in a subsequent request to determine if the value of the entity has changed.  For details on how ETags are used, see to [OData:Core][].
 
 ### 6.1.2.	The `atom:id` Element ###
 
@@ -416,41 +419,45 @@ The `atom:id` element defines a durable, opaque, globally unique identifier for 
 
 ### 6.1.3.	Self and Edit Links as `atom:link` Elements ###
 
-Atom defines two types of links within an entry that represent retrieve or update/delete operations on the entry. `atom:link` elements with a rel attribute of `"self"` can be used to retrieve the entity (via the URL specified in the `href` attribute). `atom:link` elements with a rel attribute of `"edit"` can be used to retrieve, update, or delete the entity (via the URL specified in the `href` attribute).
+Atom defines two types of links within an entry that represent retrieve or update/delete operations on the entry. 
+
+`atom:link` elements with a rel attribute of `"self"` can be used to retrieve the entity (via the URL specified in the `href` attribute). 
+
+`atom:link` elements with a rel attribute of `"edit"` can be used to retrieve, update, or delete the entity (via the URL specified in the `href` attribute).
 
 An `atom:entry` element representing an OData entity SHOULD contain a self link, an edit link, or both for a particular entry, but MUST NOT contain more than one edit link for a given entry.  Absence of an edit link implies that the entry is read-only.
 
 ### 6.1.4. Stream Properties as `atom:link` Elements ###
 
-An entity may have one or stream properties (for example, a photo property of an employee entity). Properties that represent streams have a type of "Edm.Stream".
+An entity may have one or more stream properties (for example, a photo property of an employee entity). Properties that represent streams have a type of "Edm.Stream".
 
 OData uses `atom:link` elements to represent named stream properties of an entity.
 
-For example, a stream property named "Photo" be represented through an `atom:link` element as a child of the `atom:entry` element as follows:
+For example, a stream property named "Photo" could be represented through an `atom:link` element as a child of the [`atom:entry`](#theatom:entryelement) element as follows:
 
 	<atom:link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/mediaresource/Photo" 
 	type="img/jpg" title="Photo" href="Categories(0)/Photo"/>
 
-A stream property named "Photo" be edited through an `atom:link` element as a child of the `atom:entry` element as follows:
+A stream property named "Photo" could be edited through an `atom:link` element as a child of the [`atom:entry`](#theatom:entryelement) element as follows:
 
 	<atom:link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/edit-media/Photo" 
 	type="img/jpg" title="Photo" href="Categories(0)/Photo"/>
 
 #### 6.1.4.1. The `rel` attribute of a Link Representing a Stream Property ####
 
-The `rel` attribute for an `atom:link` element that can be used to retrieve a stream property is made up of the name of the [OData Data Namespace](#odatadatanamespace), followed by the string "/mediaresource/", followed by the name of the stream property on the entity.  
+The `rel` attribute for an [`atom:link`](#streampropertiesasatom:linkelements) element that can be used to retrieve a stream property is made up of the name of the [OData Data Namespace](#odatadatanamespace), followed by the string "/mediaresource/", followed by the name of the stream property on the entity.  
 
-The `rel` attribute for an `atom:link` element that can be used to write a stream property is made up of the name of the [OData Data Namespace](#odatadatanamespace), followed by the string "/edit-media/", followed by the name of the stream property on the entity.
+The `rel` attribute for an [`atom:link`](#streampropertiesasatom:linkelements) element that can be used to write a stream property is made up of the name of the [OData Data Namespace](#odatadatanamespace), followed by the string "/edit-media/", followed by the name of the stream property on the entity.
 
-Note that the full name must be used; the use of relative URLs in the rel attribute is not allowed.
+In both cases the full name must be used; the use of relative URLs in the rel attribute is not allowed.
 
 #### 6.1.4.2. The `href` attribute of a Link Representing a Stream Property ####
 
-The `href` attribute of an `atom:link` element describing an OData stream property contains the URI that can be used to specify the URI that can be used to read, or write, the stream, according to the [`rel`](#therelattributeofalinkrepresentingastreamproperty) attribute. This URI may be relative or absolute.
+The `href` attribute of an [`atom:link`](#streampropertiesasatom:linkelements) element describing an OData stream property contains the URL that can be used to read, or write, the stream, according to the [`rel`](#therelattributeofalinkrepresentingastreamproperty) attribute. This URL may be relative or absolute.
 
 #### 6.1.4.3. The `title` attribute of a Link Representing a Stream Property ####
 
-The `title` attribute on an `atom:link` element describing an OData relationship provides human-readable, possibly language-dependent, and not necessarily unique information about the link. It has no implied semantics in OData.
+The `title` attribute on an [`atom:link`](#streampropertiesasatom:linkelements) element describing an OData relationship provides human-readable, possibly language-dependent, and not necessarily unique information about the link. It has no implied semantics in OData.
 
 ### 6.1.5.	Relationships as `atom:link` Elements ###
 
@@ -480,7 +487,7 @@ The `href` attribute of an `atom:link` element describing an OData relationship 
 
 The `type` attribute on an `atom:link` element describing an OData relationship MUST be present and determines whether the cardinality of the related end is:  
 
-* a single entity, in which case, the `type`="application/atom+xml;type=entry", or   
+* a single entity, in which case the `type`="application/atom+xml;type=entry", or   
 * a collection of entities, in which case the `type`="application/atom+xml;type=feed"  
 
 #### 6.1.5.4. The `title` attribute of an `atom:link` element Representing a Relationship ####
@@ -499,7 +506,7 @@ It is valid to include the `metadata:inline` element in only a subset of the ent
 
 OData uses `atom:link` elements to represent the collection of relationship [link(s)](#links) between entities.
 
-For example, the set of [links](#links) between a category and related products may be represented through an `atom:link` element as a child of a category entry element as follows:
+For example, the set of [links](#links) between a category and related products may be represented through an `atom:link` element as a child of a category entry element as follows:  
 
 	<atom:link 
 	  rel="http://schemas.microsoft.com/ado/2007/08/dataservices/relatedlinks/Products" 
@@ -515,15 +522,15 @@ Note that the full name must be used; the use of relative URLs in the rel attrib
 
 #### 6.1.7.2 The `href` attribute of an `atom:link` element Representing Relationship Links####
 
-The `href` attribute of an `atom:link` element describing relationship links MUST be present and specifies the URI that represents the collection of relationship links.  This URI may be relative or absolute.
+The `href` attribute of an `atom:link` element describing a relationship link MUST be present and specifies the URL that represents the collection of relationship links.  This URL may be relative or absolute.  
 
 #### 6.1.7.3. The `type` attribute of an `atom:link` element Representing Relationship Links ####
 
-The `type` attribute on an `atom:link` element describing relationship links MUST be present and equal to the content type "application/xml"
+The `type` attribute on an `atom:link` element describing a relationship link MUST be present and equal to the content type "application/xml"
 
 #### 6.1.7.4. The `title` attribute of an `atom:link` element Representing Relationship Links ####
 
-The `title` attribute on an `atom:link` element describing relationship links SHOULD be present and equal to the name of the navigation property, and provides human-readable, possibly language-dependent, and not necessarily unique information about the link.
+The `title` attribute on an `atom:link` element describing a relationship link SHOULD be present and SHOULD be set to the name of the navigation property. The `title` attribute provides human-readable, possibly language-dependent, and not necessarily unique information about the link.
 
 ### 6.1.8.	Entity Type as an `atom:category` Element ###
 
@@ -541,11 +548,11 @@ The `atom:content` element defines the content of the entry.
 
 The `atom:content` element MAY contain a `src` attribute, in which case the entry is a Media Link Entry, used to represent a Media Resource (for example, a photo). The value of the `src` attribute MUST be a URI that can be used to retrieve the content of the Media Resource.
 
-For Media Link Entries the `atom:content` element MUST be empty. In this case, Properties of the Media Resource (other than the stream) are represented by the [`metadata:properties`](#entitypropertieswithinametadata:propertieselement) element  as a sibling to, rather than a child of, the `atom:content` element. 
+For Media Entities, the `atom:content` element MUST be empty. In this case, properties of the Media Resource (other than the stream) are represented by the [`metadata:properties`](#entitypropertieswithinametadata:propertieselement) element  as a sibling to, rather than a child of, the `atom:content` element. 
 
 ### 6.1.10. `atom:link` element for Updating Media Link Entries ###
 
-A [Media Link Entry](#mediaentitiesasmedialinkentriesusingthesrcattribute) MAY contain an `atom:link` element with a rel attribute of "edit-media" to specify a URL that can be used to write to the BLOB associated with the entity.
+A [Media Link Entry](#mediaentitiesasmedialinkentriesusingthesrcattribute) MAY contain an `atom:link` element with a `rel` attribute of `"edit-media"` to specify a URL that can be used to write to the BLOB associated with the entity.
 
 #### 6.1.10.1. The `rel` attribute for writing to Media Link Entries ####
 
@@ -557,7 +564,9 @@ An atom:link element representing the link used to write to the BLOB associated 
 
 ### 6.1.11.	Entity Properties within a `metadata:properties` Element ###
 
-The `metadata:properties` element represents a subset of the property values for an entity that are not exclusively mapped to defined or custom elements, as described in [Custom Mapping to Atom Elements](#custommappingtoatomelements). The `metadata:properties` element MUST be a direct child of the `atom:content` element EXCEPT for the case where the entry represents a media resource, in which case the `metadata:properties` element MUST be a sibling of the `atom:content` element.  In the case that all properties of the entity are exclusively mapped to defined or custom elements, an empty `metadata:properties` element MAY be present.
+The `metadata:properties` element represents a subset of the property values for an entity that are not exclusively mapped to defined or custom elements, as described in [Custom Mapping to Atom Elements](#custommappingtoatomelements). 
+
+The `metadata:properties` element MUST be a direct child of the `atom:content` element EXCEPT for the case where the entry represents a [media entity](#mediaentitiesasmedialinkentriesusingthesrcattribute), in which case the `metadata:properties` element MUST be a sibling of the `atom:content` element.  In the case that all properties of the entity are exclusively mapped to defined or custom elements, an empty `metadata:properties` element MAY be present.
 
 #### 6.1.11.1. Entity Property as a `data:[propertyName]` Element ####
 
@@ -565,10 +574,15 @@ Within the `metadata:properties` element, individual data values of the entity a
 
 The `data:[PropertyName]` element MAY include a [`metadata:type`](#datatyperepresentedusingthemetadata:typeattribute) attribute to specify the type of the simple- or complex-typed instance.
 
+For example, the following element within an metadata:properties element represents the "Rating" field with an integer value of 4:  
+
+	<data:Rating m:type="Edm.Int32">4</data:Rating> 
+
 ##### 6.1.11.1.1. Simple Typed Properties #####
 
 For simple typed properties, the content of the `data:[propertyName]` element represents the value of the property.  For example, the following would represent the value "CEO" for the Title property of an entity:  
-`<data:Title>CEO</data:Title>`
+
+	<data:Title>CEO</data:Title>
 
 ##### 6.1.11.1.2. Complex Typed Properties ######
 
@@ -583,9 +597,9 @@ For example, the complex typed property "Name", with properties "FirstName" and 
 	
 ##### 6.1.11.1.3. Collection of Simple Typed Properties #####
 
-For properties that represent a collection of simple types, the `data:[propertyName]` element may include a `metadata:type` attribute with a value of `"Collection([SimpleTypeName])"`. The content of the element consists of nested child elements named "`element`", in the Data Service namespace, for each value in the collection. 
+For properties that represent a collection of simple types, the `data:[propertyName]` element may include a `metadata:type` attribute with a value of `"Collection([SimpleTypeName])"`. The content of the element consists of nested child elements named "`element`", in the [OData Data Namespace](#odatadatanamespace), for each value in the collection. 
 
-The value of each simple-typed data:element in the collection follows the syntax for the simple typed property as defined in <todo: insert link>.
+The value of each simple-typed data:element in the collection follows the syntax for the simple typed property as defined for [simple-typed properties](#simpletypedproperties.
 
 `<data:element>` elements MUST NOT contain the `metadata:null="true"` attribute value.
 
@@ -598,11 +612,11 @@ For example, the collection typed property "Emails" would be respresented as:
 	
 ##### 6.1.11.1.4.	Collection of Complex Typed Properties #####
 
-For properties that represent a collection of complex types, the `data:[propertyName]` element may include a `metdata:type` attribute with a value of `"Collection([ComplexTypeName])`" attribute. The content of the element consists of nested child elements named "`element`", in the Data Service namespace, for each complex typed value in the collection. 
+For properties that represent a collection of complex types, the `data:[propertyName]` element may include a `metdata:type` attribute with a value of `"Collection([ComplexTypeName])`" attribute. The content of the element consists of nested child elements named "`element`", in the [OData Data Namespace](#odatadatanamespace) namespace, for each complex typed value in the collection. 
 
-The `<data:element>` element representing the instance may include a `metadata:type` attribute to specify the type of the individual element. The value of each complex-typed `<data:element>` follows the syntax for complex-typed properties <todo:insert link>. 
+The `<data:element>` element representing the instance may include a `metadata:type` attribute to specify the type of the individual element. The value of each complex-typed `<data:element>` follows the syntax for [complex-typed properties](#complextypedproperties).
 
-<data:element> elements MUST NOT be empty and MUST NOT contain the metadata:null="true" attribute.
+`<data:element>` elements MUST NOT be empty and MUST NOT contain the `metadata:null="true"` attribute.
 
 For example, the collection typed property "PhoneNumbers" would be respresented as:
 
@@ -620,15 +634,15 @@ For example, the collection typed property "PhoneNumbers" would be respresented 
 
 ### 6.1.12. Nulls represented using the metadata:null Attribute ###
 
-Null valued properties are represented as empty elements with the metadata:null=true attribute. 
+Null valued properties are represented as empty elements with the `metadata:null="true"` attribute. 
 
-The metadata:null attribute distinguishes null values from other empty content (such as an empty string).  
+The `metadata:null` attribute distinguishes null values from other empty content (such as an empty string).  
 
 For example, the following represents an empty apartment number:
 
 	<data:Apartment metadata:null="true"/>
 
-The absence of the metadata:null attribute is equivalent to specifying metadata:null="false".
+The absence of the metadata:null attribute is equivalent to specifying `metadata:null="false"`.
 
 ### 6.1.13. Data Type represented using the metadata:type Attribute ###
 
@@ -648,7 +662,7 @@ Collections of entities are represented in Atom as an Atom Feed.
 
 ### 6.2.1 Collection of Entities as an atom:feed Element ##
 
-Collections of entities are represented using an atom:feed Element, where each entity is represented as an [`atom:entry`](#EntityInstances).
+Collections of entities are represented using an `atom:feed` Element, where each entity is represented as an [`atom:entry`](#EntityInstances).
 
 ### 6.2.2.	The `atom:id` Element within an `atom:feed` ###
 
@@ -656,7 +670,7 @@ The `atom:id` element defines a durable, opaque, globally unique identifier for 
 
 ### 6.2.3.	Count as a `metadata:count` Element ###
 
-The `atom:feed` element may contain an `m:count` element to specify the total count of rows in the result. This may be greater than the number of rows in the feed if server side paging has been applied, in which case the feed will include a next results link, as described below.
+The `atom:feed` element may contain an `m:count` element to specify the total count of rows in the result. This may be greater than the number of rows in the feed if server side paging has been applied, in which case the feed will include a [next results](#additionalresultsasanatom:linkelement) link.
 
 ### 6.2.4.	Self Links as `atom:link` Elements ###
 
@@ -666,11 +680,13 @@ Note that the actual set of entries contained within the atom:feed may be a subs
 
 ### 6.2.5.	Additional Results as an `atom:link` element ###
 
-The `atom:feed` element may contain a "next link" to indicate the presence of additional entries that belong to the feed.  Such a link is represented as an `atom:link` with a rel attribute of "next" and an href attribute containing a URI that can be used to retrieve the next set of results.  
+The `atom:feed` element may contain a "next link" to indicate the presence of additional entries that belong to the feed.  Such a link is represented as an `atom:link` with a `rel` attribute of `"next"` and an `href` attribute containing a URL that can be used to retrieve the next set of results.  
 
-For example, the following atom:link element within an atom:feed element indicates that additional results can be returned by following the specified `href`:
-<atom:link rel="next" href="http://myservice/customers/?$skiptoken=1237"/>
-The contents of the href should be treated as an opaque URI that can be used to fetch the next set of results.
+For example, the following `atom:link` element within an `atom:feed` element indicates that additional results can be returned by following the specified `href`:  
+
+	<atom:link rel="next" href="http://myservice/customers/?$skiptoken=1237"/>
+
+The contents of the `href` should be treated as an opaque URL that can be used to fetch the next set of results.
 
 # 7. Actions #
 
@@ -692,9 +708,11 @@ Actions are represented as `metadata:action` elements that appear as direct chil
 
 ### 7.1.1. The `metadata:metadata` Attribute for an Action ###
 
-A `metadata:action` element MUST have a `metadata:metadata` attribute which specifies the container qualified name of the function import describing the action, preceded by a "#". For example, "#MyEntityContainer.MyFunctionName". This function import name must be unique within the entity container. 
+A [`metadata:action`](actionsasametadata:actionelement) element MUST have a `metadata:metadata` attribute which specifies the container qualified name of the function import describing the action, preceded by a "#". For example, "#MyEntityContainer.MyFunctionName". 
 
-If the metadata cannot be retrieved by appending $metadata to the service root, then this name must additionally be prefixed by a URL that can be used to retrieve the metadata document containing the function import that describes the action.
+This function import name must be unique within the entity container. 
+
+If the metadata cannot be retrieved by appending `"$metadata"` to the service root, then this name MUST additionally be prefixed by a URL that can be used to retrieve the metadata document containing the function import that describes the action.
 
 ### 7.1.2. The `metadata:target` Attribute for an Action ###
 
@@ -722,15 +740,15 @@ For example, the following element describes a "GetTopProducts" function:
 
 ## 8.1. Functions as a `metadata:function` Element ##
 
-Functions are represented as `metadata:function` elements that appear as direct children of the `atom:feed` or `atom:entry` element representing the feed or entity on which the function(s) exist.
+Functions are represented as `metadata:function` elements that appear as direct children of the `atom:feed` or `atom:entry` element representing the collection or entity on which the function(s) exist.
 
 ### 8.1.1. The `metadata:metadata` Attribute for a Function ###
 
 A `metadata:function` element MUST have a `metadata:metadata` attribute which specifies the container qualified name of the function import describing the function, preceded by a "#". For example, "#MyEntityContainer.MyFunctionName".
 
-The named function may have multiple overloads (multiple function imports) within the container. If the metadata:function cannot be used to invoke all overloads for the function, then it must further be distinguished by appending a comma separated ordered list of parameter type names, enclosed in parenthesis (). For example, "#MyEntityContainer.MyFunctionName(Edm.Integer, Edm.String)".
+The named function may have multiple overloads (multiple function imports) within the container. If the `metadata:function` cannot be used to invoke all overloads for the function, then it must further be distinguished by appending a comma separated ordered list of parameter type names, enclosed in parenthesis (). For example, "#MyEntityContainer.MyFunctionName(Edm.Integer, Edm.String)".
 
-If the metadata cannot be retrieved by appending $metadata to the service root, then this name must additionally be prefixed by a URL that can be used to retrieve the metadata document containing the function import that describes the function.
+If the metadata cannot be retrieved by appending `"$metadata"` to the service root, then this name MUST additionally be prefixed by a URL that can be used to retrieve the metadata document containing the function import that describes the function.
 
 ### 8.1.2. The `metadata:target` Attribute for a Function ###
 
@@ -744,7 +762,7 @@ The `metadata:function` element MUST have a `metadata:title` attribute that cont
 
 # 9. Annotations #
 
-In OData V3, Annotations may be appear as a child to any of the following elements:
+In OData version 3.0, annotations may be appear as a child to any of the following elements:
 `<atom:feed>`, `<atom:entry>`, `<metadata:properties>`, `<metadata:function>`, `<metadata:action>`, `<metadata:error>`, or `<atom:link>` where `rel` indicates a navigation link or named stream. 
 
 There are two types of annotation terms in OData; ValueTerms and TypeTerms.
@@ -755,7 +773,9 @@ A TypeTerm defines a named annotation for a complex or entity typed value. A Typ
 
 Custom ValueTerms and Custom TypeTerms MUST be defined in a namespace other than the [Atom Namespace](#atomnamespace), [AtomPub Namespace](#atompublishingprotocolnamespace), [OData Data Namespace](#odatadatanamespace), or [OData Metadata Namespace](#odatametadatanamespace). Annotations corresponding to custom terms add additional information about the item being annotated and SHOULD be designed in such a way that they can be safely ignored by the client.
 
-TypeAnnotations and ValueAnnotations specify a target, which represents the feed, entry, property, function, action, navigation link, or named stream being annotated. The target is specified relative to the parent of the ValueAnnotation or TypeAnnotation, and is either the parent itself (".") or the name of the sibling element being annotated. If more than one sibling exists with the same unqualifed name, then the namespace qualified element named MUST be used.
+TypeAnnotations and ValueAnnotations specify a target, which represents the collection, entry, property, function, action, navigation link, error, or named stream being annotated. The target is specified relative to the parent of the ValueAnnotation or TypeAnnotation, and is either the parent itself (".") or the name of the sibling element being annotated. 
+
+If more than one sibling exists with the same unqualifed name, then the namespace qualified element named MUST be used.
 
 ## 9.1. ValueAnnotations as custom Elements ##
 
@@ -786,11 +806,11 @@ A TypeAnnotation is specified by an element containing the `metadata:target` att
 
 The TypeAnnotation element contains a single child element for each property of the TypeTerm being specified. The name of each such child element is the namespace-qualified name of the property, and its content specifies the value of the corresponding property of the TypeTerm, formatted as per [Primitive Types In Atom](#primitivetypesinatom). If the type of the annotation property is `Edm.String`, then the child element MAY contain the `metadata:type` attribute specifying "Edm.String", otherwise  the child element MUST contain the `metadata:type` attribute specifying the appropriate primitive type. 
 
-For example; the following specifies the "StreetAddress", "City", "Region", "Country" and "Postal Code" properties of an "Address" TypeTerm applied to a customer entry:
+For example; the following specifies the "StreetAddress", "City", "Region", "Country" and "Postal Code" properties of an "Address" TypeTerm applied to a customer entity:
 
-      <metadata:properties  xmlns:contact="http://odata.org/vocabularies/contact/v1">
+      <metadata:properties xmlns:contact="http://odata.org/vocabularies/contact/v1">
         <data:CustomerID>ALFKI</data:CustomerID>
-        <data:ContactName> Alfreds Futterkiste </d:ContactName>
+        <data:ContactName> Alfreds Futterkiste </data:ContactName>
         <data:Phone>030-0074321</data:Phone>
         <contact:Address metadata:target=".">  
           <contact:StreetAddress>Obere Str. 578</contact:StreetAddress>
@@ -807,15 +827,15 @@ The `metadata:target` attribute MUST be present on a TypeAnnotation and identifi
 
 # 10. Custom Mapping to Atom Elements #
 
-Individual property values may be mapped to predefined atom elements or custom content within the entry.  The mapping is described through attributes in the metadata.
+Individual property values MAY be mapped to predefined atom elements or custom content within the entry.  The mapping is described through attributes in the metadata.
 
-The mapping may specify whether the property value appears within the metadata:properties element as well as being mapped, however in the case of a null value the property MUST always appear within the `metadata:properties` element as an empty element and the metadata:null=true attribute as described above. 
+The mapping may specify whether the property value appears within the `metadata:properties` element as well as being mapped, however in the case of a null value the property MUST always appear within the `metadata:properties` element as an empty element with the [`metadata:null="true"` attribute](#nullsrepresentedusingthemetadata:nullattribute). 
 
 For more information on the format of the mapping specification, see [OData:CSDL][].
 
 # 11. Individual Primitive or Complex Scalar Values #
 
-A valid OData payload may consist of a single primitive or complex property, as defined above.  
+A valid OData payload may consist of a single [primitive](#simpletypedproperties) or [complex property](#complextypedproperties).  
 
 For example, a request for the first name of a given customer may return the following payload:
 
@@ -824,7 +844,7 @@ For example, a request for the first name of a given customer may return the fol
 Similarly, the following payload represents a full name:
 
 	<FullName metadata:type="HumanResources.Address"
-	      xmlns:metadata="http://schemas.microsoft.com/ado/2007/08/dataservices"
+	      xmlns:metadata="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
 	      xmlns="http://schemas.microsoft.com/ado/2007/08/dataservices">
 	   <FirstName>Julie</FirstName>
 	   <LastName>Swansworth</LastName>
@@ -832,28 +852,18 @@ Similarly, the following payload represents a full name:
 	
 # 12. Collections of Primitive or Complex Scalar Values #
 
-A valid OData payload may consist of a collection of primitive or complex properties. A collection is a single root element containing zero or more <metadata:element> elements whose content is an individual primitive or complex property as defined above.
+A valid OData payload MAY consist of a collection of primitive or complex properties. A collection is a single root element containing zero or more <metadata:element> elements whose content is an individual [primitive](#simpletypedproperties) or [complex](#complextypedproperties) property as defined above.
 
 For example, the following payload represents a collection of phone numbers.
 
-	<PhoneNumbers xmlns="http://schemas.microsoft.com/ado/2007/08/dataservices">
-	    <element>(203)555-1718</element>
-	    <element>(203)555-1719</element>
+	<PhoneNumbers xmlns="http://schemas.microsoft.com/ado/2007/08/dataservices">	 
+		<element>(203)555-1718<element>
+	    <element>(203)555-1719<element>
 	</PhoneNumbers>
-	
-Similarly, the following payload represents a collection of start times.
-
-	<StartTimes 
-	     	xmlns:metadata="http://schemas.microsoft.com/ado/2007/08/dataservices"
-	        xmlns="http://schemas.microsoft.com/ado/2007/08/dataservices">
-	   <element metadata:type="Edm.DateTime">2010-01-01T00:00:00</element>
-	   <element metadata:type="Edm.DateTime">2010-01-01T00:00:15</element>
-	   <element metadata:type="Edm.DateTime">2010-01-01T00:00:30</element>
-	</StartTimes>
-	
+		
 Similarly, the following payload represents a collection of full names.
 
-	<Names xmlns:metadata="http://schemas.microsoft.com/ado/2007/08/dataservices"
+	<Names xmlns:metadata="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
 	       xmlns="http://schemas.microsoft.com/ado/2007/08/dataservices">
 	   <element metadata:type="HumanResources.FullName">
 	       <FirstName>Julie</FirstName>
@@ -880,21 +890,24 @@ OData represents entity containers as `app:workspace` elements.  An `app:workspa
 ### 13.1.2.	Entity Sets as an `app:collection` element ###
 
 OData describes available collections of entities as `app:collection` elements.
-The `app:collection` element contains an `href` attribute which represents a URI that can be used to retrieve the members of the entity set.
+
+The `app:collection` element MUST contain an `href` attribute which represents a URL that can be used to retrieve the members of the entity set.
 
 ### 13.1.3.	Entity Set Name as an `atom:title` element ###
 
-The `atom:title` element within the [`app:collection`](#entitysetsasanapp:collectionelement) contains the name of the entity set.
+The `atom:title` element within the [`app:collection`](#entitysetsasanapp:collectionelement) SHOULD contain the name of the entity set.
 
 # 14. Links 
 
-Links represent the relationships between an entity and related entity(s). The link(s) available from a particular entity for a particular relationship can be retrieved from the service as a colleciton of URIs within a [`data:link`](#collectionoflinksasadata:linkselement) element.
+Links represent the relationships between an entity and related entity(s). 
+
+The link(s) available from a particular entity for a particular relationship can be retrieved from the service as a colleciton of URIs within a [`data:links`](#collectionoflinksasadata:linkselement) element.
 
 ## 14.1. Collection of Links as a `data:links` Element ##
 
 A `data:link` element represents the set of references from one entity to all related entities according to a particular relationship.
 
-The reference for each related entity is represented as a `data:uri` element that appears as a direct child of the `data:link` element.
+The reference for each related entity is represented as a `data:uri` element that appears as a direct child of the `data:links` element.
 
 For example, a query for links to Products within the Category with ID=1:
 
@@ -915,13 +928,13 @@ might return the following XML response:
 
 Each related entity is represented as a `data:uri` element, which appears as a direct child of a [`data:link`](#collectionoflinksasadata:linkselement) element.
 
-The content of the `data:uri` element is the URI of the related entity.
+The content of the `data:uri` element is the [Canonical URL](/OData.html#canonicalurl) for the related entity. 
 
 # 15. Errors as XML #
 
-In case of an error in response to a request specifying an `Accept` header of `application/xml` or `application/atom+xml`, or that does not specify an `Accept` header, the service MUST respond with with an error formatted as XML.
+In the case of an error being generated in response to a request specifying an `Accept` header of `application/xml` or `application/atom+xml`, or that does not specify an `Accept` header, the service MUST respond with with an error formatted as XML.
 
-When formatting error responses as XML, servers SHOULD include a `Content-Type` response header with the value "application/xml".
+When formatting error responses as XML, servers SHOULD include a `Content-Type` response header with the value `"application/xml"`.
 
 ## 15.1 The `metadata:error` Element
 
@@ -930,6 +943,7 @@ Errors formatted as XML have a root `metadata:error` element. The `metadata:erro
 In addition, errors may be annotated using custom [annotations](#Annotations)
 
 For example: 
+
 	<error xmlns="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">
 	  <code>BDRQST</code>
 	  <message xml:lang="en-US">Bad Request - Error in query syntax.</message>
@@ -937,11 +951,11 @@ For example:
 	
 ##15.2 The `metadata:code` Element
 
-The `metadata:code` element specifies a service-defined string which serves as a substatus to the HTTP response code.
+The `metadata:error` element MUST contain a `metadata:code` element specifying a service-defined string. This value MAY be used to provide a more specific substatus to the returned HTTP response code.
 
 ##15.3 The `metadata:message` Element
 
-The required `metadata:message` element specifies a human readable message describing the error.
+The `metadata:error` element MUST contain a `metadata:message` element specifying a human readable message describing the error.
 
 ### 15.3.1. The xml:lang Attribute
 
@@ -949,10 +963,10 @@ The `metadata:message` element MAY contain an `xml:lang` attribute to specify th
 
 ##15.4 The `metadata:innererror` Element
 
-The optional `metadata:innererror` element contains data service specific debugging information that might assist a service implementer in determining the cause of an error.
+The `metadata:error` element MAY contain a `metadata:innererror` element containing service specific debugging information that might assist a service implementer in determining the cause of an error.
 
-The `metadata:innererror` element SHOULD only be used in development environments in order to guard against potential information disclosure security concerns.
+The `metadata:innererror` element SHOULD only be used in development environments in order to guard against potential security concerns around information disclosure.
 
 #16. Extensibility #
 
-Implementations may add custom content anywhere allowed by [RFC4287][], Section 6, "Extending Atom"; however, custom elements and attributes MUST NOT be defined in the [OData Data Namespace](#odatadatanamespace) nor the [OData Metadata Namespace](#odatametadatanamespace).
+Implementations MAY add custom content anywhere allowed by [RFC4287][], Section 6, "Extending Atom". However, custom elements and attributes MUST NOT be defined in the [OData Data Namespace](#odatadatanamespace) nor the [OData Metadata Namespace](#odatametadatanamespace), and SHOULD not be required to be understood by the receiving party in order to correctly interpret the rest of the payload.

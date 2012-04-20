@@ -1,8 +1,3 @@
-Title: Common Schema Definition Language (CSDL)
-Author: Mark Stafford
-Date: 29 March 2012
-Keywords: odata, csdl
-
 # Appendix A: Formal Description of Common Schema Definition Language (CSDL)[top]
 
 ### Table of Contents[toc]
@@ -42,15 +37,15 @@ Keywords: odata, csdl
 [5.1.1	The `edm:Name` Attribute][csdl5.1.1]  
 [5.2	The `edm:Type` Attribute][csdl5.2]  
 [5.3	Property Facets][csdl5.3]  
-[5.3.1	The `edm:Nullable` Facet][csdl5.3.1]  
-[5.3.2	The `edm:MaxLength` Facet][csdl5.3.2]  
-[5.3.3	The `edm:FixedLength` Facet][csdl5.3.3]  
+[5.3.1	The `edm:Nullable` Attribute][csdl5.3.1]  
+[5.3.2	The `edm:MaxLength` Attribute][csdl5.3.2]  
+[5.3.3	The `edm:FixedLength` Attribute][csdl5.3.3]  
 [5.3.4	The `edm:Precision` Attribute][csdl5.3.4]  
 [5.3.5	The `edm:Scale` Attribute][csdl5.3.5]  
 [5.3.6	The `edm:Unicode` Attribute][csdl5.3.6]  
 [5.3.7	The `edm:Collation` Attribute][csdl5.3.7]  
 [5.3.8	The `edm:SRID` Attribute][csdl5.3.8]  
-[5.3.9	The `edm:DefaultValue` Facet][csdl5.3.9]  
+[5.3.9	The `edm:DefaultValue` Attribute][csdl5.3.9]  
 [5.3.10	The `edm:ConcurrencyMode` Attribute][csdl5.3.10]  
 [6	Entity Type Constructs][csdl6]  
 [6.1	The `edm:EntityType` Element][csdl6.1]  
@@ -58,6 +53,7 @@ Keywords: odata, csdl
 [6.1.2	The `edm:BaseType` Attribute][csdl6.1.2]  
 [6.1.3	The `edm:Abstract` Attribute][csdl6.1.3]  
 [6.1.4	The `edm:OpenType` Attribute][csdl6.1.4]  
+[6.1.5	The `metadata:HasStream` Attribute][csdl6.1.5]
 [6.2	The `edm:Key` Element][csdl6.2]  
 [6.3	The `edm:PropertyRef` Element][csdl6.3]  
 [6.4	The `edm:NavigationProperty` Element][csdl6.4]  
@@ -182,14 +178,13 @@ Elements and attributes that define the entity model exposed by the OData Servic
 
 Prior versions of CSDL used the following namespaces for EDM:
 
-- http://schemas.microsoft.com/ado/2006/04/edm
-- http://schemas.microsoft.com/ado/2007/05/edm
-- http://schemas.microsoft.com/ado/2008/01/edm
-- http://schemas.microsoft.com/ado/2008/09/edm
-- http://schemas.microsoft.com/ado/2009/11/edm
+- CSDL version 1.0: http://schemas.microsoft.com/ado/2006/04/edm
+- CSDL version 1.1: http://schemas.microsoft.com/ado/2007/05/edm
+- CSDL version 1.2: http://schemas.microsoft.com/ado/2008/01/edm
+- CSDL version 2.0: http://schemas.microsoft.com/ado/2008/09/edm
+- CSDL version 3.0: http://schemas.microsoft.com/ado/2009/11/edm
 
 In this specification the namespace prefix `edm` is used to represent the Entity Data Model namespace, however the prefix name is not prescriptive.
-
 
 ## 1.3	Data Service Metadata Namespace[csdl1.3]
 
@@ -258,7 +253,6 @@ For example:
 
 ## 2.4	Vocabulary Annotations[csdl2.4]
 
-<!-- TODO: Pull out addressable metadata... perhaps reuse definition in Annotations Target -->
 Many parts of the model can be annotated with additional information with the [`edm:TypeAnnotation`][csdl15.2] and [`edm:ValueAnnotation`][csdl15.4] elements.
 
 A model element MUST NOT specify more than one type annotation or value annotation for a given type term or value term.
@@ -336,7 +330,7 @@ The `edmx:DataServices` element contains zero or more [`edm:Schema`][csdl4.1] el
 
 ### 3.2.1	The `metadata:DataServiceVersion` Attribute[csdl3.2.1]
 
-The `metadata:DataServiceVersion` attribute describes the version of OData protocol required to consume the service. This version of the specification defines the following valid data service version values: ì1.0î, ì2.0î, and ì3.0î, corresponding to OData protocol versions 1.0, 2.0 and 3.0 respectively.
+The `metadata:DataServiceVersion` attribute describes the version of OData protocol required to consume the service. This version of the specification defines the following valid data service version values: ‚Äú1.0‚Äù, ‚Äú2.0‚Äù, and ‚Äú3.0‚Äù, corresponding to OData protocol versions 1.0, 2.0 and 3.0 respectively.
 
 ## 3.3	The `edmx:Reference` Element[csdl3.3]
 
@@ -425,7 +419,7 @@ A Schema element contains zero or more of the following elements:
 
 ### 4.1.1	The `edm:Namespace` Attribute[csdl4.1.1]
 
-A schema is identified by the value of the `edm:Namespace` attribute. The schemaís namespace is combined with the name of elements in the entity model to create unique names.
+A schema is identified by the value of the `edm:Namespace` attribute. The schema‚Äôs namespace is combined with the name of elements in the entity model to create unique names.
 
 Identifiers that are used to name types MUST be unique within a namespace to prevent ambiguity. See [Nominal Types][csdl2.1] for more detail.
 
@@ -489,13 +483,13 @@ The value of the type attribute MUST be of the form [`<anyKeylessTypeReference>`
 
 ## 5.3	Property Facets[csdl5.3]
 
-Property facets allow a model to provide additional constraints or data about the value of structural properties.
+Property facets allow a model to provide additional constraints or data about the value of structural properties. Facets are expressed as attributes on the property element.
 
 Facets apply to the type referenced in the element where the facet is declared. If the type is a collection type declared with attribute notation, the facets apply to the types in the collection. In the following example, the Nullable facet applies to the DateTime type.
 
 	<Property Name="SuggestedTimes" Type="Collection(Edm.DateTime)" Nullable="true" />
 
-In the following example the Nullable facet MUST be placed on the child element that references the `DateTime` type. Facets MUST NOT be applied to Collection type references.
+In the following example the Nullable attribute MUST be placed on the child element that references the `DateTime` type. Facet attributes MUST NOT be applied to Collection type references.
 
 	<ReturnType>
 	 <Collection>
@@ -503,25 +497,25 @@ In the following example the Nullable facet MUST be placed on the child element 
 	 </Collection>
 	</ReturnType>
 
-### 5.3.1	The `edm:Nullable` Facet[csdl5.3.1]
+### 5.3.1	The `edm:Nullable` Attribute[csdl5.3.1]
 
-Any `edm:Property` MAY define a [`<boolean>`][csdl19] value for the `edm:Nullable` facet. The value of this facet determines whether a value is required for the property on instances of the containing type.
+Any `edm:Property` MAY define a [`<boolean>`][csdl19] value for the `edm:Nullable` facet attribute. The value of this attribute determines whether a value is required for the property on instances of the containing type.
 
 If no value is specified, the nullable facet defaults to `true`.
 
-### 5.3.2	The `edm:MaxLength` Facet[csdl5.3.2]
+### 5.3.2	The `edm:MaxLength` Attribute[csdl5.3.2]
 
-A binary, stream or string `edm:Property` MAY define a [`<nonNegativeIntegral>`][csdl19] value for the `edm:MaxLength` facet. The value of this facet specifies the maximum length of the value of the property on a type instance.
+A binary, stream or string `edm:Property` MAY define a [`<nonNegativeIntegral>`][csdl19] value for the `edm:MaxLength` facet attribute. The value of this attribute specifies the maximum length of the value of the property on a type instance.
 
-### 5.3.3	The `edm:FixedLength` Facet[csdl5.3.3]
+### 5.3.3	The `edm:FixedLength` Attribute[csdl5.3.3]
 
-A binary, stream or string `edm:Property` MAY define a [`<nonNegativeIntegral>`][csdl19] value for the `edm:FixedLength` facet. The value of this facet specifies the size of the array used to store the value of the property on a type instance.
+A binary, stream or string `edm:Property` MAY define a [`<nonNegativeIntegral>`][csdl19] value for the `edm:FixedLength` facet attribute. The value of this attribute specifies the size of the array used to store the value of the property on a type instance.
 
 ### 5.3.4	The `edm:Precision` Attribute[csdl5.3.4]
 
 A temporal or decimal `edm:Property` MAY define a [`<nonNegativeIntegral>`][csdl19] value for the `edm:Precision` attribute.
 
-For a decimal property the value of this attribute specifies the maximum number of digits allowed in the propertyís value. For a temporal property the value of this attribute specifies the number of decimal places allowed in the seconds portion of the propertyís value.
+For a decimal property the value of this attribute specifies the maximum number of digits allowed in the property‚Äôs value. For a temporal property the value of this attribute specifies the number of decimal places allowed in the seconds portion of the property‚Äôs value.
 
 ### 5.3.5	The `edm:Scale` Attribute[csdl5.3.5]
 
@@ -567,7 +561,7 @@ The value of the SRID attribute MUST be a [`<nonNegativeInt32>`][csdl19] or the 
 
 The valid values of the SRID attribute and their meanings are as defined by the [European Petroleum Survey Group (EPSG)][http://www.epsg.org/Geodetic.html].
 
-### 5.3.9	The `edm:DefaultValue` Facet[csdl5.3.9]
+### 5.3.9	The `edm:DefaultValue` Attribute[csdl5.3.9]
 
 A string property MAY define a value for the `edm:DefaultValue` attribute. The value of this attribute determines the value of the property on new type instances.
 
@@ -622,7 +616,7 @@ If no base type is specified, the `edm:EntityType` element MUST contain one or m
 
 ### 6.1.1	The `edm:Name` Attribute[csdl6.1.1]
 
-A value of the form [`<simpleIdentifier>`][csdl19] MUST be provided for the `edm:Name` attribute because an entity type is a [nominal type][csdl2.1]. The value identifies the entity type and MUST be unique within the entity typeís namespace.
+A value of the form [`<simpleIdentifier>`][csdl19] MUST be provided for the `edm:Name` attribute because an entity type is a [nominal type][csdl2.1]. The value identifies the entity type and MUST be unique within the entity type‚Äôs namespace.
 
 ### 6.1.2	The `edm:BaseType` Attribute[csdl6.1.2]
 
@@ -630,7 +624,7 @@ An entity type can inherit from another entity type by specifying a [`<singleEnt
 
 An entity type that provides a value for the base type attribute MUST NOT declare a key with the [`edm:Key`][csdl6.2] element.
 
-An entity type inherits the key as well as structural and navigation properties declared on the entity typeís base type.
+An entity type inherits the key as well as structural and navigation properties declared on the entity type‚Äôs base type.
 
 An entity type MUST NOT introduce an inheritance cycle via the base type attribute.
 
@@ -646,9 +640,17 @@ If no value is provided for the open type attribute, the value of the open type 
 
 An entity type derived from an open entity type MUST NOT provide a value of false for the open type attribute.
 
+### 6.1.5	The `metadata:HasStream` Attribute[csdl6.1.5]
+
+An entity type MAY contain the `metadata:hasstream` attribute. 
+
+A value of `true` specifies that the entity type is a media entity. *Media entities* are entities that represent a media stream, such as a photo. For more information on Media Entities, see [OData:Core][].
+
+If no value is provided for the HasStream attribute, the value of the HasStream attribute is set to `false`.
+
 ## 6.2	The `edm:Key` Element[csdl6.2]
 
-An entity type MUST be uniquely identifiable. If an entity type does not specify a base type, the entity type MUST contain exactly one `edm:Key` element. An entity typeís key refers to the set of properties that uniquely identify an instance of the entity type.
+An entity type MUST be uniquely identifiable. If an entity type does not specify a base type, the entity type MUST contain exactly one `edm:Key` element. An entity type‚Äôs key refers to the set of properties that uniquely identify an instance of the entity type.
 
 If specified, the key MUST contain one or more `edm:PropertyRef` elements. An `edm:PropertyRef` element references an [`edm:Property`][csdl5.1]. The properties that compose the key MUST be non-nullable [primitives][csdl2.1] or [enumeration types][csdl8].
 
@@ -886,7 +888,7 @@ A reference type MUST specify a [`<singleEntityTypeReference>`][csdl19] value fo
 
 ## 9.4	Row Types[csdl9.4]
 
-A row type is the only structural type that is not nominal in nature. Because it does not have a name, the row type MUST be used inline. Row types are frequently used as the structure of a function importís return type.
+A row type is the only structural type that is not nominal in nature. Because it does not have a name, the row type MUST be used inline. Row types are frequently used as the structure of a function import‚Äôs return type.
 
 ### 9.4.1	The `edm:RowType` Element[csdl9.4.1]
 
@@ -926,9 +928,9 @@ The `edm:Role` attribute allows the association end to be bound to a [navigation
 ### 10.2.3	The `edm:Multiplicity` Attribute[csdl10.2.3]
 
 The `edm:Multiplicity` attribute defines the cardinality of the association end. The value of the attribute MUST be one of the following:
-- `0..1` ñ zero or one
-- `1` ñ exactly one
-- `*` ñ zero or more
+- `0..1` ‚Äì zero or one
+- `1` ‚Äì exactly one
+- `*` ‚Äì zero or more
 
 ## 10.3	The `edm:OnDelete` Element[csdl10.3]
 
@@ -1128,7 +1130,7 @@ An association set can contain zero, one or two `edm:End` elements.
 
 An `edm:End` element MUST be specified if the corresponding end of the association refers to an entity type that is exposed in more than one entity set.
 
-An association set end MUST provide a [`<simpleIdentifier>`][csdl19] value for the `edm:Role` attribute that is the same as the value of one of the association endsí `edm:Role` attribute.
+An association set end MUST provide a [`<simpleIdentifier>`][csdl19] value for the `edm:Role` attribute that is the same as the value of one of the association ends‚Äô `edm:Role` attribute.
 
 The `edm:End` element MUST also provide a [`<simpleIdentifier>`][csdl19] or [`<qualifiedIdentifier>`][csdl19] value for the `edm:EntitySet` attribute. The entity set that is named MUST expose the entity type bound by the corresponding end of the association.
 
@@ -1162,7 +1164,7 @@ The function import MAY specify a value for the `edm:EntitySetPath` attribute if
 
 The value for the `edm:EntitySetPath` attribute consists of a series of segments joined together with forward slashes.
 
-The first segment of the entity set path MUST have the same name as one of the function importís parameters. The remaining segments of the entity set path MUST represent navigation or type casts.
+The first segment of the entity set path MUST have the same name as one of the function import‚Äôs parameters. The remaining segments of the entity set path MUST represent navigation or type casts.
 
 A navigation segment simply names the [`<simpleIdentifier>`][csdl19] of the [navigation property][csdl6.4] to be traversed. A type cast segment names the [`<qualifiedIdentifier>`][csdl19] of the entity type that should be returned from the type cast.
 
@@ -1192,7 +1194,7 @@ If element notation is used, a similar set of attributes can be used to specify 
 
 ## 12.6	The `edm:Parameter` Element[csdl12.6]
 
-The `edm:Parameter` element allows one or more parameters to be passed to the function. This enables the function to return a dynamic set of instances ñ for example, the top-selling products by year. In this case the year must be specified as a parameter to the function with the `edm:Parameter` element.
+The `edm:Parameter` element allows one or more parameters to be passed to the function. This enables the function to return a dynamic set of instances ‚Äì for example, the top-selling products by year. In this case the year must be specified as a parameter to the function with the `edm:Parameter` element.
 
 The `edm:Name` attribute MUST be used to assign a unique [`<simpleIdentifier>`][csdl19] value to the parameter.
 
@@ -1496,6 +1498,7 @@ A time expression may be written with either element notation or attribute notat
 	</ValueAnnotation>
 
 ## 16.2	Dynamic Expressions[csdl16.2]
+
 ### 16.2.1	The `edm:Apply` Expression[csdl16.2.1]
 
 The `edm:Apply` expression enables a value to be obtained by applying a client-side function. An apply expression MUST assign a string value to the `edm:Function` attribute. The value of the function attribute SHOULD be a [`<qualifiedIdentifier>`][csdl19]. The value of the function attribute is used to locate the client-side function that should be applied.
@@ -1698,7 +1701,7 @@ The `edm:FunctionReference` expression MUST be written with element notation, as
 
 The `edm:Record` expression enables a new entity type or complex type to be constructed.
 
-A record expression can specify a [`<simpleIdentifier>`][csdl19] or [`<qualifiedIdentifier>`][csdl19] value for the `edm:Type` attribute. If no value is specified for the type attribute, the type is derived from the expressionís context. If a value is specified, the value MUST resolve to an entity type or complex type in the entity model.
+A record expression can specify a [`<simpleIdentifier>`][csdl19] or [`<qualifiedIdentifier>`][csdl19] value for the `edm:Type` attribute. If no value is specified for the type attribute, the type is derived from the expression‚Äôs context. If a value is specified, the value MUST resolve to an entity type or complex type in the entity model.
 
 A record expression MUST contain zero or more [`edm:PropertyValue`][csdl15.3] elements.
 
